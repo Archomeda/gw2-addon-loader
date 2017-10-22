@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GW2 Addon Loader", "src\GW2 Addon Loader.vcxproj", "{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Debug|x64.ActiveCfg = Debug|x64
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Debug|x64.Build.0 = Debug|x64
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Debug|x86.ActiveCfg = Debug|Win32
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Debug|x86.Build.0 = Debug|Win32
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Release|x64.ActiveCfg = Release|x64
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Release|x64.Build.0 = Release|x64
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Release|x86.ActiveCfg = Release|Win32
+		{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5B090B88-41C2-45C1-9D5D-8C9D3868564B}
+	EndGlobalSection
+EndGlobal
