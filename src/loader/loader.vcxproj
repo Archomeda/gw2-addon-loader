@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{0A527FC4-C30A-48DE-A9ED-8B3E0242CA02}</ProjectGuid>
+    <RootNamespace>GW2AddonLoader</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>d3d9</TargetName>
+    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>d3d9</TargetName>
+    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>d3d9</TargetName>
+    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>d3d9</TargetName>
+    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_GW2ADDON_IMPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_GW2ADDON_IMPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_GW2ADDON_IMPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/Qspectre %(AdditionalOptions)</AdditionalOptions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_GW2ADDON_IMPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/Qspectre %(AdditionalOptions)</AdditionalOptions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="addons\Addon.h" />
+    <ClInclude Include="addons\addons_manager.h" />
+    <ClInclude Include="addons\exceptions.h" />
+    <ClInclude Include="addons\types\NativeAddonImpl.h" />
+    <ClInclude Include="addons\ProxyDirect3D9.h" />
+    <ClInclude Include="addons\ProxyDirect3DDevice9.h" />
+    <ClInclude Include="addons\types\DummyAddonImpl.h" />
+    <ClInclude Include="addons\types\ITypeImpl.h" />
+    <ClInclude Include="addons\types\LegacyAddonImpl.h" />
+    <ClInclude Include="gui\gui_manager.h" />
+    <ClInclude Include="gui\MessageWindow.h" />
+    <ClInclude Include="windows.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="d3d9types.h" />
+    <ClInclude Include="hooks\hooks_manager.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="gui\SettingsWindow.h" />
+    <ClInclude Include="hooks\vftable.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="gui\Window.h" />
+    <ClInclude Include="addons\AddonDirect3D9.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="addons\Addon.cpp" />
+    <ClCompile Include="addons\addons_manager.cpp" />
+    <ClCompile Include="addons\types\NativeAddonImpl.cpp" />
+    <ClCompile Include="addons\ProxyDirect3D9.cpp" />
+    <ClCompile Include="addons\ProxyDirect3DDevice9.cpp" />
+    <ClCompile Include="addons\types\DummyAddonImpl.cpp" />
+    <ClCompile Include="addons\types\ITypeImpl.cpp" />
+    <ClCompile Include="addons\types\LegacyAddonImpl.cpp" />
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="gui\gui_manager.cpp" />
+    <ClCompile Include="gui\MessageWindow.cpp" />
+    <ClCompile Include="hooks\hooks_manager.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="gui\SettingsWindow.cpp" />
+    <ClCompile Include="hooks\vftable.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="gui\Window.cpp" />
+    <ClCompile Include="addons\AddonDirect3D9.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="exports.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dependencies\dependencies.vcxproj">
+      <Project>{9a4064cf-5604-4363-9b07-02f4f7071de3}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

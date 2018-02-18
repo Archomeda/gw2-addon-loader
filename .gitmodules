@@ -1,0 +1,12 @@
+[submodule "src/dependencies/imgui"]
+	path = src/dependencies/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "src/dependencies/simpleini"]
+	path = src/dependencies/simpleini
+	url = https://github.com/brofield/simpleini.git
+[submodule "src/dependencies/spdlog"]
+	path = src/dependencies/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "src/dependencies/minhook"]
+	path = src/dependencies/minhook
+	url = https://github.com/TsudaKageyu/minhook.git
