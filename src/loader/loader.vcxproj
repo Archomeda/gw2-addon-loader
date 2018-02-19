@@ -177,6 +177,8 @@
     <ClInclude Include="addons\types\LegacyAddonImpl.h" />
     <ClInclude Include="gui\gui_manager.h" />
     <ClInclude Include="gui\MessageWindow.h" />
+    <ClInclude Include="hooks\LoaderDirect3D9.h" />
+    <ClInclude Include="hooks\LoaderDirect3DDevice9.h" />
     <ClInclude Include="windows.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="d3d9types.h" />
@@ -202,6 +204,8 @@
     <ClCompile Include="gui\gui_manager.cpp" />
     <ClCompile Include="gui\MessageWindow.cpp" />
     <ClCompile Include="hooks\hooks_manager.cpp" />
+    <ClCompile Include="hooks\LoaderDirect3D9.cpp" />
+    <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="gui\SettingsWindow.cpp" />
     <ClCompile Include="hooks\vftable.c">

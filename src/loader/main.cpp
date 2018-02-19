@@ -1,16 +1,15 @@
 #include "main.h"
 #include <list>
 #include <stdint.h>
-
 #include <imgui.h>
 #include <examples/directx9_example/imgui_impl_dx9.h>
-
 #include "addons/addons_manager.h"
 #include "addons/Addon.h"
 #include "hooks/hooks_manager.h"
+#include "hooks/LoaderDirect3D9.h"
+#include "hooks/LoaderDirect3DDevice9.h"
 #include "gui/gui_manager.h"
 #include "gui/SettingsWindow.h"
-
 #include "Config.h"
 #include "log.h"
 #include "utils.h"
@@ -33,21 +32,6 @@ string imGuiConfigFile;
 bool imGuiDemoOpen = false;
 set<uint32_t> imGuiDemoKeybind { VK_SHIFT, VK_MENU, VK_F1 };
 #endif
-
-void Draw(IDirect3DDevice9* dev) {
-    dev->BeginScene();
-    ImGui_ImplDX9_NewFrame();
-
-    gui::Render();
-#ifdef _DEBUG
-    if (imGuiDemoOpen) {
-        ImGui::ShowTestWindow();
-    }
-#endif
-
-    ImGui::Render();
-    dev->EndScene();
-}
 
 
 extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -175,19 +159,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return CallWindowProc(BaseWndProc, hWnd, msg, wParam, lParam);
 }
 
-void PreCreateDevice(HWND hFocusWindow) {
+
+HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
+    // Hook WindowProc
     if (!BaseWndProc) {
         BaseWndProc = (WNDPROC)GetWindowLongPtr(hFocusWindow, GWLP_WNDPROC);
         SetWindowLongPtr(hFocusWindow, GWLP_WNDPROC, (LONG_PTR)&WndProc);
     }
+
+    // Initialize addons
+    GetLog()->info("Initializing addons");
+    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+        (*it)->SetSdkVersion(hooks::SDKVersion);
+        (*it)->SetD3D9(d3d9);
+        (*it)->Initialize();
+    }
+
+    return D3D_OK;
 }
 
-void PostCreateDevice(HWND hFocusWindow, IDirect3DDevice9* pTmpDev, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
+    // Set up ImGui
     auto& imio = ImGui::GetIO();
     imGuiConfigFile = AppConfig.GetImGuiConfigPath();
     imio.IniFilename = imGuiConfigFile.c_str();
 
-    ImGui_ImplDX9_Init(hFocusWindow, pTmpDev);
+    ImGui_ImplDX9_Init(hFocusWindow, pDeviceInterface);
 
     ImGuiStyle* style = &ImGui::GetStyle();
     style->WindowRounding = 2;
@@ -216,15 +213,49 @@ void PostCreateDevice(HWND hFocusWindow, IDirect3DDevice9* pTmpDev, D3DPRESENT_P
     style->Colors[ImGuiCol_CloseButton] = ImVec4(0.3f, 0.3f, 0.2f, style->Colors[ImGuiCol_CloseButton].w);
     style->Colors[ImGuiCol_CloseButtonHovered] = ImVec4(0.5f, 0.5f, 0.35f, style->Colors[ImGuiCol_CloseButtonHovered].w);
     style->Colors[ImGuiCol_CloseButtonActive] = ImVec4(0.6f, 0.6f, 0.43f, style->Colors[ImGuiCol_CloseButtonActive].w);
+
+    // Load enabled addons
+    GetLog()->info("Loading enabled addons");
+    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+        (*it)->SetFocusWindow(hFocusWindow);
+        if ((*it)->IsEnabledByConfig()) {
+            (*it)->Load();
+        }
+    }
 }
 
-void PreReset(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+HRESULT PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, bool* done) {
+    // Draw ImGui stuff
+    pDeviceInterface->BeginScene();
+    ImGui_ImplDX9_NewFrame();
+
+    gui::Render();
+#ifdef _DEBUG
+    if (imGuiDemoOpen) {
+        ImGui::ShowTestWindow();
+    }
+#endif
+
+    ImGui::Render();
+    pDeviceInterface->EndScene();
+
+    // Draw addons
+    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+        (*it)->DrawFrame(pDeviceInterface);
+    }
+
+    return D3D_OK;
+}
+
+HRESULT PreReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters, bool* done) {
     ImGui_ImplDX9_InvalidateDeviceObjects();
+    return D3D_OK;
 }
 
-void PostReset(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+void PostReset(IDirect3DDevice9* pDeviceInterface) {
     ImGui_ImplDX9_CreateDeviceObjects();
 }
+
 
 bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
@@ -232,17 +263,11 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
             GetLog()->info("GW2 Addon Loader attached");
             LaunchDebugger();
             
-            if (!hooks::InitializeHooks()) {
-                return false;
-            }
-
-            hooks::D3D9Hooks hooks = {};
-            hooks.PreCreateDevice = &PreCreateDevice;
-            hooks.PostCreateDevice = &PostCreateDevice;
-            hooks.PrePresent = &Draw;
-            hooks.PreReset = &PreReset;
-            hooks.PostReset = &PostReset;
-            hooks::SetD3D9Hooks(hooks);
+            hooks::PreCreateDeviceHook = &PreCreateDevice;
+            hooks::PostCreateDeviceHook = &PostCreateDevice;
+            hooks::PrePresentHook = &PrePresent;
+            hooks::PreResetHook = &PreReset;
+            hooks::PostResetHook = &PostReset;
 
             // Make ourselves known by setting an environment variable
             // This makes it easy for addon developers to detect early if we are loaded by GW2 or not

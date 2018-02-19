@@ -12,7 +12,11 @@ namespace loader {
         }
 
         __declspec(noinline) ULONG ProxyDirect3DDevice9::Release() {
-            return this->dev->Release();
+            ULONG count = this->dev->Release();
+            if (count == 0) {
+                delete this;
+            }
+            return count;
         }
 
         __declspec(noinline) HRESULT ProxyDirect3DDevice9::TestCooperativeLevel() {
@@ -489,7 +493,11 @@ namespace loader {
         }
 
         __declspec(noinline) ULONG ProxyDirect3DDevice9Ex::Release() {
-            return this->dev->Release();
+            ULONG count = this->dev->Release();
+            if (count == 0) {
+                delete this;
+            }
+            return count;
         }
 
         __declspec(noinline) HRESULT ProxyDirect3DDevice9Ex::TestCooperativeLevel() {
@@ -1015,7 +1023,6 @@ namespace loader {
         __declspec(noinline) HRESULT ProxyDirect3DDevice9Ex::GetDisplayModeEx(UINT iSwapChain, D3DDISPLAYMODEEX* pMode, D3DDISPLAYROTATION* pRotation) {
             return this->dev->GetDisplayModeEx(iSwapChain, pMode, pRotation);
         }
-
 
     }
 }

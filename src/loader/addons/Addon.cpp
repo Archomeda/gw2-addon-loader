@@ -3,7 +3,6 @@
 #include <Winver.h>
 #include <filesystem>
 #include <string>
-#include <MinHook.h>
 #include <gw2addon-native.h>
 #include "ProxyDirect3D9.h"
 #include "exceptions.h"
@@ -13,7 +12,6 @@
 #include "../log.h"
 #include "../utils.h"
 #include "../Config.h"
-#include "../hooks/hooks_manager.h"
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
@@ -21,22 +19,6 @@ using namespace loader::addons::types;
 
 namespace loader {
     namespace addons {
-
-        /*namespace hooks {
-
-            Direct3DCreate9_t Direct3DCreate9System;
-            Direct3DCreate9Ex_t Direct3DCreate9ExSystem;
-
-            IDirect3D9* WINAPI ProxyDirect3DCreate9(UINT SDKVersion) {
-                return new ProxyDirect3D9(Direct3DCreate9System(SDKVersion));
-            }
-
-            IDirect3D9Ex* WINAPI ProxyDirect3DCreate9Ex(UINT SDKVersion) {
-                return new ProxyDirect3D9Ex(Direct3DCreate9ExSystem(SDKVersion));
-            }
-
-        }*/
-
 
         Addon::Addon(const std::wstring& fullFileName) {
             this->filePath = fullFileName;
@@ -218,6 +200,7 @@ namespace loader {
                 GetLog()->error("Addon will be disabled on next restart");
                 AppConfig.SetAddonEnabled(this->GetFileName(), false);
             }
+            return false;
         }
 
 
@@ -349,144 +332,6 @@ namespace loader {
                 GetLog()->info("Addon {0} homepage: {1}", ws2s(this->GetFileName()), ws2s(this->GetHomepage()));
             }
         }
-
-
-        /*
-        bool Addon::BootstrapD3D9(UINT SDKVersion, IDirect3D9* d3d9) {
-            GetLog()->debug("loader::addons::Addon::BootstrapD3D9({0})", ws2s(this->GetFileName()));
-            if (this->addonState != AddonState::InactiveState) {
-                GetLog()->info("Skipped bootstrapping addon {0}; it's not loaded", ws2s(this->GetFileName()));
-                return false;
-            }
-            if (this->GetAddonType() != AddonType::LegacyAddon) {
-                GetLog()->warn("Skipped bootstrapping addon {0} in D3D9 mode; it's not a legacy addon", ws2s(this->GetFileName()));
-                return false;
-            }
-
-            this->ChangeState(AddonState::ActivatingState);
-
-            if (this->Direct3DCreate9) {
-                // We have to catch a few common hooking cases here, and therefore we have to use
-                // our proxy objects to prevent possible modification of deeper CPU instructions by hook libraries
-                ProxyDirect3D9 proxyD3D9(d3d9);
-                auto vft = GetVftD3D9(&proxyD3D9);
-
-                // Hook GetProcAddress for the system d3d9's Direct3DCreate9 to have it return
-                // our proxy object that we compare later on to check the differences
-                HMODULE systemD3D9 = LoadSystemD3D9();
-                auto procAddressD3DCreate9 = GetProcAddress(systemD3D9, "Direct3DCreate9");
-                auto fDirect3DCreate9 = reinterpret_cast<Direct3DCreate9_t>(GetProcAddress(systemD3D9, "Direct3DCreate9"));
-                CreateAndEnableHook("Direct3DCreate9", fDirect3DCreate9, &hooks::ProxyDirect3DCreate9, &hooks::Direct3DCreate9System);
-
-                // Let the addon create their stuff
-                this->D3D9 = this->Direct3DCreate9(SDKVersion);
-
-                // Undo the hook
-                MH_RemoveHook(fDirect3DCreate9);
-                FreeLibrary(systemD3D9);
-
-                // Determine addon type
-                if (&proxyD3D9 == this->D3D9) {
-                    // Same object, the addon probably modified the virtual table
-                    // But since we gave it our proxy object, we don't have to do anything
-                    //this->ChangeType(AddonType::LegacyVirtualTableReplacingAddon);
-                    //TODO: Add support for this hook type
-                    this->ChangeType(AddonType::LegacyUnsupportedAddon);
-                    return false;
-                }
-                else if (CompareVftPtr(&proxyD3D9, this->D3D9)) {
-                    // Same vtable object, the addon probably modified some pointers
-                    if (!CompareD3D9Vft(&proxyD3D9, vft)) {
-                        // The addon indeed modified some pointers
-                        //this->ChangeType(AddonType::LegacyPointerReplacingAddon);
-                        //TODO: Add support for this hook type
-                        this->ChangeType(AddonType::LegacyUnsupportedAddon);
-                        return false;
-                    }
-                    else {
-                        // The addon did something else, unsupported (minhook-like)
-                        //TODO: Add support for custom hooks
-                        this->ChangeType(AddonType::LegacyUnsupportedAddon);
-                        return false;
-                    }
-                }
-                else {
-                    // Different object, we don't need to do anything special here (arcdps-like)
-                    this->ChangeType(AddonType::LegacyWrapperAddon);
-                }
-            }
-
-            this->ChangeState(AddonState::ActiveState);
-            GetLog()->info("Addon {0} activated", ws2s(this->GetFileName()));
-            return true;
-        }
-        */
-
-        /*
-        bool Addon::BootstrapD3D9Ex(UINT SDKVersion, IDirect3D9Ex* d3d9Ex) {
-            GetLog()->debug("loader::addons::Addon::BootstrapD3D9Ex({0})", ws2s(this->GetFileName()));
-            if (this->addonState != AddonState::InactiveState) {
-                GetLog()->info("Skipped bootstrapping addon {0}; it's not loaded", ws2s(this->GetFileName()));
-                return false;
-            }
-
-            this->ChangeState(AddonState::ActivatingState);
-
-            if (this->Direct3DCreate9Ex) {
-                // We have to catch a few common hooking cases here, and therefore we have to use
-                // our proxy objects to prevent possible modification of deeper CPU instructions by hook libraries
-                ProxyDirect3D9Ex proxyD3D9Ex(d3d9Ex);
-                auto vft = GetVftD3D9Ex(&proxyD3D9Ex);
-
-                // Hook GetProcAddress for the system d3d9's Direct3DCreate9 to have it return
-                // our proxy object that we compare later on to check the differences
-                HMODULE systemD3D9 = LoadSystemD3D9();
-                auto fDirect3DCreate9Ex = reinterpret_cast<Direct3DCreate9Ex_t>(GetProcAddress(systemD3D9, "Direct3DCreate9Ex"));
-                CreateAndEnableHook("Direct3DCreate9Ex", fDirect3DCreate9Ex, &hooks::ProxyDirect3DCreate9Ex, &hooks::Direct3DCreate9ExSystem);
-
-                // Let the addon create their stuff
-                this->D3D9Ex = this->Direct3DCreate9Ex(SDKVersion);
-
-                // Undo the hook
-                MH_RemoveHook(fDirect3DCreate9Ex);
-                FreeLibrary(systemD3D9);
-
-                // Determine addon type
-                if (&proxyD3D9Ex == this->D3D9Ex) {
-                    // Same object, the addon probably modified the virtual table
-                    // But since we gave it our proxy object, we don't have to do anything
-                    //this->ChangeType(AddonType::LegacyVirtualTableReplacingAddon);
-                    //TODO: Add support for this hook type
-                    this->ChangeType(AddonType::LegacyUnsupportedAddon);
-                    return false;
-                }
-                else if (CompareVftPtr(&proxyD3D9Ex, this->D3D9Ex)) {
-                    // Same vtable object, the addon probably modified some pointers
-                    if (!CompareD3D9ExVft(&proxyD3D9Ex, vft)) {
-                        // The addon indeed modified some pointers
-                        //this->ChangeType(AddonType::LegacyPointerReplacingAddon);
-                        //TODO: Add support for this hook type
-                        this->ChangeType(AddonType::LegacyUnsupportedAddon);
-                        return false;
-                    }
-                    else {
-                        // The addon did something else, unsupported (minhook-like)
-                        //TODO: Add support for custom hooks
-                        this->ChangeType(AddonType::LegacyUnsupportedAddon);
-                        return false;
-                    }
-                }
-                else {
-                    // Different object, we don't need to do anything special here (arcdps-like)
-                    this->ChangeType(AddonType::LegacyWrapperAddon);
-                }
-            }
-
-            this->ChangeState(AddonState::ActiveState);
-            GetLog()->info("Addon {0} activated", ws2s(this->GetFileName()));
-            return true;
-        }
-        */
 
     }
 }

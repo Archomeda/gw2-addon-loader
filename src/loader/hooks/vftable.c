@@ -163,7 +163,7 @@ void SetVftD3D9Ex(IDirect3D9Ex* obj, D3D9Ex_vft vft) {
     }
 }
 
-D3DDevice9_vft GetVftD3DDevice9(IDirect3DDevice9 * obj) {
+D3DDevice9_vft GetVftD3DDevice9(IDirect3DDevice9* obj) {
     D3DDevice9_vft vft = { 0 };
     vft.Present = obj->lpVtbl->Present;
     vft.Reset = obj->lpVtbl->Reset;
@@ -172,7 +172,7 @@ D3DDevice9_vft GetVftD3DDevice9(IDirect3DDevice9 * obj) {
     return vft;
 }
 
-D3DDevice9_vft GetVftD3DDevice9Ex(IDirect3DDevice9Ex * obj) {
+D3DDevice9_vft GetVftD3DDevice9Ex(IDirect3DDevice9Ex* obj) {
     D3DDevice9_vft vft = { 0 };
     vft.Present = obj->lpVtbl->Present;
     vft.PresentEx = obj->lpVtbl->PresentEx;
