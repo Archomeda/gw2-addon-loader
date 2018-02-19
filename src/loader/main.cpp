@@ -215,9 +215,24 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     addons::LoadAddons(hFocusWindow);
 }
 
+void PrePresentGui(IDirect3DDevice9* pDeviceInterface) {
+    // Draw addons
+    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+        (*it)->DrawFrameBeforeGui(pDeviceInterface);
+    }
+
+    //TODO: Remove this hook whenever there's no addon that's using this, to prevent unnecessary StateBlock calls
+}
+
 HRESULT PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, bool* done) {
-    // Draw ImGui stuff
     pDeviceInterface->BeginScene();
+
+    // Draw addons
+    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+        (*it)->DrawFrame(pDeviceInterface);
+    }
+
+    // Draw ImGui stuff
     ImGui_ImplDX9_NewFrame();
 
     gui::Render();
@@ -229,11 +244,6 @@ HRESULT PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, 
 
     ImGui::Render();
     pDeviceInterface->EndScene();
-
-    // Draw addons
-    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-        (*it)->DrawFrame(pDeviceInterface);
-    }
 
     return D3D_OK;
 }
@@ -256,6 +266,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
             
             hooks::PreCreateDeviceHook = &PreCreateDevice;
             hooks::PostCreateDeviceHook = &PostCreateDevice;
+            hooks::PrePresentGuiHook = &PrePresentGui;
             hooks::PrePresentHook = &PrePresent;
             hooks::PreResetHook = &PreReset;
             hooks::PostResetHook = &PostReset;

@@ -51,6 +51,7 @@ namespace loader {
                 virtual void Load() = 0;
                 virtual void Unload() = 0;
                 virtual void DrawFrame(IDirect3DDevice9* device) = 0;
+                virtual void DrawFrameBeforeGui(IDirect3DDevice9* device) = 0;
                 virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) = 0;
 
             protected:

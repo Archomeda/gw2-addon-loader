@@ -61,6 +61,10 @@ namespace loader {
 
             }
 
+            void LegacyAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
+
+            }
+
             bool LegacyAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 return false;
             }

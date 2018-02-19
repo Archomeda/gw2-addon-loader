@@ -52,6 +52,7 @@ namespace loader {
             bool Load();
             bool Unload();
             void DrawFrame(IDirect3DDevice9* device);
+            void DrawFrameBeforeGui(IDirect3DDevice9* device);
             bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
         private:

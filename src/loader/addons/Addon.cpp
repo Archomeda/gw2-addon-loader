@@ -187,6 +187,21 @@ namespace loader {
             }
         }
 
+        void Addon::DrawFrameBeforeGui(IDirect3DDevice9* device) {
+            if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
+                return;
+            }
+
+            try {
+                this->GetTypeImpl()->DrawFrameBeforeGui(device);
+            }
+            catch (const exceptions::AddonDrawFrameException& ex) {
+                GetLog()->error("Failed to draw frame before GUI in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
+                GetLog()->error("Addon will be disabled on next restart");
+                AppConfig.SetAddonEnabled(this->GetFileName(), false);
+            }
+        }
+
         bool Addon::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
                 return false;

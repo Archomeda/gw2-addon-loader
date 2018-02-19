@@ -13,6 +13,9 @@ namespace loader {
         typedef HRESULT(*PreResetEx_t)(IDirect3DDevice9Ex* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, bool* done);
         typedef void(*PostResetEx_t)(IDirect3DDevice9Ex* pDeviceInterface);
 
+        typedef void(*PrePresentGui_t)(IDirect3DDevice9* pDeviceInterface);
+        typedef void(*PrePresentGuiEx_t)(IDirect3DDevice9Ex* pDeviceInterface);
+
         extern PrePresent_t PrePresentHook;
         extern PostPresent_t PostPresentHook;
         extern PreReset_t PreResetHook;
@@ -21,6 +24,9 @@ namespace loader {
         extern PostPresentEx_t PostPresentExHook;
         extern PreResetEx_t PreResetExHook;
         extern PostResetEx_t PostResetExHook;
+
+        extern PrePresentGui_t PrePresentGuiHook;
+        extern PrePresentGuiEx_t PrePresentGuiExHook;
 
         
         class LoaderDirect3DDevice9 : public IDirect3DDevice9

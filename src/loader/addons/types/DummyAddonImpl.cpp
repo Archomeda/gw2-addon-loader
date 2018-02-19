@@ -31,6 +31,10 @@ namespace loader {
 
             }
 
+            void DummyAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
+
+            }
+
             bool DummyAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 return false;
             }

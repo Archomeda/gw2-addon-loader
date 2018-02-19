@@ -118,6 +118,31 @@ namespace loader {
                 }
             }
 
+            void NativeAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
+                if (!this->GW2_DrawFrameBeforeGui) {
+                    return;
+                }
+                try {
+                    this->GW2_DrawFrameBeforeGui(device);
+                }
+                catch (const exception& ex) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException(ex.what());
+                }
+                catch (const char* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException(err);
+                }
+                catch (const wchar_t* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException(ws2s(err));
+                }
+                catch (...) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException("Unknown error");
+                }
+            }
+
             bool NativeAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 if (!this->GW2_HandleWndProc) {
                     return false;

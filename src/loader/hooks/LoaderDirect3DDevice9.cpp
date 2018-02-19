@@ -1,4 +1,11 @@
 #include "LoaderDirect3DDevice9.h"
+#include <iomanip>
+#include <set>
+#include <sstream>
+#include <string>
+#include "../log.h"
+
+using namespace std;
 
 namespace loader {
     namespace hooks {
@@ -11,6 +18,45 @@ namespace loader {
         PostPresentEx_t PostPresentExHook = nullptr;
         PreResetEx_t PreResetExHook = nullptr;
         PostResetEx_t PostResetExHook = nullptr;
+
+        PrePresentGui_t PrePresentGuiHook = nullptr;
+        PrePresentGuiEx_t PrePresentGuiExHook = nullptr;
+
+
+        // Full vertex shader bytecode:
+        // fffe0300 05000051 a00f0004 00000000 00000000 00000000 00000000 0200001f 80000000 900f0000 0200001f 80000003|900f0003 0200001f 80000005 900f0007 0200001f 80000005 e00f0000 0200001f 80000000 e00f0001 02000001 80070000 a0000004 02000001 80070000 a0000004 03000009 e0010001 90e40000 a0e40000 03000009 e0020001 90e40000 a0e40001 03000009 e0040001 90e40000 a0e40002 03000009 e0080001 90e40000 a0e40003 02000001 e0030000 90e40007
+        const DWORD PatternGuiText[] = {
+            0x900f0003, 0x0200001f, 0x80000005, 0x900f0007, 0x0200001f,
+            0x80000005, 0xe00f0000, 0x0200001f, 0x80000000, 0xe00f0001,
+            0x02000001, 0x80070000, 0xa0000004, 0x02000001, 0x80070000,
+            0xa0000004, 0x03000009, 0xe0010001, 0x90e40000, 0xa0e40000,
+            0x03000009, 0xe0020001, 0x90e40000, 0xa0e40001, 0x03000009,
+            0xe0040001, 0x90e40000, 0xa0e40002, 0x03000009, 0xe0080001,
+            0x90e40000, 0xa0e40003, 0x02000001, 0xe0030000, 0x90e40007
+        };
+        const int PatternGuiTextLength = sizeof(PatternGuiText) / sizeof(*PatternGuiText);
+        set<IDirect3DVertexShader9*> GuiTextShaderPtrs;        
+        
+        bool PrePresentGuiDone = false;
+
+
+        int GetShaderFunctionLength(const DWORD* pFunction) {
+            int i = 0;
+            while ((pFunction[i++] & D3DSI_OPCODE_MASK) != D3DSIO_END);
+            return i - 1;
+        }
+
+        bool CheckShaderPattern(const DWORD* pFunction, int functionLength, const DWORD* pattern, int patternLength) {
+            if (functionLength < patternLength) {
+                return false;
+            }
+            for (int i = 0; i < patternLength; ++i) {
+                if (pattern[patternLength - 1 - i] != pFunction[functionLength - 1 - i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
 
         HRESULT LoaderDirect3DDevice9::QueryInterface(REFIID riid, void** ppvObj) {
@@ -132,6 +178,9 @@ namespace loader {
                 PostPresentHook(this);
             }
 
+            // Reset this for a new frame
+            PrePresentGuiDone = false;
+            
             return hr;
         }
 
@@ -428,10 +477,45 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::CreateVertexShader(CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader) {
-            return this->dev->CreateVertexShader(pFunction, ppShader);
+            HRESULT result = this->dev->CreateVertexShader(pFunction, ppShader);
+            if (result != D3D_OK) {
+                return result;
+            }
+            int functionLength = GetShaderFunctionLength(pFunction);
+            if (functionLength > 0 && CheckShaderPattern(pFunction, functionLength, PatternGuiText, PatternGuiTextLength)) {
+                GuiTextShaderPtrs.insert(*ppShader);
+                stringstream sstream;
+                sstream << hex << ppShader;
+                GetLog()->info("Found vertex shader for GUI text, initialized at 0x" + sstream.str());
+            }
+            return result;
         }
 
         HRESULT LoaderDirect3DDevice9::SetVertexShader(IDirect3DVertexShader9* pShader) {
+            if (!pShader) {
+                return this->dev->SetVertexShader(pShader);
+            }
+
+            if (!PrePresentGuiDone) {
+                if (PrePresentGuiHook && GuiTextShaderPtrs.find(pShader) != GuiTextShaderPtrs.end()) {
+                    // The GUI is being rendered, HALT!
+
+                    // Save our current state
+                    IDirect3DStateBlock9* pStateBlock = NULL;
+                    this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+
+                    // Call our hook
+                    PrePresentGuiHook(this);
+
+                    // Restore our state
+                    pStateBlock->Apply();
+                    pStateBlock->Release();
+
+                    // Make sure we keep track that we've done this
+                    PrePresentGuiDone = true;
+                }
+            }
+
             return this->dev->SetVertexShader(pShader);
         }
 
@@ -913,6 +997,30 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::SetVertexShader(IDirect3DVertexShader9* pShader) {
+            if (!pShader) {
+                return this->dev->SetVertexShader(pShader);
+            }
+
+            if (!PrePresentGuiDone) {
+                if (PrePresentGuiExHook && GuiTextShaderPtrs.find(pShader) != GuiTextShaderPtrs.end()) {
+                    // The GUI is being rendered, HALT!
+
+                    // Save our current state
+                    IDirect3DStateBlock9* pStateBlock = NULL;
+                    this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+
+                    // Call our hook
+                    PrePresentGuiExHook(this);
+
+                    // Restore our state
+                    pStateBlock->Apply();
+                    pStateBlock->Release();
+
+                    // Make sure we keep track that we've done this
+                    PrePresentGuiDone = true;
+                }
+            }
+
             return this->dev->SetVertexShader(pShader);
         }
 
@@ -1051,6 +1159,9 @@ namespace loader {
             if (PostPresentExHook != nullptr) {
                 PostPresentExHook(this);
             }
+
+            // Reset this for a new frame
+            PrePresentGuiDone = false;
 
             return hr;
         }

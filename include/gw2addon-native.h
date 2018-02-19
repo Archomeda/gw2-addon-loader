@@ -123,6 +123,14 @@ typedef void(GW2ADDON_CALL *GW2DrawFrame)(IDirect3DDevice9* pDev);
 #define GW2_DLL_DrawFrame "GW2_DrawFrame"
 
 /**
+Exported C-function: GW2_DrawFrameBeforeGui. Optional.
+Gets called every frame right before the GUI gets drawn.
+Can be used to draw custom elements in the world that needs to be behind the GUI, or to do some postprocessing.
+*/
+typedef void(GW2ADDON_CALL *GW2DrawFrameBeforeGui)(IDirect3DDevice9* pDev);
+#define GW2_DLL_DrawFrameBeforeGui "GW2_DrawFrameBeforeGui"
+
+/**
 Exported C-function: GW2_HandleWndProc. Optional.
 Gets called whenever a message in the message loop is being handled by the Guild Wars 2 client.
 Can be used to e.g. intercept mouse and keyboard events.
