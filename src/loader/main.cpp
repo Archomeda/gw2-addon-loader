@@ -169,11 +169,7 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
 
     // Initialize addons
     GetLog()->info("Initializing addons");
-    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-        (*it)->SetSdkVersion(hooks::SDKVersion);
-        (*it)->SetD3D9(d3d9);
-        (*it)->Initialize();
-    }
+    addons::InitializeAddons(hooks::SDKVersion, d3d9);
 
     return D3D_OK;
 }
@@ -216,12 +212,7 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
 
     // Load enabled addons
     GetLog()->info("Loading enabled addons");
-    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-        (*it)->SetFocusWindow(hFocusWindow);
-        if ((*it)->IsEnabledByConfig()) {
-            (*it)->Load();
-        }
-    }
+    addons::LoadAddons(hFocusWindow);
 }
 
 HRESULT PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, bool* done) {
@@ -279,10 +270,10 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         break;
         case DLL_PROCESS_DETACH: {
             ImGui::Shutdown();
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-                (*it)->Unload();
-                (*it)->Uninitialize();
-            }
+            GetLog()->info("Unloading and uninitializing addons");
+            addons::UnloadAddons();
+            addons::UninitializeAddons();
+            GetLog()->info("Uninitializing hooks");
             hooks::UninitializeHooks();
             GetLog()->info("GW2 Addon Loader detached");
         }

@@ -50,5 +50,39 @@ namespace loader {
                 return AppConfig.GetAddonOrder(b->GetFileName()) > AppConfig.GetAddonOrder(a->GetFileName());
             });
         }
+        
+        void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9) {
+            GetLog()->debug("loader::addons::InitializeAddons()");
+            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+                (*it)->SetSdkVersion(sdkVersion);
+                (*it)->SetD3D9(d3d9);
+                (*it)->Initialize();
+            }
+        }
+
+        void UninitializeAddons() {
+            GetLog()->debug("loader::addons::UninitializeAddons()");
+            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+                (*it)->Uninitialize();
+            }
+        }
+
+        void LoadAddons(HWND hFocusWindow) {
+            GetLog()->debug("loader::addons::LoadAddons()");
+            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+                (*it)->SetFocusWindow(hFocusWindow);
+                if ((*it)->IsEnabledByConfig()) {
+                    (*it)->Load();
+                }
+            }
+        }
+
+        void UnloadAddons() {
+            GetLog()->debug("loader::addons::UnloadAddons()");
+            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+                (*it)->Unload();
+            }
+        }
+
     }
 }

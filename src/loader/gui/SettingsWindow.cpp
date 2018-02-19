@@ -1,4 +1,6 @@
 #include "SettingsWindow.h"
+#include "../windows.h"
+#include <shellapi.h>
 #include <filesystem>
 #include <memory>
 #include <vector>
