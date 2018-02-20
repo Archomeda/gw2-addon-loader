@@ -42,9 +42,6 @@
     <ClInclude Include="spdlog\include\spdlog\spdlog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="minhook\include\MinHook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="minhook\src\trampoline.h">
       <Filter>Header Files</Filter>
     </ClInclude>

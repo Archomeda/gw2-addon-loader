@@ -1,5 +1,4 @@
 #include "utils.h"
-#include "windows.h"
 #include <algorithm>
 #include <codecvt>
 #include <filesystem>
@@ -91,17 +90,6 @@ namespace loader {
 
     HMODULE LoadSystemD3D9() {
         return LoadLibrary(GetSystemPath(TEXT("d3d9")).c_str());
-    }
-
-    bool EnableHook(const string& hookName, LPVOID pTarget) {
-        GetLog()->debug("loader::EnableHook({0})", hookName);
-        MH_STATUS status = MH_EnableHook(pTarget);
-        if (status != MH_OK) {
-            GetLog()->error("Failed to enable hook {0}: {1}", hookName, MH_StatusToString(status));
-            return false;
-        }
-        GetLog()->info("Hook {0} enabled", hookName);
-        return true;
     }
 
 }
