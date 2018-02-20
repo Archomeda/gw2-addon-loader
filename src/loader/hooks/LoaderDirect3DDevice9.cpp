@@ -37,8 +37,24 @@ namespace loader {
             0x90e40000, 0xa0e40003, 0x02000001, 0xe0030000, 0x90e40007
         };
         const int PatternGuiTextLength = sizeof(PatternGuiText) / sizeof(*PatternGuiText);
-        set<IDirect3DVertexShader9*> GuiTextShaderPtrs;
-        bool PrePresentGuiDone = false;
+
+        // Full vertex shader bytecode:
+        // fffe0300 05000051 a00f0006 00000000 3f800000 00000000 00000000 0200001f 80000000 900f0000 0200001f 80000003|900f0003 0200001f 80000005 900f0007 0200001f 80010005 900f0008 0200001f 80020005 900f0009 0200001f 80030005 900f000a 0200001f 80000005 e00f0000 0200001f 80000000 e00f0001 02000001 80070000 a0000006 02000001 80070000 a0000006 03000009 e0010001 90e40000 a0e40000 03000009 e0020001 90e40000 a0e40001 03000009 e0040001 90e40000 a0e40002 03000009 e0080001 90e40000 a0e40003 02000001 80030001 90e40007 02000001 800c0001 a0550006 03000009 80010002 80e40001 a0e40004 03000009 80020002 80e40001 a0e40005 02000001 e0030000 80440002
+        const DWORD PatternGuiIcon[] = {
+            0x900f0003, 0x0200001f, 0x80000005, 0x900f0007, 0x0200001f,
+            0x80010005, 0x900f0008, 0x0200001f, 0x80020005, 0x900f0009,
+            0x0200001f, 0x80030005, 0x900f000a, 0x0200001f, 0x80000005,
+            0xe00f0000, 0x0200001f, 0x80000000, 0xe00f0001, 0x02000001,
+            0x80070000, 0xa0000006, 0x02000001, 0x80070000, 0xa0000006,
+            0x03000009, 0xe0010001, 0x90e40000, 0xa0e40000, 0x03000009,
+            0xe0020001, 0x90e40000, 0xa0e40001, 0x03000009, 0xe0040001,
+            0x90e40000, 0xa0e40002, 0x03000009, 0xe0080001, 0x90e40000,
+            0xa0e40003, 0x02000001, 0x80030001, 0x90e40007, 0x02000001,
+            0x800c0001, 0xa0550006, 0x03000009, 0x80010002, 0x80e40001,
+            0xa0e40004, 0x03000009, 0x80020002, 0x80e40001, 0xa0e40005,
+            0x02000001, 0xe0030000, 0x80440002
+        };
+        const int PatternGuiIconLength = sizeof(PatternGuiIcon) / sizeof(*PatternGuiIcon);
 
         // Full vertex shader bytecode:
         // fffe0300 05000051 a00f0000 bf800000 3f800000 00000000 00000000 05000051 a00f0001 00000000 40000000 c0000000 00000000 0200001f 80000000 900f0000 0200001f 80000000 e00f0000 02000001 80070000 a0e40001 04000004 e00f0000 90040000|80090000 a0640000
@@ -46,7 +62,10 @@ namespace loader {
             0xe00f0000, 0x90040000, 0x80090000, 0xa0640000
         };
         const int PatternPostProcessingLength = sizeof(PatternPostProcessing) / sizeof(*PatternPostProcessing);
+
+        set<IDirect3DVertexShader9*> GuiShaderPtrs;
         set<IDirect3DVertexShader9*> PostProcessingShaderPtrs;
+        bool PrePresentGuiDone = false;
         int PrePostProcessingDone = 0;
 
 
@@ -521,10 +540,17 @@ namespace loader {
             if (functionLength > 0) {
                 if (CheckShaderPattern(pFunction, functionLength, PatternGuiText, PatternGuiTextLength)) {
                     // GUI text pattern
-                    GuiTextShaderPtrs.insert(*ppShader);
+                    GuiShaderPtrs.insert(*ppShader);
                     stringstream sstream;
                     sstream << hex << ppShader;
                     GetLog()->info("Found vertex shader for GUI text, initialized at 0x" + sstream.str());
+                }
+                else if (CheckShaderPattern(pFunction, functionLength, PatternGuiIcon, PatternGuiIconLength)) {
+                    // GUI icon pattern
+                    GuiShaderPtrs.insert(*ppShader);
+                    stringstream sstream;
+                    sstream << hex << ppShader;
+                    GetLog()->info("Found vertex shader for GUI icons, initialized at 0x" + sstream.str());
                 }
                 else if (CheckShaderPattern(pFunction, functionLength, PatternPostProcessing, PatternPostProcessingLength)) {
                     // Post processing pattern
@@ -543,7 +569,7 @@ namespace loader {
                 return this->dev->SetVertexShader(pShader);
             }
 
-            if (PrePresentGuiHook && GuiTextShaderPtrs.find(pShader) != GuiTextShaderPtrs.end()) {
+            if (PrePresentGuiHook && GuiShaderPtrs.find(pShader) != GuiShaderPtrs.end()) {
                 if (!PrePresentGuiDone) {
                     // The GUI is being rendered, HALT!
 
@@ -1079,10 +1105,17 @@ namespace loader {
             if (functionLength > 0) {
                 if (CheckShaderPattern(pFunction, functionLength, PatternGuiText, PatternGuiTextLength)) {
                     // GUI text pattern
-                    GuiTextShaderPtrs.insert(*ppShader);
+                    GuiShaderPtrs.insert(*ppShader);
                     stringstream sstream;
                     sstream << hex << ppShader;
                     GetLog()->info("Found vertex shader for GUI text, initialized at 0x" + sstream.str());
+                }
+                else if (CheckShaderPattern(pFunction, functionLength, PatternGuiIcon, PatternGuiIconLength)) {
+                    // GUI icon pattern
+                    GuiShaderPtrs.insert(*ppShader);
+                    stringstream sstream;
+                    sstream << hex << ppShader;
+                    GetLog()->info("Found vertex shader for GUI icons, initialized at 0x" + sstream.str());
                 }
                 else if (CheckShaderPattern(pFunction, functionLength, PatternPostProcessing, PatternPostProcessingLength)) {
                     // Post processing pattern
@@ -1101,7 +1134,7 @@ namespace loader {
                 return this->dev->SetVertexShader(pShader);
             }
 
-            if (PrePresentGuiExHook && GuiTextShaderPtrs.find(pShader) != GuiTextShaderPtrs.end()) {
+            if (PrePresentGuiExHook && GuiShaderPtrs.find(pShader) != GuiShaderPtrs.end()) {
                 if (!PrePresentGuiDone) {
                     // The GUI is being rendered, HALT!
 
