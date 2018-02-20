@@ -115,20 +115,28 @@ typedef GW2ADDON_RESULT(GW2ADDON_CALL *GW2Unload)();
 #define GW2_DLL_Unload "GW2_Unload"
 
 /**
+Exported C-function: GW2_DrawFrameBeforePostProcessing. Optional.
+Gets called every frame right before the post processing gets drawn.
+Can be used to draw custom elements in the world that needs to be behind the GUI, or to do some additional postprocessing.
+*/
+typedef void(GW2ADDON_CALL *GW2DrawFrameBeforePostProcessing)(IDirect3DDevice9* pDev);
+#define GW2_DLL_DrawFrameBeforePostProcessing "GW2_DrawFrameBeforePostProcessing"
+
+/**
+Exported C-function: GW2_DrawFrameBeforeGui. Optional.
+Gets called every frame right before the GUI gets drawn.
+Can be used to draw custom elements in the world that needs to be behind the GUI, or to do some additional postprocessing.
+*/
+typedef void(GW2ADDON_CALL *GW2DrawFrameBeforeGui)(IDirect3DDevice9* pDev);
+#define GW2_DLL_DrawFrameBeforeGui "GW2_DrawFrameBeforeGui"
+
+/**
 Exported C-function: GW2_DrawFrame. Optional.
 Gets called every frame whenever the frame needs to be drawn on the D3D9 device.
 Can be used to draw custom elements on the game as an overlay.
 */
 typedef void(GW2ADDON_CALL *GW2DrawFrame)(IDirect3DDevice9* pDev);
 #define GW2_DLL_DrawFrame "GW2_DrawFrame"
-
-/**
-Exported C-function: GW2_DrawFrameBeforeGui. Optional.
-Gets called every frame right before the GUI gets drawn.
-Can be used to draw custom elements in the world that needs to be behind the GUI, or to do some postprocessing.
-*/
-typedef void(GW2ADDON_CALL *GW2DrawFrameBeforeGui)(IDirect3DDevice9* pDev);
-#define GW2_DLL_DrawFrameBeforeGui "GW2_DrawFrameBeforeGui"
 
 /**
 Exported C-function: GW2_HandleWndProc. Optional.

@@ -54,25 +54,46 @@ extern "C" {
     }
 
     GW2ADDON_API GW2ADDON_RESULT GW2ADDON_CALL GW2_Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
-        // Our loading entrypoint
-        // You can initialize whatever you want to initialize here
+        // Our loading entrypoint.
+        // You can initialize whatever you want to initialize here.
         focusWindow = hFocusWindow;
         device = pDev;
         return 0;
     }
 
     GW2ADDON_API GW2ADDON_RESULT GW2ADDON_CALL GW2_Unload() {
-        // Unload all used resources, do not neglect this
+        // Unload all used resources, do not neglect this.
         focusWindow = NULL;
         device = NULL;
         return 0;
     }
 
-    GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrame(IDirect3DDevice9* pDev) {
-        // Our main draw entrypoint
-        // Here you can draw whatever you want
-        // Do NOT process longstanding tasks here
+    GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrameBeforePostProcessing(IDirect3DDevice9* pDev) {
+        // One of our extra draw entrypoints.
+        // This gets called before the game adds post processing.
+        // Do NOT process longstanding tasks here.
 
+        // Drawing this text is painfully slow; this is just an example.
+        // Don't use this in your own addon.
+        LPD3DXFONT font;
+        RECT rect;
+        rect.left = 10;
+        rect.top = 50;
+        rect.right = rect.left + 400;
+        rect.bottom = rect.top + 16;
+        D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
+        wstring text = L"I am drawn behind the post processing layer";
+        font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 0));
+        font->Release();
+    }
+
+    GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrame(IDirect3DDevice9* pDev) {
+        // Our main draw entrypoint.
+        // Here you can draw whatever you want.
+        // Do NOT process longstanding tasks here.
+
+        // Drawing this text is painfully slow; this is just an example.
+        // Don't use this in your own addon.
         frame++;
         LPD3DXFONT font;
         RECT rect;

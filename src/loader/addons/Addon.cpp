@@ -172,16 +172,16 @@ namespace loader {
             return true;
         }
 
-        void Addon::DrawFrame(IDirect3DDevice9* device) {
+        void Addon::DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
             if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
                 return;
             }
 
             try {
-                this->GetTypeImpl()->DrawFrame(device);
+                this->GetTypeImpl()->DrawFrameBeforePostProcessing(device);
             }
             catch (const exceptions::AddonDrawFrameException& ex) {
-                GetLog()->error("Failed to draw frame in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
+                GetLog()->error("Failed to draw frame before post processing in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
                 GetLog()->error("Addon will be disabled on next restart");
                 AppConfig.SetAddonEnabled(this->GetFileName(), false);
             }
@@ -197,6 +197,21 @@ namespace loader {
             }
             catch (const exceptions::AddonDrawFrameException& ex) {
                 GetLog()->error("Failed to draw frame before GUI in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
+                GetLog()->error("Addon will be disabled on next restart");
+                AppConfig.SetAddonEnabled(this->GetFileName(), false);
+            }
+        }
+
+        void Addon::DrawFrame(IDirect3DDevice9* device) {
+            if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
+                return;
+            }
+
+            try {
+                this->GetTypeImpl()->DrawFrame(device);
+            }
+            catch (const exceptions::AddonDrawFrameException& ex) {
+                GetLog()->error("Failed to draw frame in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
                 GetLog()->error("Addon will be disabled on next restart");
                 AppConfig.SetAddonEnabled(this->GetFileName(), false);
             }

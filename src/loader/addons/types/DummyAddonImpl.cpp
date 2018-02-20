@@ -27,11 +27,15 @@ namespace loader {
 
             }
 
-            void DummyAddonImpl::DrawFrame(IDirect3DDevice9* device) {
+            void DummyAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
 
             }
 
-            void DummyAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
+            void DummyAddonImpl::DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
+
+            }
+
+            void DummyAddonImpl::DrawFrame(IDirect3DDevice9* device) {
 
             }
 

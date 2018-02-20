@@ -44,6 +44,8 @@ namespace loader {
 
                 this->GW2_Load = (GW2Load)GetProcAddress(h, GW2_DLL_Load);
                 this->GW2_Unload = (GW2Unload)GetProcAddress(h, GW2_DLL_Unload);
+                this->GW2_DrawFrameBeforeGui = (GW2DrawFrame)GetProcAddress(h, GW2_DLL_DrawFrameBeforeGui);
+                this->GW2_DrawFrameBeforePostProcessing = (GW2DrawFrame)GetProcAddress(h, GW2_DLL_DrawFrameBeforePostProcessing);
                 this->GW2_DrawFrame = (GW2DrawFrame)GetProcAddress(h, GW2_DLL_DrawFrame);
                 this->GW2_HandleWndProc = (GW2HandleWndProc)GetProcAddress(h, GW2_DLL_HandleWndProc);
 
@@ -87,18 +89,20 @@ namespace loader {
                 this->GW2_Load = nullptr;
                 this->GW2_Unload = nullptr;
                 this->GW2_DrawFrame = nullptr;
+                this->GW2_DrawFrameBeforeGui = nullptr;
+                this->GW2_DrawFrameBeforePostProcessing = nullptr;
                 this->GW2_HandleWndProc = nullptr;
 
                 // Done
                 this->ChangeState(AddonState::UnloadedState);
             }
 
-            void NativeAddonImpl::DrawFrame(IDirect3DDevice9* device) {
-                if (!this->GW2_DrawFrame) {
+            void NativeAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
+                if (!this->GW2_DrawFrameBeforeGui) {
                     return;
                 }
                 try {
-                    this->GW2_DrawFrame(device);
+                    this->GW2_DrawFrameBeforeGui(device);
                 }
                 catch (const exception& ex) {
                     this->ChangeState(AddonState::ErroredState);
@@ -118,12 +122,37 @@ namespace loader {
                 }
             }
 
-            void NativeAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
-                if (!this->GW2_DrawFrameBeforeGui) {
+            void NativeAddonImpl::DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
+                if (!this->GW2_DrawFrameBeforePostProcessing) {
                     return;
                 }
                 try {
-                    this->GW2_DrawFrameBeforeGui(device);
+                    this->GW2_DrawFrameBeforePostProcessing(device);
+                }
+                catch (const exception& ex) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException(ex.what());
+                }
+                catch (const char* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException(err);
+                }
+                catch (const wchar_t* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException(ws2s(err));
+                }
+                catch (...) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonDrawFrameException("Unknown error");
+                }
+            }
+
+            void NativeAddonImpl::DrawFrame(IDirect3DDevice9* device) {
+                if (!this->GW2_DrawFrame) {
+                    return;
+                }
+                try {
+                    this->GW2_DrawFrame(device);
                 }
                 catch (const exception& ex) {
                     this->ChangeState(AddonState::ErroredState);
