@@ -577,6 +577,12 @@ namespace loader {
                     IDirect3DStateBlock9* pStateBlock = NULL;
                     this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
 
+                    if (PrePostProcessingDone < 3) {
+                        // Pre post processing has not been called yet, make sure it is called
+                        PrePostProcessingDone = 3;
+                        PrePresentPostProcessingHook(this);
+                    }
+
                     // Call our hook
                     PrePresentGuiHook(this);
 
@@ -1141,6 +1147,12 @@ namespace loader {
                     // Save our current state
                     IDirect3DStateBlock9* pStateBlock = NULL;
                     this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+
+                    if (PrePostProcessingDone < 3) {
+                        // Pre post processing has not been called yet, make sure it is called
+                        PrePostProcessingDone = 3;
+                        PrePresentPostProcessingExHook(this);
+                    }
 
                     // Call our hook
                     PrePresentGuiExHook(this);
