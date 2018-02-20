@@ -87,6 +87,25 @@ extern "C" {
         font->Release();
     }
 
+    GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrameBeforeGui(IDirect3DDevice9* pDev) {
+        // One of our extra draw entrypoints.
+        // This gets called before the game draws its GUI.
+        // Do NOT process longstanding tasks here.
+
+        // Drawing this text is painfully slow; this is just an example.
+        // Don't use this in your own addon.
+        LPD3DXFONT font;
+        RECT rect;
+        rect.left = 10;
+        rect.top = 30;
+        rect.right = rect.left + 400;
+        rect.bottom = rect.top + 16;
+        D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
+        wstring text = L"I am drawn behind the GUI";
+        font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 255));
+        font->Release();
+    }
+
     GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrame(IDirect3DDevice9* pDev) {
         // Our main draw entrypoint.
         // Here you can draw whatever you want.
