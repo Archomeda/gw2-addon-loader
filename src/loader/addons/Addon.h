@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <memory>
+#include <set>
 #include <string>
 #include "types/ITypeImpl.h"
 #include "../d3d9types.h"
@@ -33,6 +34,8 @@ namespace loader {
             const AddonType GetAddonType();
             const std::wstring GetAddonTypeString();
 
+            bool IsLoaded() const;
+
             const std::shared_ptr<types::ITypeImpl>& GetTypeImpl() const { return this->typeImpl; }
             void SetTypeImpl(const AddonType addonType);
 
@@ -51,9 +54,7 @@ namespace loader {
             bool Uninitialize();
             bool Load();
             bool Unload();
-            void DrawFrameBeforePostProcessing(IDirect3DDevice9* device);
-            void DrawFrameBeforeGui(IDirect3DDevice9* device);
-            void DrawFrame(IDirect3DDevice9* device);
+
             bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
         private:

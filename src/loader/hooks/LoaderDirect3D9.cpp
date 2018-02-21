@@ -81,7 +81,7 @@ namespace loader {
         HRESULT LoaderDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
             HRESULT hr;
             if (PreCreateDeviceHook != nullptr) {
-                hr = PreCreateDeviceHook(this, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
+                hr = PreCreateDeviceHook(this->d3d9, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
                 if (hr != D3D_OK) {
                     // Fail
                     return hr;
@@ -100,7 +100,7 @@ namespace loader {
             *ppReturnedDeviceInterface = new LoaderDirect3DDevice9(*ppReturnedDeviceInterface);
 
             if (PostCreateDeviceHook != nullptr) {
-                PostCreateDeviceHook(this, *ppReturnedDeviceInterface, hFocusWindow);
+                PostCreateDeviceHook(this->d3d9, *ppReturnedDeviceInterface, hFocusWindow);
             }
 
             return hr;
@@ -194,7 +194,7 @@ namespace loader {
         HRESULT LoaderDirect3D9Ex::CreateDeviceEx(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface) {
             HRESULT hr;
             if (PreCreateDeviceExHook != nullptr) {
-                hr = PreCreateDeviceExHook(this, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, pFullscreenDisplayMode, ppReturnedDeviceInterface);
+                hr = PreCreateDeviceExHook(this->d3d9, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, pFullscreenDisplayMode, ppReturnedDeviceInterface);
                 if (hr != D3D_OK) {
                     // Fail
                     return hr;
@@ -213,7 +213,7 @@ namespace loader {
             *ppReturnedDeviceInterface = new LoaderDirect3DDevice9Ex(*ppReturnedDeviceInterface);
 
             if (PostCreateDeviceExHook != nullptr) {
-                PostCreateDeviceExHook(this, *ppReturnedDeviceInterface, hFocusWindow);
+                PostCreateDeviceExHook(this->d3d9, *ppReturnedDeviceInterface, hFocusWindow);
             }
 
             return hr;

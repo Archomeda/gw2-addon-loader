@@ -30,9 +30,9 @@ namespace loader {
                     AddonException(message) { }
             };
 
-            class AddonDrawFrameException : public AddonException {
+            class AddonDrawException : public AddonException {
             public:
-                AddonDrawFrameException(const std::string& message) :
+                AddonDrawException(const std::string& message) :
                     AddonException(message) { }
             };
 
@@ -41,6 +41,19 @@ namespace loader {
                 AddonWndProcException(const std::string& message) :
                     AddonException(message) { }
             };
+
+            class AddonAdvFuncException : public AddonException {
+            public:
+                AddonAdvFuncException(const std::string& funcName, const std::string& message) :
+                    AddonException("(" + funcName + ") " + message),
+                    funcName(funcName) { }
+
+                const std::string& GetFuncName() const { return this->funcName; }
+
+            private:
+                std::string funcName;
+            };
+
         }
     }
 }

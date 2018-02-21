@@ -57,22 +57,6 @@ namespace loader {
                 this->ChangeState(AddonState::DeactivatedOnRestartState);*/
             }
 
-            void LegacyAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
-
-            }
-
-            void LegacyAddonImpl::DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
-
-            }
-
-            void LegacyAddonImpl::DrawFrame(IDirect3DDevice9* device) {
-
-            }
-
-            bool LegacyAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-                return false;
-            }
-
         }
     }
 }

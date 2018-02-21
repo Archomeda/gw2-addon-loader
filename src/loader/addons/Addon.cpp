@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <string>
 #include <gw2addon-native.h>
+#include "addons_manager.h"
 #include "ProxyDirect3D9.h"
 #include "exceptions.h"
 #include "types/DummyAddonImpl.h"
@@ -100,6 +101,12 @@ namespace loader {
         }
 
 
+        bool Addon::IsLoaded() const {
+            auto impl = this->GetTypeImpl();
+            return impl && impl->GetAddonState() == AddonState::LoadedState;
+        }
+
+
         void Addon::SetTypeImpl(const AddonType addonType) {
             switch (addonType) {
             case AddonType::NativeAddon:
@@ -124,7 +131,10 @@ namespace loader {
 
             // Actually initialize addon
             try {
-                this->GetTypeImpl()->Initialize();
+                auto impl = this->GetTypeImpl();
+                if (impl) {
+                    impl->Initialize();
+                }
             }
             catch (const exceptions::AddonInitializationException& ex) {
                 GetLog()->error("Failed to initialize addon {0}: {1}", ws2s(this->GetFileName()), ex.what());
@@ -146,13 +156,15 @@ namespace loader {
         bool Addon::Load() {
             GetLog()->debug("loader::addons::Addon({0})::Load()", ws2s(this->GetFileName()));
             try {
-                this->GetTypeImpl()->Load();
+                auto impl = this->GetTypeImpl();
+                if (impl) {
+                    impl->Load();
+                }
             }
             catch (const exceptions::AddonLoadingException& ex) {
                 GetLog()->error("Failed to load addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
                 return false;
             }
-
             return true;
         }
 
@@ -168,54 +180,9 @@ namespace loader {
                 GetLog()->error("Failed to unload addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
                 return false;
             }
-
             return true;
         }
 
-        void Addon::DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
-            if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
-                return;
-            }
-
-            try {
-                this->GetTypeImpl()->DrawFrameBeforePostProcessing(device);
-            }
-            catch (const exceptions::AddonDrawFrameException& ex) {
-                GetLog()->error("Failed to draw frame before post processing in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
-                GetLog()->error("Addon will be disabled on next restart");
-                AppConfig.SetAddonEnabled(this->GetFileName(), false);
-            }
-        }
-
-        void Addon::DrawFrameBeforeGui(IDirect3DDevice9* device) {
-            if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
-                return;
-            }
-
-            try {
-                this->GetTypeImpl()->DrawFrameBeforeGui(device);
-            }
-            catch (const exceptions::AddonDrawFrameException& ex) {
-                GetLog()->error("Failed to draw frame before GUI in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
-                GetLog()->error("Addon will be disabled on next restart");
-                AppConfig.SetAddonEnabled(this->GetFileName(), false);
-            }
-        }
-
-        void Addon::DrawFrame(IDirect3DDevice9* device) {
-            if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
-                return;
-            }
-
-            try {
-                this->GetTypeImpl()->DrawFrame(device);
-            }
-            catch (const exceptions::AddonDrawFrameException& ex) {
-                GetLog()->error("Failed to draw frame in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
-                GetLog()->error("Addon will be disabled on next restart");
-                AppConfig.SetAddonEnabled(this->GetFileName(), false);
-            }
-        }
 
         bool Addon::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {
@@ -232,7 +199,6 @@ namespace loader {
             }
             return false;
         }
-
 
         void Addon::LoadMetaData() {
             GetLog()->debug("loader::addons::Addon({0})::LoadMetaData()", ws2s(this->GetFileName()));
@@ -362,6 +328,6 @@ namespace loader {
                 GetLog()->info("Addon {0} homepage: {1}", ws2s(this->GetFileName()), ws2s(this->GetHomepage()));
             }
         }
-
-    }
+  
+  }
 }

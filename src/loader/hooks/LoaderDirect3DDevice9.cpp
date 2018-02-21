@@ -4,25 +4,16 @@
 #include <sstream>
 #include <string>
 #include "../log.h"
+#include "../addons/addons_manager.h"
 
 using namespace std;
 
 namespace loader {
     namespace hooks {
 
-        PrePresent_t PrePresentHook = nullptr;
-        PostPresent_t PostPresentHook = nullptr;
         PreReset_t PreResetHook = nullptr;
         PostReset_t PostResetHook = nullptr;
-        PrePresentEx_t PrePresentExHook = nullptr;
-        PostPresentEx_t PostPresentExHook = nullptr;
-        PreResetEx_t PreResetExHook = nullptr;
-        PostResetEx_t PostResetExHook = nullptr;
-
-        PrePresentPostProcessing_t PrePresentPostProcessingHook = nullptr;
-        PrePresentPostProcessingEx_t PrePresentPostProcessingExHook = nullptr;
-        PrePresentGui_t PrePresentGuiHook = nullptr;
-        PrePresentGuiEx_t PrePresentGuiExHook = nullptr;
+        PrePresent_t PrePresentHook = nullptr;
 
 
         // Full vertex shader bytecode:
@@ -157,55 +148,32 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::Reset(D3DPRESENT_PARAMETERS* pPresentationParameters) {
-            HRESULT hr;
-            bool done = false;
-            if (PreResetHook != nullptr) {
-                hr = PreResetHook(this, pPresentationParameters, &done);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
+            PreResetHook(this->dev, pPresentationParameters);
+            addons::AdvPreReset(this->dev, pPresentationParameters);
+
+            HRESULT hr = this->dev->Reset(pPresentationParameters);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
             }
 
-            if (!done) {
-                // The pre hook didn't override our main call
-                hr = this->dev->Reset(pPresentationParameters);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
-            }
-
-            if (PostResetHook != nullptr) {
-                PostResetHook(this);
-            }
+            PostResetHook(this->dev, pPresentationParameters);
+            addons::AdvPostReset(this->dev, pPresentationParameters);
 
             return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::Present(CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
-            HRESULT hr;
-            bool done = false;
-            if (PrePresentHook != nullptr) {
-                hr = PrePresentHook(this, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, &done);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
+            PrePresentHook(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+            addons::AdvPrePresent(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+
+            HRESULT hr = this->dev->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
             }
 
-            if (!done) {
-                // The pre hook didn't override our main call
-                hr = this->dev->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
-            }
-
-            if (PostPresentHook != nullptr) {
-                PostPresentHook(this);
-            }
+            addons::AdvPostPresent(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
 
             // Reset this for a new frame
             PrePresentGuiDone = false;
@@ -235,7 +203,24 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::CreateTexture(UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle) {
-            return this->dev->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
+            IDirect3DTexture9* pOldTexture = *ppTexture;
+            HRESULT hr = addons::AdvPreCreateTexture(this->dev, Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            if (*ppTexture == pOldTexture) {
+                hr = this->dev->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
+            }
+
+            addons::AdvPostCreateTexture(this->dev, *ppTexture, Width, Height, Levels, Usage, Format, Pool, pSharedHandle);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::CreateVolumeTexture(UINT Width, UINT Height, UINT Depth, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DVolumeTexture9** ppVolumeTexture, HANDLE* pSharedHandle) {
@@ -255,7 +240,24 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::CreateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle) {
-            return this->dev->CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
+            IDirect3DSurface9* pOldSurface = *ppSurface;
+            HRESULT hr = addons::AdvPreCreateRenderTarget(this->dev, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            if (*ppSurface == pOldSurface) {
+                hr = this->dev->CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
+            }
+
+            addons::AdvPostCreateRenderTarget(this->dev, *ppSurface, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, pSharedHandle);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::CreateDepthStencilSurface(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle) {
@@ -291,7 +293,17 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
-            return this->dev->SetRenderTarget(RenderTargetIndex, pRenderTarget);
+            addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
+
+            HRESULT hr = this->dev->SetRenderTarget(RenderTargetIndex, pRenderTarget);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::GetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9** ppRenderTarget) {
@@ -307,15 +319,45 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::BeginScene() {
-            return this->dev->BeginScene();
+            addons::AdvPreBeginScene(this->dev);
+
+            HRESULT hr = this->dev->BeginScene();
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostBeginScene(this->dev);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::EndScene() {
-            return this->dev->EndScene();
+            addons::AdvPreEndScene(this->dev);
+
+            HRESULT hr = this->dev->EndScene();
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostEndScene(this->dev);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil) {
-            return this->dev->Clear(Count, pRects, Flags, Color, Z, Stencil);
+            addons::AdvPreClear(this->dev, Count, pRects, Flags, Color, Z, Stencil);
+
+            HRESULT hr = this->dev->Clear(Count, pRects, Flags, Color, Z, Stencil);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostClear(this->dev, Count, pRects, Flags, Color, Z, Stencil);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D3DMATRIX* pMatrix) {
@@ -403,7 +445,17 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture) {
-            return this->dev->SetTexture(Stage, pTexture);
+            addons::AdvPreSetTexture(this->dev, Stage, pTexture);
+
+            HRESULT hr = this->dev->SetTexture(Stage, pTexture);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostSetTexture(this->dev, Stage, pTexture);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::GetTextureStageState(DWORD Stage, D3DTEXTURESTAGESTATETYPE Type, DWORD* pValue) {
@@ -467,16 +519,29 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
-            return this->dev->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
+            addons::AdvPreDrawPrimitive(this->dev, PrimitiveType, StartVertex, PrimitiveCount);
+
+            HRESULT hr = this->dev->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostDrawPrimitive(this->dev, PrimitiveType, StartVertex, PrimitiveCount);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
-            HRESULT result = this->dev->DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-            if (result != D3D_OK) {
-                return result;
+            addons::AdvPreDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+
+            HRESULT hr = this->dev->DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
             }
 
-            if (PrePresentPostProcessingHook && PrePostProcessingDone == 2) {
+            if (PrePostProcessingDone == 2) {
                 // Post processing is being rendered, HALT!
 
                 // Make sure we keep track that we are doing this before actually doing it, in order to prevent stack overflow
@@ -486,15 +551,17 @@ namespace loader {
                 IDirect3DStateBlock9* pStateBlock = NULL;
                 this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
 
-                // Call our hook
-                PrePresentPostProcessingHook(this);
+                // Call our addons
+                addons::DrawFrameBeforePostProcessing(this->dev);
 
                 // Restore our state
                 pStateBlock->Apply();
                 pStateBlock->Release();
             }
+            
+            addons::AdvPostDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 
-            return result;
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, CONST void* pVertexStreamZeroData, UINT VertexStreamZeroStride) {
@@ -530,9 +597,19 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::CreateVertexShader(CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader) {
-            HRESULT result = this->dev->CreateVertexShader(pFunction, ppShader);
-            if (result != D3D_OK) {
-                return result;
+            IDirect3DVertexShader9* pOldShader = *ppShader;
+            HRESULT hr = addons::AdvPreCreateVertexShader(this->dev, pFunction, ppShader);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            if (*ppShader == pOldShader) {
+                hr = this->dev->CreateVertexShader(pFunction, ppShader);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
             }
 
             // Check for vertex patterns
@@ -561,47 +638,57 @@ namespace loader {
                 }
             }
 
-            return result;
+            addons::AdvPostCreateVertexShader(this->dev, *ppShader, pFunction);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::SetVertexShader(IDirect3DVertexShader9* pShader) {
-            if (!pShader) {
-                return this->dev->SetVertexShader(pShader);
-            }
+            addons::AdvPreSetVertexShader(this->dev, pShader);
 
-            if (PrePresentGuiHook && GuiShaderPtrs.find(pShader) != GuiShaderPtrs.end()) {
-                if (!PrePresentGuiDone) {
-                    // The GUI is being rendered, HALT!
+            if (pShader) {
+                if (GuiShaderPtrs.find(pShader) != GuiShaderPtrs.end()) {
+                    if (!PrePresentGuiDone) {
+                        // The GUI is being rendered, HALT!
 
-                    // Save our current state
-                    IDirect3DStateBlock9* pStateBlock = NULL;
-                    this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+                        // Save our current state
+                        IDirect3DStateBlock9* pStateBlock = NULL;
+                        this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
 
-                    if (PrePostProcessingDone < 3) {
-                        // Pre post processing has not been called yet, make sure it is called
-                        PrePostProcessingDone = 3;
-                        PrePresentPostProcessingHook(this);
+                        if (PrePostProcessingDone < 3) {
+                            // Pre post processing has not been called yet, make sure it is called
+                            PrePostProcessingDone = 3;
+                            addons::DrawFrameBeforePostProcessing(this->dev);
+                        }
+
+                        // Call our hook
+                        addons::DrawFrameBeforeGui(this->dev);
+
+                        // Restore our state
+                        pStateBlock->Apply();
+                        pStateBlock->Release();
+
+                        // Make sure we keep track that we've done this
+                        PrePresentGuiDone = true;
                     }
+                }
 
-                    // Call our hook
-                    PrePresentGuiHook(this);
-
-                    // Restore our state
-                    pStateBlock->Apply();
-                    pStateBlock->Release();
-
-                    // Make sure we keep track that we've done this
-                    PrePresentGuiDone = true;
+                if (PostProcessingShaderPtrs.find(pShader) != PostProcessingShaderPtrs.end()) {
+                    if (PrePostProcessingDone < 2) {
+                        ++PrePostProcessingDone;
+                    }
                 }
             }
 
-            if (PrePresentPostProcessingHook && PostProcessingShaderPtrs.find(pShader) != PostProcessingShaderPtrs.end()) {
-                if (PrePostProcessingDone < 2) {
-                    ++PrePostProcessingDone;
-                }
+            HRESULT hr = this->dev->SetVertexShader(pShader);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
             }
 
-            return this->dev->SetVertexShader(pShader);
+            addons::AdvPostSetVertexShader(this->dev, pShader);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::GetVertexShader(IDirect3DVertexShader9** ppShader) {
@@ -657,11 +744,38 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::CreatePixelShader(CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader) {
-            return this->dev->CreatePixelShader(pFunction, ppShader);
+            IDirect3DPixelShader9* pOldShader = *ppShader;
+            HRESULT hr = addons::AdvPreCreatePixelShader(this->dev, pFunction, ppShader);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            if (*ppShader == pOldShader) {
+                hr = this->dev->CreatePixelShader(pFunction, ppShader);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
+            }
+
+            addons::AdvPostCreatePixelShader(this->dev, *ppShader, pFunction);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::SetPixelShader(IDirect3DPixelShader9* pShader) {
-            return this->dev->SetPixelShader(pShader);
+            addons::AdvPreSetPixelShader(this->dev, pShader);
+
+            HRESULT hr = this->dev->SetPixelShader(pShader);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostSetPixelShader(this->dev, pShader);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::GetPixelShader(IDirect3DPixelShader9** ppShader) {
@@ -806,6 +920,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::CreateTexture(UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
         }
 
@@ -826,6 +941,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::CreateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
         }
 
@@ -862,6 +978,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::SetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->SetRenderTarget(RenderTargetIndex, pRenderTarget);
         }
 
@@ -878,14 +995,17 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::BeginScene() {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->BeginScene();
         }
 
         HRESULT LoaderDirect3DDevice9Ex::EndScene() {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->EndScene();
         }
 
         HRESULT LoaderDirect3DDevice9Ex::Clear(DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->Clear(Count, pRects, Flags, Color, Z, Stencil);
         }
 
@@ -974,6 +1094,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->SetTexture(Stage, pTexture);
         }
 
@@ -1038,34 +1159,13 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
         }
 
         HRESULT LoaderDirect3DDevice9Ex::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
-            HRESULT result = this->dev->DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-            if (result != D3D_OK) {
-                return result;
-            }
-
-            if (PrePresentPostProcessingExHook && PrePostProcessingDone == 2) {
-                // Post processing is being rendered, HALT!
-
-                // Make sure we keep track that we are doing this before actually doing it, in order to prevent stack overflow
-                ++PrePostProcessingDone;
-
-                // Save our current state
-                IDirect3DStateBlock9* pStateBlock = NULL;
-                this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
-
-                // Call our hook
-                PrePresentPostProcessingExHook(this);
-
-                // Restore our state
-                pStateBlock->Apply();
-                pStateBlock->Release();
-            }
-
-            return result;
+            // Not hooked, GW2 doesn't use Ex calls
+            return this->dev->DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
         }
 
         HRESULT LoaderDirect3DDevice9Ex::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, CONST void* pVertexStreamZeroData, UINT VertexStreamZeroStride) {
@@ -1101,77 +1201,12 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::CreateVertexShader(CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader) {
-            HRESULT result = this->dev->CreateVertexShader(pFunction, ppShader);
-            if (result != D3D_OK) {
-                return result;
-            }
-
-            // Check for vertex patterns
-            int functionLength = GetShaderFunctionLength(pFunction);
-            if (functionLength > 0) {
-                if (CheckShaderPattern(pFunction, functionLength, PatternGuiText, PatternGuiTextLength)) {
-                    // GUI text pattern
-                    GuiShaderPtrs.insert(*ppShader);
-                    stringstream sstream;
-                    sstream << hex << ppShader;
-                    GetLog()->info("Found vertex shader for GUI text, initialized at 0x" + sstream.str());
-                }
-                else if (CheckShaderPattern(pFunction, functionLength, PatternGuiIcon, PatternGuiIconLength)) {
-                    // GUI icon pattern
-                    GuiShaderPtrs.insert(*ppShader);
-                    stringstream sstream;
-                    sstream << hex << ppShader;
-                    GetLog()->info("Found vertex shader for GUI icons, initialized at 0x" + sstream.str());
-                }
-                else if (CheckShaderPattern(pFunction, functionLength, PatternPostProcessing, PatternPostProcessingLength)) {
-                    // Post processing pattern
-                    PostProcessingShaderPtrs.insert(*ppShader);
-                    stringstream sstream;;
-                    sstream << hex << ppShader;
-                    GetLog()->info("Found vertex shader for post processing, initialized at 0x" + sstream.str());
-                }
-            }
-
-            return result;
+            // Not hooked, GW2 doesn't use Ex calls
+            return this->dev->CreateVertexShader(pFunction, ppShader);
         }
 
         HRESULT LoaderDirect3DDevice9Ex::SetVertexShader(IDirect3DVertexShader9* pShader) {
-            if (!pShader) {
-                return this->dev->SetVertexShader(pShader);
-            }
-
-            if (PrePresentGuiExHook && GuiShaderPtrs.find(pShader) != GuiShaderPtrs.end()) {
-                if (!PrePresentGuiDone) {
-                    // The GUI is being rendered, HALT!
-
-                    // Save our current state
-                    IDirect3DStateBlock9* pStateBlock = NULL;
-                    this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
-
-                    if (PrePostProcessingDone < 3) {
-                        // Pre post processing has not been called yet, make sure it is called
-                        PrePostProcessingDone = 3;
-                        PrePresentPostProcessingExHook(this);
-                    }
-
-                    // Call our hook
-                    PrePresentGuiExHook(this);
-
-                    // Restore our state
-                    pStateBlock->Apply();
-                    pStateBlock->Release();
-
-                    // Make sure we keep track that we've done this
-                    PrePresentGuiDone = true;
-                }
-            }
-
-            if (PrePresentPostProcessingExHook && PostProcessingShaderPtrs.find(pShader) != PostProcessingShaderPtrs.end()) {
-                if (PrePostProcessingDone < 2) {
-                    ++PrePostProcessingDone;
-                }
-            }
-            
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->SetVertexShader(pShader);
         }
 
@@ -1228,10 +1263,12 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::CreatePixelShader(CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->CreatePixelShader(pFunction, ppShader);
         }
 
         HRESULT LoaderDirect3DDevice9Ex::SetPixelShader(IDirect3DPixelShader9* pShader) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->SetPixelShader(pShader);
         }
 
@@ -1288,34 +1325,8 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::PresentEx(CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, DWORD dwFlags) {
-            HRESULT hr;
-            bool done = false;
-            if (PrePresentExHook != nullptr) {
-                hr = PrePresentExHook(this, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags, &done);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
-            }
-
-            if (!done) {
-                // The pre hook didn't override our main call
-                hr = this->dev->PresentEx(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
-            }
-
-            if (PostPresentExHook != nullptr) {
-                PostPresentExHook(this);
-            }
-
-            // Reset this for a new frame
-            PrePresentGuiDone = false;
-            PrePostProcessingDone = 0;
-
-            return hr;
+            // Not hooked, GW2 doesn't use Ex calls
+            return this->dev->PresentEx(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
         }
 
         HRESULT LoaderDirect3DDevice9Ex::GetGPUThreadPriority(INT* pPriority) {
@@ -1347,6 +1358,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::CreateRenderTargetEx(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle, DWORD Usage) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->CreateRenderTargetEx(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle, Usage);
         }
 
@@ -1359,30 +1371,8 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::ResetEx(D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode) {
-            HRESULT hr;
-            bool done = false;
-            if (PreResetExHook != nullptr) {
-                hr = PreResetExHook(this, pPresentationParameters, pFullscreenDisplayMode, &done);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
-            }
-
-            if (!done) {
-                // The pre hook didn't override our main call
-                hr = this->dev->ResetEx(pPresentationParameters, pFullscreenDisplayMode);
-                if (hr != D3D_OK) {
-                    // Fail
-                    return hr;
-                }
-            }
-
-            if (PostResetExHook != nullptr) {
-                PostResetExHook(this);
-            }
-
-            return hr;
+            // Not hooked, GW2 doesn't use Ex calls
+            return this->dev->ResetEx(pPresentationParameters, pFullscreenDisplayMode);
         }
 
         HRESULT LoaderDirect3DDevice9Ex::GetDisplayModeEx(UINT iSwapChain, D3DDISPLAYMODEEX* pMode, D3DDISPLAYROTATION* pRotation) {

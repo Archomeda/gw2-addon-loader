@@ -27,22 +27,6 @@ namespace loader {
 
             }
 
-            void DummyAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
-
-            }
-
-            void DummyAddonImpl::DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
-
-            }
-
-            void DummyAddonImpl::DrawFrame(IDirect3DDevice9* device) {
-
-            }
-
-            bool DummyAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-                return false;
-            }
-
         }
     }
 }

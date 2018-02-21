@@ -4,35 +4,21 @@
 namespace loader {
     namespace hooks {
 
-        typedef HRESULT(*PrePresent_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, bool* done);
-        typedef void(*PostPresent_t)(IDirect3DDevice9* pDeviceInterface);
-        typedef HRESULT(*PreReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters, bool* done);
-        typedef void(*PostReset_t)(IDirect3DDevice9* pDeviceInterface);
-        typedef HRESULT(*PrePresentEx_t)(IDirect3DDevice9Ex* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, DWORD dwFlags, bool* done);
-        typedef void(*PostPresentEx_t)(IDirect3DDevice9Ex* pDeviceInterface);
-        typedef HRESULT(*PreResetEx_t)(IDirect3DDevice9Ex* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, bool* done);
-        typedef void(*PostResetEx_t)(IDirect3DDevice9Ex* pDeviceInterface);
-
         typedef void(*PrePresentPostProcessing_t)(IDirect3DDevice9* pDeviceInterface);
-        typedef void(*PrePresentPostProcessingEx_t)(IDirect3DDevice9Ex* pDeviceInterface);
         typedef void(*PrePresentGui_t)(IDirect3DDevice9* pDeviceInterface);
-        typedef void(*PrePresentGuiEx_t)(IDirect3DDevice9Ex* pDeviceInterface);
 
-        extern PrePresent_t PrePresentHook;
-        extern PostPresent_t PostPresentHook;
+        typedef void(*PreReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
+        typedef void(*PostReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
+        typedef void(*PrePresent_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
+        
+        extern PrePresentPostProcessing_t PrePresentPostProcessingHook;
+        extern PrePresentGui_t PrePresentGuiHook;
+
         extern PreReset_t PreResetHook;
         extern PostReset_t PostResetHook;
-        extern PrePresentEx_t PrePresentExHook;
-        extern PostPresentEx_t PostPresentExHook;
-        extern PreResetEx_t PreResetExHook;
-        extern PostResetEx_t PostResetExHook;
+        extern PrePresent_t PrePresentHook;
 
-        extern PrePresentPostProcessing_t PrePresentPostProcessingHook;
-        extern PrePresentPostProcessingEx_t PrePresentPostProcessingExHook;
-        extern PrePresentGui_t PrePresentGuiHook;
-        extern PrePresentGuiEx_t PrePresentGuiExHook;
-
-        
+                
         class LoaderDirect3DDevice9 : public IDirect3DDevice9
         {
         public:

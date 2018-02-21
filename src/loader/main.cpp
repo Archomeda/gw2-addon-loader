@@ -215,31 +215,19 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     addons::LoadAddons(hFocusWindow);
 }
 
-void PrePresentPostProcessing(IDirect3DDevice9* pDeviceInterface) {
-    // Draw addons
-    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-        (*it)->DrawFrameBeforePostProcessing(pDeviceInterface);
-    }
 
-    //TODO: Remove this hook whenever there's no addon that's using this, to prevent unnecessary StateBlock calls
+void PreReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+    ImGui_ImplDX9_InvalidateDeviceObjects();
 }
 
-void PrePresentGui(IDirect3DDevice9* pDeviceInterface) {
-    // Draw addons
-    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-        (*it)->DrawFrameBeforeGui(pDeviceInterface);
-    }
-
-    //TODO: Remove this hook whenever there's no addon that's using this, to prevent unnecessary StateBlock calls
+void PostReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+    ImGui_ImplDX9_CreateDeviceObjects();
 }
 
-HRESULT PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, bool* done) {
+void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
     pDeviceInterface->BeginScene();
 
-    // Draw addons
-    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-        (*it)->DrawFrame(pDeviceInterface);
-    }
+    addons::DrawFrame(pDeviceInterface);
 
     // Draw ImGui stuff
     ImGui_ImplDX9_NewFrame();
@@ -253,17 +241,6 @@ HRESULT PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, 
 
     ImGui::Render();
     pDeviceInterface->EndScene();
-
-    return D3D_OK;
-}
-
-HRESULT PreReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters, bool* done) {
-    ImGui_ImplDX9_InvalidateDeviceObjects();
-    return D3D_OK;
-}
-
-void PostReset(IDirect3DDevice9* pDeviceInterface) {
-    ImGui_ImplDX9_CreateDeviceObjects();
 }
 
 
@@ -275,11 +252,10 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
             
             hooks::PreCreateDeviceHook = &PreCreateDevice;
             hooks::PostCreateDeviceHook = &PostCreateDevice;
-            hooks::PrePresentPostProcessingHook = &PrePresentPostProcessing;
-            hooks::PrePresentGuiHook = &PrePresentGui;
-            hooks::PrePresentHook = &PrePresent;
+
             hooks::PreResetHook = &PreReset;
             hooks::PostResetHook = &PostReset;
+            hooks::PrePresentHook = &PrePresent;
 
             // Make ourselves known by setting an environment variable
             // This makes it easy for addon developers to detect early if we are loaded by GW2 or not
