@@ -43,8 +43,8 @@ namespace loader {
             int AdvPostSetPixelShader = 0;
             int AdvPreSetRenderTarget = 0;
             int AdvPostSetRenderTarget = 0;
-            int AdvPreDrawPrimitive = 0;
-            int AdvPostDrawPrimitive = 0;
+            int AdvPreSetRenderState = 0;
+            int AdvPostSetRenderState = 0;
             int AdvPreDrawIndexedPrimitive = 0;
             int AdvPostDrawIndexedPrimitive = 0;
         };
@@ -88,8 +88,8 @@ namespace loader {
         void AdvPostSetPixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* pShader);
         void AdvPreSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
         void AdvPostSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
-        void AdvPreDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount);
-        void AdvPostDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount);
+        void AdvPreSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value);
+        void AdvPostSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value);
         void AdvPreDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
         void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
         

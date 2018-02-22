@@ -78,8 +78,8 @@ namespace loader {
                 this->GW2_AdvPostSetPixelShader = (GW2AdvPostSetPixelShader)GetProcAddress(h, GW2_DLL_AdvPostSetPixelShader);
                 this->GW2_AdvPreSetRenderTarget = (GW2AdvPreSetRenderTarget)GetProcAddress(h, GW2_DLL_AdvPreSetRenderTarget);
                 this->GW2_AdvPostSetRenderTarget = (GW2AdvPostSetRenderTarget)GetProcAddress(h, GW2_DLL_AdvPostSetRenderTarget);
-                this->GW2_AdvPreDrawPrimitive = (GW2AdvPreDrawPrimitive)GetProcAddress(h, GW2_DLL_AdvPreDrawPrimitive);
-                this->GW2_AdvPostDrawPrimitive = (GW2AdvPostDrawPrimitive)GetProcAddress(h, GW2_DLL_AdvPostDrawPrimitive);
+                this->GW2_AdvPreSetRenderState = (GW2AdvPreSetRenderState)GetProcAddress(h, GW2_DLL_AdvPreSetRenderState);
+                this->GW2_AdvPostSetRenderState = (GW2AdvPostSetRenderState)GetProcAddress(h, GW2_DLL_AdvPostSetRenderState);
                 this->GW2_AdvPreDrawIndexedPrimitive = (GW2AdvPreDrawIndexedPrimitive)GetProcAddress(h, GW2_DLL_AdvPreDrawIndexedPrimitive);
                 this->GW2_AdvPostDrawIndexedPrimitive = (GW2AdvPostDrawIndexedPrimitive)GetProcAddress(h, GW2_DLL_AdvPostDrawIndexedPrimitive);
 
@@ -113,8 +113,8 @@ namespace loader {
                 if (this->GW2_AdvPostSetPixelShader) ++ActiveAddonHookCounts.AdvPostSetPixelShader;
                 if (this->GW2_AdvPreSetRenderTarget) ++ActiveAddonHookCounts.AdvPreSetRenderTarget;
                 if (this->GW2_AdvPostSetRenderTarget) ++ActiveAddonHookCounts.AdvPostSetRenderTarget;
-                if (this->GW2_AdvPreDrawPrimitive) ++ActiveAddonHookCounts.AdvPreDrawPrimitive;
-                if (this->GW2_AdvPostDrawPrimitive) ++ActiveAddonHookCounts.AdvPostDrawPrimitive;
+                if (this->GW2_AdvPreSetRenderState) ++ActiveAddonHookCounts.AdvPreSetRenderState;
+                if (this->GW2_AdvPostSetRenderState) ++ActiveAddonHookCounts.AdvPostSetRenderState;
                 if (this->GW2_AdvPreDrawIndexedPrimitive) ++ActiveAddonHookCounts.AdvPreDrawIndexedPrimitive;
                 if (this->GW2_AdvPostDrawIndexedPrimitive) ++ActiveAddonHookCounts.AdvPostDrawIndexedPrimitive;
 
@@ -190,8 +190,8 @@ namespace loader {
                 if (this->GW2_AdvPostSetPixelShader) --ActiveAddonHookCounts.AdvPostSetPixelShader;
                 if (this->GW2_AdvPreSetRenderTarget) --ActiveAddonHookCounts.AdvPreSetRenderTarget;
                 if (this->GW2_AdvPostSetRenderTarget) --ActiveAddonHookCounts.AdvPostSetRenderTarget;
-                if (this->GW2_AdvPreDrawPrimitive) --ActiveAddonHookCounts.AdvPreDrawPrimitive;
-                if (this->GW2_AdvPostDrawPrimitive) --ActiveAddonHookCounts.AdvPostDrawPrimitive;
+                if (this->GW2_AdvPreSetRenderState) --ActiveAddonHookCounts.AdvPreSetRenderState;
+                if (this->GW2_AdvPostSetRenderState) --ActiveAddonHookCounts.AdvPostSetRenderState;
                 if (this->GW2_AdvPreDrawIndexedPrimitive) --ActiveAddonHookCounts.AdvPreDrawIndexedPrimitive;
                 if (this->GW2_AdvPostDrawIndexedPrimitive) --ActiveAddonHookCounts.AdvPostDrawIndexedPrimitive;
                 
@@ -225,8 +225,8 @@ namespace loader {
                 this->GW2_AdvPostSetPixelShader = nullptr;
                 this->GW2_AdvPreSetRenderTarget = nullptr;
                 this->GW2_AdvPostSetRenderTarget = nullptr;
-                this->GW2_AdvPreDrawPrimitive = nullptr;
-                this->GW2_AdvPostDrawPrimitive = nullptr;
+                this->GW2_AdvPreSetRenderState = nullptr;
+                this->GW2_AdvPostSetRenderState = nullptr;
                 this->GW2_AdvPreDrawIndexedPrimitive = nullptr;
                 this->GW2_AdvPostDrawIndexedPrimitive = nullptr;
 
@@ -523,21 +523,21 @@ namespace loader {
                 });
             }
 
-            void NativeAddonImpl::AdvPreDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
-                if (!this->GW2_AdvPreDrawPrimitive) {
+            void NativeAddonImpl::AdvPreSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) {
+                if (!this->GW2_AdvPreSetRenderState) {
                     return;
                 }
-                this->callAdvFunc("PreDrawPrimitive", [=]() {
-                    this->GW2_AdvPreDrawPrimitive(device, PrimitiveType, StartVertex, PrimitiveCount);
+                this->callAdvFunc("PreSetRenderState", [=]() {
+                    this->GW2_AdvPreSetRenderState(device, State, Value);
                 });
             }
 
-            void NativeAddonImpl::AdvPostDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
-                if (!this->GW2_AdvPostDrawPrimitive) {
+            void NativeAddonImpl::AdvPostSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) {
+                if (!this->GW2_AdvPostSetRenderState) {
                     return;
                 }
-                this->callAdvFunc("PostDrawPrimitive", [=]() {
-                    this->GW2_AdvPostDrawPrimitive(device, PrimitiveType, StartVertex, PrimitiveCount);
+                this->callAdvFunc("PostSetRenderState", [=]() {
+                    this->GW2_AdvPostSetRenderState(device, State, Value);
                 });
             }
 

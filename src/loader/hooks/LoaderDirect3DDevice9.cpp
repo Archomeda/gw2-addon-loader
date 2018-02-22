@@ -16,46 +16,44 @@ namespace loader {
         PrePresent_t PrePresentHook = nullptr;
 
 
-        // Full vertex shader bytecode:
-        // fffe0300 05000051 a00f0004 00000000 00000000 00000000 00000000 0200001f 80000000 900f0000 0200001f 80000003|900f0003 0200001f 80000005 900f0007 0200001f 80000005 e00f0000 0200001f 80000000 e00f0001 02000001 80070000 a0000004 02000001 80070000 a0000004 03000009 e0010001 90e40000 a0e40000 03000009 e0020001 90e40000 a0e40001 03000009 e0040001 90e40000 a0e40002 03000009 e0080001 90e40000 a0e40003 02000001 e0030000 90e40007
-        const DWORD PatternGuiText[] = {
-            0x900f0003, 0x0200001f, 0x80000005, 0x900f0007, 0x0200001f,
-            0x80000005, 0xe00f0000, 0x0200001f, 0x80000000, 0xe00f0001,
-            0x02000001, 0x80070000, 0xa0000004, 0x02000001, 0x80070000,
-            0xa0000004, 0x03000009, 0xe0010001, 0x90e40000, 0xa0e40000,
-            0x03000009, 0xe0020001, 0x90e40000, 0xa0e40001, 0x03000009,
-            0xe0040001, 0x90e40000, 0xa0e40002, 0x03000009, 0xe0080001,
-            0x90e40000, 0xa0e40003, 0x02000001, 0xe0030000, 0x90e40007
+        const DWORD GuiTextVertexShader[] = {
+            0xfffe0300, 0x05000051, 0xa00f0004, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x0200001f, 0x80000000, 0x900f0000,
+            0x0200001f, 0x80000003, 0x900f0003, 0x0200001f, 0x80000005,
+            0x900f0007, 0x0200001f, 0x80000005, 0xe00f0000, 0x0200001f,
+            0x80000000, 0xe00f0001, 0x02000001, 0x80070000, 0xa0000004,
+            0x02000001, 0x80070000, 0xa0000004, 0x03000009, 0xe0010001,
+            0x90e40000, 0xa0e40000, 0x03000009, 0xe0020001, 0x90e40000,
+            0xa0e40001, 0x03000009, 0xe0040001, 0x90e40000, 0xa0e40002,
+            0x03000009, 0xe0080001, 0x90e40000, 0xa0e40003, 0x02000001,
+            0xe0030000, 0x90e40007
         };
-        const int PatternGuiTextLength = sizeof(PatternGuiText) / sizeof(*PatternGuiText);
+        const int GuiTextVertexShaderLength = sizeof(GuiTextVertexShader) / sizeof(*GuiTextVertexShader);
 
-        // Full vertex shader bytecode:
-        // fffe0300 05000051 a00f0006 00000000 3f800000 00000000 00000000 0200001f 80000000 900f0000 0200001f 80000003|900f0003 0200001f 80000005 900f0007 0200001f 80010005 900f0008 0200001f 80020005 900f0009 0200001f 80030005 900f000a 0200001f 80000005 e00f0000 0200001f 80000000 e00f0001 02000001 80070000 a0000006 02000001 80070000 a0000006 03000009 e0010001 90e40000 a0e40000 03000009 e0020001 90e40000 a0e40001 03000009 e0040001 90e40000 a0e40002 03000009 e0080001 90e40000 a0e40003 02000001 80030001 90e40007 02000001 800c0001 a0550006 03000009 80010002 80e40001 a0e40004 03000009 80020002 80e40001 a0e40005 02000001 e0030000 80440002
-        const DWORD PatternGuiIcon[] = {
-            0x900f0003, 0x0200001f, 0x80000005, 0x900f0007, 0x0200001f,
-            0x80010005, 0x900f0008, 0x0200001f, 0x80020005, 0x900f0009,
-            0x0200001f, 0x80030005, 0x900f000a, 0x0200001f, 0x80000005,
-            0xe00f0000, 0x0200001f, 0x80000000, 0xe00f0001, 0x02000001,
-            0x80070000, 0xa0000006, 0x02000001, 0x80070000, 0xa0000006,
-            0x03000009, 0xe0010001, 0x90e40000, 0xa0e40000, 0x03000009,
-            0xe0020001, 0x90e40000, 0xa0e40001, 0x03000009, 0xe0040001,
-            0x90e40000, 0xa0e40002, 0x03000009, 0xe0080001, 0x90e40000,
-            0xa0e40003, 0x02000001, 0x80030001, 0x90e40007, 0x02000001,
-            0x800c0001, 0xa0550006, 0x03000009, 0x80010002, 0x80e40001,
-            0xa0e40004, 0x03000009, 0x80020002, 0x80e40001, 0xa0e40005,
-            0x02000001, 0xe0030000, 0x80440002
+        const DWORD GuiIconVertexShader[] = {
+            0xfffe0300, 0x05000051, 0xa00f0006, 0x00000000, 0x3f800000,
+            0x00000000, 0x00000000, 0x0200001f, 0x80000000, 0x900f0000,
+            0x0200001f, 0x80000003, 0x900f0003, 0x0200001f, 0x80000005,
+            0x900f0007, 0x0200001f, 0x80010005, 0x900f0008, 0x0200001f,
+            0x80020005, 0x900f0009, 0x0200001f, 0x80030005, 0x900f000a,
+            0x0200001f, 0x80000005, 0xe00f0000, 0x0200001f, 0x80000000,
+            0xe00f0001, 0x02000001, 0x80070000, 0xa0000006, 0x02000001,
+            0x80070000, 0xa0000006, 0x03000009, 0xe0010001, 0x90e40000,
+            0xa0e40000, 0x03000009, 0xe0020001, 0x90e40000, 0xa0e40001,
+            0x03000009, 0xe0040001, 0x90e40000, 0xa0e40002, 0x03000009,
+            0xe0080001, 0x90e40000, 0xa0e40003, 0x02000001, 0x80030001,
+            0x90e40007, 0x02000001, 0x800c0001, 0xa0550006, 0x03000009,
+            0x80010002, 0x80e40001, 0xa0e40004, 0x03000009, 0x80020002,
+            0x80e40001, 0xa0e40005, 0x02000001, 0xe0030000, 0x80440002
         };
-        const int PatternGuiIconLength = sizeof(PatternGuiIcon) / sizeof(*PatternGuiIcon);
+        const int GuiIconVertexShaderLength = sizeof(GuiIconVertexShader) / sizeof(*GuiIconVertexShader);
 
-        // Full vertex shader bytecode:
-        // fffe0300 05000051 a00f0000 bf800000 3f800000 00000000 00000000 05000051 a00f0001 00000000 40000000 c0000000 00000000 0200001f 80000000 900f0000 0200001f 80000000 e00f0000 02000001 80070000 a0e40001 04000004 e00f0000 90040000|80090000 a0640000
-        const DWORD PatternPostProcessing[] = {
-            0xe00f0000, 0x90040000, 0x80090000, 0xa0640000
-        };
-        const int PatternPostProcessingLength = sizeof(PatternPostProcessing) / sizeof(*PatternPostProcessing);
+        set<IDirect3DVertexShader9*> GuiVertexShaderPtrs;
 
-        set<IDirect3DVertexShader9*> GuiShaderPtrs;
-        set<IDirect3DVertexShader9*> PostProcessingShaderPtrs;
+        DWORD stateColorWriteEnable = 0;
+        DWORD stateZEnable = 0;
+        DWORD stateZFunc = 0;
+
         bool PrePresentGuiDone = false;
         int PrePostProcessingDone = 0;
 
@@ -67,11 +65,11 @@ namespace loader {
         }
 
         bool CheckShaderPattern(const DWORD* pFunction, int functionLength, const DWORD* pattern, int patternLength) {
-            if (functionLength < patternLength) {
+            if (functionLength != patternLength) {
                 return false;
             }
             for (int i = 0; i < patternLength; ++i) {
-                if (pattern[patternLength - 1 - i] != pFunction[functionLength - 1 - i]) {
+                if (pattern[i] != pFunction[i]) {
                     return false;
                 }
             }
@@ -295,6 +293,30 @@ namespace loader {
         HRESULT LoaderDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
             addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
 
+            if (PrePostProcessingDone == 1) {
+                // Guild Wars 2 will now be rendering the world view.
+                // We need wait until this is done.
+                ++PrePostProcessingDone;
+            }
+            else if (PrePostProcessingDone == 2) {
+                // Guild Wars 2 is done rendering the world view.
+                // We can now do our thing.
+
+                // Make sure we keep track that we are doing this before actually doing it, in order to prevent stack overflows
+                ++PrePostProcessingDone;
+
+                // Save our current state
+                IDirect3DStateBlock9* pStateBlock = NULL;
+                this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+
+                // Call our addons
+                addons::DrawFrameBeforePostProcessing(this->dev);
+
+                // Restore our state
+                pStateBlock->Apply();
+                pStateBlock->Release();
+            }
+
             HRESULT hr = this->dev->SetRenderTarget(RenderTargetIndex, pRenderTarget);
             if (hr != D3D_OK) {
                 // Fail
@@ -413,7 +435,29 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value) {
-            return this->dev->SetRenderState(State, Value);
+            addons::AdvPreSetRenderState(this->dev, State, Value);
+
+            HRESULT hr = this->dev->SetRenderState(State, Value);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            switch (State) {
+            case D3DRS_COLORWRITEENABLE:
+                stateColorWriteEnable = Value;
+                break;
+            case D3DRS_ZENABLE:
+                stateZEnable = Value;
+                break;
+            case D3DRS_ZFUNC:
+                stateZFunc = Value;
+                break;
+            }
+
+            addons::AdvPostSetRenderState(this->dev, State, Value);
+
+            return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::GetRenderState(D3DRENDERSTATETYPE State, DWORD* pValue) {
@@ -519,17 +563,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
-            addons::AdvPreDrawPrimitive(this->dev, PrimitiveType, StartVertex, PrimitiveCount);
-
-            HRESULT hr = this->dev->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
-            if (hr != D3D_OK) {
-                // Fail
-                return hr;
-            }
-
-            addons::AdvPostDrawPrimitive(this->dev, PrimitiveType, StartVertex, PrimitiveCount);
-
-            return hr;
+            return this->dev->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
         }
 
         HRESULT LoaderDirect3DDevice9::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
@@ -541,22 +575,13 @@ namespace loader {
                 return hr;
             }
 
-            if (PrePostProcessingDone == 2) {
-                // Post processing is being rendered, HALT!
-
-                // Make sure we keep track that we are doing this before actually doing it, in order to prevent stack overflow
-                ++PrePostProcessingDone;
-
-                // Save our current state
-                IDirect3DStateBlock9* pStateBlock = NULL;
-                this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
-
-                // Call our addons
-                addons::DrawFrameBeforePostProcessing(this->dev);
-
-                // Restore our state
-                pStateBlock->Apply();
-                pStateBlock->Release();
+            if (PrePostProcessingDone == 0) {
+                // Check if our render state has these values.
+                // If that's the case, the current render target has the environment color
+                // and the next render target is where the world view gets rendered.
+                if (stateColorWriteEnable == D3DCOLORWRITEENABLE_ALPHA && stateZEnable == D3DZB_FALSE && stateZFunc == D3DCMP_ALWAYS) {
+                    ++PrePostProcessingDone;
+                }
             }
             
             addons::AdvPostDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -615,26 +640,19 @@ namespace loader {
             // Check for vertex patterns
             int functionLength = GetShaderFunctionLength(pFunction);
             if (functionLength > 0) {
-                if (CheckShaderPattern(pFunction, functionLength, PatternGuiText, PatternGuiTextLength)) {
+                if (CheckShaderPattern(pFunction, functionLength, GuiTextVertexShader, GuiTextVertexShaderLength)) {
                     // GUI text pattern
-                    GuiShaderPtrs.insert(*ppShader);
+                    GuiVertexShaderPtrs.insert(*ppShader);
                     stringstream sstream;
                     sstream << hex << ppShader;
                     GetLog()->info("Found vertex shader for GUI text, initialized at 0x" + sstream.str());
                 }
-                else if (CheckShaderPattern(pFunction, functionLength, PatternGuiIcon, PatternGuiIconLength)) {
+                else if (CheckShaderPattern(pFunction, functionLength, GuiIconVertexShader, GuiIconVertexShaderLength)) {
                     // GUI icon pattern
-                    GuiShaderPtrs.insert(*ppShader);
+                    GuiVertexShaderPtrs.insert(*ppShader);
                     stringstream sstream;
                     sstream << hex << ppShader;
                     GetLog()->info("Found vertex shader for GUI icons, initialized at 0x" + sstream.str());
-                }
-                else if (CheckShaderPattern(pFunction, functionLength, PatternPostProcessing, PatternPostProcessingLength)) {
-                    // Post processing pattern
-                    PostProcessingShaderPtrs.insert(*ppShader);
-                    stringstream sstream;;
-                    sstream << hex << ppShader;
-                    GetLog()->info("Found vertex shader for post processing, initialized at 0x" + sstream.str());
                 }
             }
 
@@ -647,7 +665,7 @@ namespace loader {
             addons::AdvPreSetVertexShader(this->dev, pShader);
 
             if (pShader) {
-                if (GuiShaderPtrs.find(pShader) != GuiShaderPtrs.end()) {
+                if (GuiVertexShaderPtrs.find(pShader) != GuiVertexShaderPtrs.end()) {
                     if (!PrePresentGuiDone) {
                         // The GUI is being rendered, HALT!
 
@@ -670,12 +688,6 @@ namespace loader {
 
                         // Make sure we keep track that we've done this
                         PrePresentGuiDone = true;
-                    }
-                }
-
-                if (PostProcessingShaderPtrs.find(pShader) != PostProcessingShaderPtrs.end()) {
-                    if (PrePostProcessingDone < 2) {
-                        ++PrePostProcessingDone;
                     }
                 }
             }
@@ -1062,6 +1074,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value) {
+            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->SetRenderState(State, Value);
         }
 
@@ -1159,7 +1172,6 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9Ex::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
-            // Not hooked, GW2 doesn't use Ex calls
             return this->dev->DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
         }
 

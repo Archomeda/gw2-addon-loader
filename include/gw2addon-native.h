@@ -365,19 +365,19 @@ typedef void(GW2ADDON_CALL *GW2AdvPostSetRenderTarget)(IDirect3DDevice9* pDev, D
 #define GW2_DLL_AdvPostSetRenderTarget "GW2_AdvPostSetRenderTarget"
 
 /**
-Exported C-function: GW2_AdvPreDrawPrimitive. Optional.
-Advanced function that gets called before D3D9 processes the DrawPrimitive call.
-Do not call DrawPrimitive yourself. The addon loader does that already after this call.
+Exported C-function: GW2_AdvPreSetRenderState. Optional.
+Advanced function that gets called before D3D9 processes the SetRenderState. call.
+Do not call SetRenderState yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2AdvPreDrawPrimitive)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount);
-#define GW2_DLL_AdvPreDrawPrimitive "GW2_AdvPreDrawPrimitive"
+typedef void(GW2ADDON_CALL *GW2AdvPreSetRenderState)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
+#define GW2_DLL_AdvPreSetRenderState "GW2_AdvPreSetRenderState"
 
 /**
-Exported C-function: GW2_AdvPostDrawPrimitive. Optional.
-Advanced function that gets called after D3D9 has processed the DrawPrimitive call.
+Exported C-function: GW2_AdvPostSetRenderState. Optional.
+Advanced function that gets called after D3D9 has processed the SetRenderState call.
 */
-typedef void(GW2ADDON_CALL *GW2AdvPostDrawPrimitive)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount);
-#define GW2_DLL_AdvPostDrawPrimitive "GW2_AdvPostDrawPrimitive"
+typedef void(GW2ADDON_CALL *GW2AdvPostSetRenderState)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
+#define GW2_DLL_AdvPostSetRenderState "GW2_AdvPostSetRenderState"
 
 /**
 Exported C-function: GW2_AdvPreDrawIndexedPrimitive. Optional.
@@ -393,4 +393,3 @@ Advanced function that gets called after D3D9 has processed the DrawIndexedPrimi
 */
 typedef void(GW2ADDON_CALL *GW2AdvPostDrawIndexedPrimitive)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
 #define GW2_DLL_AdvPostDrawIndexedPrimitive "GW2_AdvPostDrawIndexedPrimitive"
-

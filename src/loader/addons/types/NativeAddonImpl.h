@@ -52,8 +52,8 @@ namespace loader {
                 virtual void AdvPostSetPixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* pShader) override;
                 virtual void AdvPreSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) override;
                 virtual void AdvPostSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) override;
-                virtual void AdvPreDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) override;
-                virtual void AdvPostDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) override;
+                virtual void AdvPreSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) override;
+                virtual void AdvPostSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) override;
                 virtual void AdvPreDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) override;
                 virtual void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) override;
 
@@ -94,8 +94,8 @@ namespace loader {
                 GW2AdvPostSetPixelShader GW2_AdvPostSetPixelShader = nullptr;
                 GW2AdvPreSetRenderTarget GW2_AdvPreSetRenderTarget = nullptr;
                 GW2AdvPostSetRenderTarget GW2_AdvPostSetRenderTarget = nullptr;
-                GW2AdvPreDrawPrimitive GW2_AdvPreDrawPrimitive = nullptr;
-                GW2AdvPostDrawPrimitive GW2_AdvPostDrawPrimitive = nullptr;
+                GW2AdvPreSetRenderState GW2_AdvPreSetRenderState = nullptr;
+                GW2AdvPostSetRenderState GW2_AdvPostSetRenderState = nullptr;
                 GW2AdvPreDrawIndexedPrimitive GW2_AdvPreDrawIndexedPrimitive = nullptr;
                 GW2AdvPostDrawIndexedPrimitive GW2_AdvPostDrawIndexedPrimitive = nullptr;
 

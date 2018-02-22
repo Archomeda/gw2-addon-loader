@@ -113,7 +113,7 @@ extern "C" {
 
         // Drawing this text is painfully slow; this is just an example.
         // Don't use this in your own addon.
-        frame++;
+        ++frame;
         LPD3DXFONT font;
         RECT rect;
         rect.left = 10;

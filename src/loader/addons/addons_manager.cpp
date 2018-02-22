@@ -602,15 +602,15 @@ namespace loader {
             }
         }
 
-        void AdvPreDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
-            if (ActiveAddonHookCounts.AdvPreDrawPrimitive > 0) {
+        void AdvPreSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) {
+            if (ActiveAddonHookCounts.AdvPreSetRenderState > 0) {
                 for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                     if ((*it)->IsLoaded()) {
                         try {
-                            (*it)->GetTypeImpl()->AdvPreDrawPrimitive(device, PrimitiveType, StartVertex, PrimitiveCount);
+                            (*it)->GetTypeImpl()->AdvPreSetRenderState(device, State, Value);
                         }
                         catch (const exceptions::AddonAdvFuncException& ex) {
-                            GetLog()->error("Failed to call AdvPreDrawPrimitive in addon: {0} : {1}", ws2s((*it)->GetFileName()), ex.what());
+                            GetLog()->error("Failed to call AdvPreSetRenderState in addon: {0} : {1}", ws2s((*it)->GetFileName()), ex.what());
                             GetLog()->error("Addon will be disabled on next restart");
                             AppConfig.SetAddonEnabled((*it)->GetFileName(), false);
                         }
@@ -619,15 +619,15 @@ namespace loader {
             }
         }
 
-        void AdvPostDrawPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) {
-            if (ActiveAddonHookCounts.AdvPostDrawPrimitive > 0) {
+        void AdvPostSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) {
+            if (ActiveAddonHookCounts.AdvPostSetRenderState > 0) {
                 for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                     if ((*it)->IsLoaded()) {
                         try {
-                            (*it)->GetTypeImpl()->AdvPostDrawPrimitive(device, PrimitiveType, StartVertex, PrimitiveCount);
+                            (*it)->GetTypeImpl()->AdvPostSetRenderState(device, State, Value);
                         }
                         catch (const exceptions::AddonAdvFuncException& ex) {
-                            GetLog()->error("Failed to call AdvPostDrawPrimitive in addon: {0} : {1}", ws2s((*it)->GetFileName()), ex.what());
+                            GetLog()->error("Failed to call AdvPostSetRenderState in addon: {0} : {1}", ws2s((*it)->GetFileName()), ex.what());
                             GetLog()->error("Addon will be disabled on next restart");
                             AppConfig.SetAddonEnabled((*it)->GetFileName(), false);
                         }
