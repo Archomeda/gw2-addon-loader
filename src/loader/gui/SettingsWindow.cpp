@@ -82,7 +82,7 @@ namespace loader {
                     version = ws2s(addon->GetVersion());
                     homepage = addon->GetHomepage();
                 }
-                ImGui::BeginChild("##Addon", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing())); // Leave room for 1 line below us
+                ImGui::BeginChild("##Addon", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
                 {
                     ImGui::BeginGroup();
                     {

@@ -19,7 +19,7 @@ namespace loader {
                 ImGui::TextWrapped(ws2s(this->Message).c_str());
             }
             ImGui::EndChild();
-            ImGui::BeginChild("##Buttons", ImVec2(480, ImGui::GetItemsLineHeightWithSpacing()));
+            ImGui::BeginChild("##Buttons", ImVec2(480, ImGui::GetFrameHeightWithSpacing()));
             {
                 ImGui::SameLine((480 - 120) / 2);
                 if (ImGui::Button("OK", ImVec2(120, 0))) {

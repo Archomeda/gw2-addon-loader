@@ -18,6 +18,8 @@ using namespace std;
 using namespace loader;
 
 
+IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 // States
 WNDPROC BaseWndProc;
 set<uint32_t> PressedKeys;
@@ -34,7 +36,6 @@ set<uint32_t> imGuiDemoKeybind { VK_SHIFT, VK_MENU, VK_F1 };
 #endif
 
 
-extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     struct EventKey {
         uint32_t vk: 31;
@@ -107,7 +108,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #endif
     }
 
-    ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam);
+    ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
 
     const auto& io = ImGui::GetIO();
 
@@ -184,7 +185,7 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
 
     ImGuiStyle* style = &ImGui::GetStyle();
     style->WindowRounding = 2;
-    style->ChildWindowRounding = 0;
+    style->ChildRounding = 0;
     style->FrameRounding = 0;
     style->ScrollbarRounding = 0;
     style->Colors[ImGuiCol_FrameBg] = ImVec4(0.2f, 0.2f, 0.2f, style->Colors[ImGuiCol_FrameBg].w);
