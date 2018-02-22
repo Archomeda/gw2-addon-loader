@@ -16,45 +16,12 @@ namespace loader {
         PrePresent_t PrePresentHook = nullptr;
 
 
-        const DWORD GuiTextVertexShader[] = {
-            0xfffe0300, 0x05000051, 0xa00f0004, 0x00000000, 0x00000000,
-            0x00000000, 0x00000000, 0x0200001f, 0x80000000, 0x900f0000,
-            0x0200001f, 0x80000003, 0x900f0003, 0x0200001f, 0x80000005,
-            0x900f0007, 0x0200001f, 0x80000005, 0xe00f0000, 0x0200001f,
-            0x80000000, 0xe00f0001, 0x02000001, 0x80070000, 0xa0000004,
-            0x02000001, 0x80070000, 0xa0000004, 0x03000009, 0xe0010001,
-            0x90e40000, 0xa0e40000, 0x03000009, 0xe0020001, 0x90e40000,
-            0xa0e40001, 0x03000009, 0xe0040001, 0x90e40000, 0xa0e40002,
-            0x03000009, 0xe0080001, 0x90e40000, 0xa0e40003, 0x02000001,
-            0xe0030000, 0x90e40007
-        };
-        const int GuiTextVertexShaderLength = sizeof(GuiTextVertexShader) / sizeof(*GuiTextVertexShader);
-
-        const DWORD GuiIconVertexShader[] = {
-            0xfffe0300, 0x05000051, 0xa00f0006, 0x00000000, 0x3f800000,
-            0x00000000, 0x00000000, 0x0200001f, 0x80000000, 0x900f0000,
-            0x0200001f, 0x80000003, 0x900f0003, 0x0200001f, 0x80000005,
-            0x900f0007, 0x0200001f, 0x80010005, 0x900f0008, 0x0200001f,
-            0x80020005, 0x900f0009, 0x0200001f, 0x80030005, 0x900f000a,
-            0x0200001f, 0x80000005, 0xe00f0000, 0x0200001f, 0x80000000,
-            0xe00f0001, 0x02000001, 0x80070000, 0xa0000006, 0x02000001,
-            0x80070000, 0xa0000006, 0x03000009, 0xe0010001, 0x90e40000,
-            0xa0e40000, 0x03000009, 0xe0020001, 0x90e40000, 0xa0e40001,
-            0x03000009, 0xe0040001, 0x90e40000, 0xa0e40002, 0x03000009,
-            0xe0080001, 0x90e40000, 0xa0e40003, 0x02000001, 0x80030001,
-            0x90e40007, 0x02000001, 0x800c0001, 0xa0550006, 0x03000009,
-            0x80010002, 0x80e40001, 0xa0e40004, 0x03000009, 0x80020002,
-            0x80e40001, 0xa0e40005, 0x02000001, 0xe0030000, 0x80440002
-        };
-        const int GuiIconVertexShaderLength = sizeof(GuiIconVertexShader) / sizeof(*GuiIconVertexShader);
-
-        set<IDirect3DVertexShader9*> GuiVertexShaderPtrs;
-
+        D3DFORMAT stateFormat = D3DFMT_UNKNOWN;
         DWORD stateColorWriteEnable = 0;
         DWORD stateZEnable = 0;
         DWORD stateZFunc = 0;
 
-        bool PrePresentGuiDone = false;
+        int PrePresentGuiDone = 0;
         int PrePostProcessingDone = 0;
 
 
@@ -174,7 +141,7 @@ namespace loader {
             addons::AdvPostPresent(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
 
             // Reset this for a new frame
-            PrePresentGuiDone = false;
+            PrePresentGuiDone = 0;
             PrePostProcessingDone = 0;
             
             return hr;
@@ -292,6 +259,11 @@ namespace loader {
 
         HRESULT LoaderDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
             addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
+            
+            D3DSURFACE_DESC desc;
+            if (pRenderTarget->GetDesc(&desc) == D3D_OK) {
+                stateFormat = desc.Format;
+            }
 
             if (PrePostProcessingDone == 1) {
                 // Guild Wars 2 will now be rendering the world view.
@@ -583,6 +555,14 @@ namespace loader {
                     ++PrePostProcessingDone;
                 }
             }
+            if (PrePresentGuiDone == 0) {
+                // Check if our render state has these values.
+                // If that's the case, the current render target is our last one before the GUI gets drawn.
+                if (stateColorWriteEnable == (D3DCOLORWRITEENABLE_ALPHA | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_RED) &&
+                    stateZEnable == D3DZB_FALSE && stateZFunc == D3DCMP_LESSEQUAL && stateFormat == D3DFMT_X8R8G8B8) {
+                    ++PrePresentGuiDone;
+                }
+            }
             
             addons::AdvPostDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 
@@ -637,25 +617,6 @@ namespace loader {
                 }
             }
 
-            // Check for vertex patterns
-            int functionLength = GetShaderFunctionLength(pFunction);
-            if (functionLength > 0) {
-                if (CheckShaderPattern(pFunction, functionLength, GuiTextVertexShader, GuiTextVertexShaderLength)) {
-                    // GUI text pattern
-                    GuiVertexShaderPtrs.insert(*ppShader);
-                    stringstream sstream;
-                    sstream << hex << ppShader;
-                    GetLog()->info("Found vertex shader for GUI text, initialized at 0x" + sstream.str());
-                }
-                else if (CheckShaderPattern(pFunction, functionLength, GuiIconVertexShader, GuiIconVertexShaderLength)) {
-                    // GUI icon pattern
-                    GuiVertexShaderPtrs.insert(*ppShader);
-                    stringstream sstream;
-                    sstream << hex << ppShader;
-                    GetLog()->info("Found vertex shader for GUI icons, initialized at 0x" + sstream.str());
-                }
-            }
-
             addons::AdvPostCreateVertexShader(this->dev, *ppShader, pFunction);
 
             return hr;
@@ -664,38 +625,28 @@ namespace loader {
         HRESULT LoaderDirect3DDevice9::SetVertexShader(IDirect3DVertexShader9* pShader) {
             addons::AdvPreSetVertexShader(this->dev, pShader);
 
-            if (pShader) {
-                if (GuiVertexShaderPtrs.find(pShader) != GuiVertexShaderPtrs.end()) {
-                    if (!PrePresentGuiDone) {
-                        // The GUI is being rendered, HALT!
-
-                        // Save our current state
-                        IDirect3DStateBlock9* pStateBlock = NULL;
-                        this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
-
-                        if (PrePostProcessingDone < 3) {
-                            // Pre post processing has not been called yet, make sure it is called
-                            PrePostProcessingDone = 3;
-                            addons::DrawFrameBeforePostProcessing(this->dev);
-                        }
-
-                        // Call our hook
-                        addons::DrawFrameBeforeGui(this->dev);
-
-                        // Restore our state
-                        pStateBlock->Apply();
-                        pStateBlock->Release();
-
-                        // Make sure we keep track that we've done this
-                        PrePresentGuiDone = true;
-                    }
-                }
-            }
-
             HRESULT hr = this->dev->SetVertexShader(pShader);
             if (hr != D3D_OK) {
                 // Fail
                 return hr;
+            }
+
+            if (!pShader && PrePresentGuiDone == 1) {
+                // Guild Wars 2 will now be rendering the GUI
+
+                // Make sure we keep track that we are doing this before actually doing it, in order to prevent stack overflows
+                ++PrePresentGuiDone;
+
+                // Save our current state
+                IDirect3DStateBlock9* pStateBlock = NULL;
+                this->dev->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+
+                // Call our addons
+                addons::DrawFrameBeforeGui(this->dev);
+
+                // Restore our state
+                pStateBlock->Apply();
+                pStateBlock->Release();
             }
 
             addons::AdvPostSetVertexShader(this->dev, pShader);
