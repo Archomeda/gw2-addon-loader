@@ -213,12 +213,12 @@ namespace loader {
             HMODULE hAddon = LoadLibraryEx(fileName, NULL, DONT_RESOLVE_DLL_REFERENCES);
             
             // First check if the addon is native
-            GW2GetAddonInfo getAddonInfo = (GW2GetAddonInfo)GetProcAddress(hAddon, GW2_DLL_GetAddonInfo);
+            GW2_GetAddonInfo_t getAddonInfo = reinterpret_cast<GW2_GetAddonInfo_t>(GetProcAddress(hAddon, GW2_DLL_GetAddonInfo));
             if (getAddonInfo != NULL) {
                 // Our addon is native
                 FreeLibrary(hAddon);
                 hAddon = LoadLibrary(fileName);
-                getAddonInfo = (GW2GetAddonInfo)GetProcAddress(hAddon, GW2_DLL_GetAddonInfo);
+                getAddonInfo = reinterpret_cast<GW2_GetAddonInfo_t>(GetProcAddress(hAddon, GW2_DLL_GetAddonInfo));
                 void* addonInfoGeneric;
 
                 GW2ADDON_RESULT result = getAddonInfo((GW2AddonInfo**)&addonInfoGeneric);
