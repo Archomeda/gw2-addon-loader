@@ -45,9 +45,6 @@
     <ClInclude Include="gui\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\SettingsWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="addons\Addon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,6 +84,18 @@
     <ClInclude Include="hooks\LoaderDirect3DDevice9.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_dx9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\AddonInfoWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\SettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -111,9 +120,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\SettingsWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="addons\Addon.cpp">
@@ -152,10 +158,24 @@
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imgui_impl_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\AddonInfoWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\SettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def">
       <Filter>Source Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="loader.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -73,25 +73,25 @@
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x86</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x86</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x64</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x64</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -140,7 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="imgui\examples\directx9_example\imgui_impl_dx9.h" />
+    <ClInclude Include="IconFontCppHeaders\IconsMaterialDesign.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
@@ -151,7 +151,6 @@
     <ClInclude Include="spdlog\include\spdlog\spdlog.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="imgui\examples\directx9_example\imgui_impl_dx9.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -73,28 +73,28 @@
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -109,7 +109,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -124,7 +124,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,7 +143,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -163,11 +163,12 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="gui\SettingsWindow.h" />
     <ClInclude Include="addons\Addon.h" />
     <ClInclude Include="addons\addons_manager.h" />
     <ClInclude Include="addons\exceptions.h" />
@@ -181,12 +182,14 @@
     <ClInclude Include="gui\MessageWindow.h" />
     <ClInclude Include="hooks\LoaderDirect3D9.h" />
     <ClInclude Include="hooks\LoaderDirect3DDevice9.h" />
+    <ClInclude Include="imgui_impl_dx9.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="windows.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="d3d9types.h" />
     <ClInclude Include="hooks\hooks_manager.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="gui\SettingsWindow.h" />
+    <ClInclude Include="gui\AddonInfoWindow.h" />
     <ClInclude Include="hooks\vftable.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="utils.h" />
@@ -194,6 +197,7 @@
     <ClInclude Include="addons\AddonDirect3D9.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="gui\SettingsWindow.cpp" />
     <ClCompile Include="addons\Addon.cpp" />
     <ClCompile Include="addons\addons_manager.cpp" />
     <ClCompile Include="addons\types\NativeAddonImpl.cpp" />
@@ -208,8 +212,9 @@
     <ClCompile Include="hooks\hooks_manager.cpp" />
     <ClCompile Include="hooks\LoaderDirect3D9.cpp" />
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp" />
+    <ClCompile Include="imgui_impl_dx9.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="gui\SettingsWindow.cpp" />
+    <ClCompile Include="gui\AddonInfoWindow.cpp" />
     <ClCompile Include="hooks\vftable.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -236,6 +241,9 @@
     <ProjectReference Include="..\dependencies\dependencies.vcxproj">
       <Project>{9a4064cf-5604-4363-9b07-02f4f7071de3}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="loader.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

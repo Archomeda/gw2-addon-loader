@@ -42,9 +42,9 @@ There are also a few pre-made addons available inside the same folder.
 
 ## Disclaimer
 This is an **unofficial** library.
-The author of this library is not associated with ArenaNet or any of its partners.
-Modifying Guild Wars 2 through any third party software is not supported by ArenaNet or any of its partners.
-By using this software, you agree that it is at your own risk and you assume all responsibility.
+The author of this library is not associated with ArenaNet nor with any of its partners.
+Modifying Guild Wars 2 through any third party software is not supported by ArenaNet nor by any of its partners.
+By using this software, you agree that it is at your own risk and that you assume all responsibility.
 There is no warranty for using this software.
 
 If you do not agree with this, please do not use this software.

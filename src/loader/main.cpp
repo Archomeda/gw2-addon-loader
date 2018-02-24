@@ -2,7 +2,6 @@
 #include <list>
 #include <stdint.h>
 #include <imgui.h>
-#include <examples/directx9_example/imgui_impl_dx9.h>
 #include "addons/addons_manager.h"
 #include "addons/Addon.h"
 #include "hooks/hooks_manager.h"
@@ -11,6 +10,7 @@
 #include "gui/gui_manager.h"
 #include "gui/SettingsWindow.h"
 #include "Config.h"
+#include "imgui_impl_dx9.h"
 #include "log.h"
 #include "utils.h"
 
@@ -18,12 +18,13 @@ using namespace std;
 using namespace loader;
 
 
-IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+HMODULE dllModule;
 
 // States
 WNDPROC BaseWndProc;
 set<uint32_t> PressedKeys;
-shared_ptr<gui::SettingsWindow> SettingsWnd = make_shared<gui::SettingsWindow>();
 bool prevCaptureMouse = false;
 CURSORINFO prevCursor;
 
@@ -96,7 +97,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     // Only run these for key down/key up (incl. mouse buttons) events
     if (!eventKeys.empty()) {
         if (PressedKeys == AppConfig.GetSettingsKeybind()) {
-            gui::IsWindowOpen(SettingsWnd) ? gui::CloseWindow(SettingsWnd) : gui::ShowWindow(SettingsWnd);
+            gui::IsWindowOpen(gui::SettingsWnd) ? gui::CloseWindow(gui::SettingsWnd) : gui::ShowWindow(gui::SettingsWnd);
             return true;
         }
 
@@ -108,8 +109,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #endif
     }
 
-    ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
 
+    ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam);
     const auto& io = ImGui::GetIO();
 
     // Prevent game from receiving input if ImGui requests capture
@@ -176,11 +177,15 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
 }
 
 void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
+    // Create textures
+    gui::LoadTextures(dllModule, pDeviceInterface);
+
     // Set up ImGui
-    auto& imio = ImGui::GetIO();
+    ImGuiIO imio = ImGui::GetIO();
     imGuiConfigFile = AppConfig.GetImGuiConfigPath();
     imio.IniFilename = imGuiConfigFile.c_str();
 
+    gui::LoadFonts(dllModule);
     ImGui_ImplDX9_Init(hFocusWindow, pDeviceInterface);
 
     ImGuiStyle* style = &ImGui::GetStyle();
@@ -188,28 +193,50 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     style->ChildRounding = 0;
     style->FrameRounding = 0;
     style->ScrollbarRounding = 0;
-    style->Colors[ImGuiCol_FrameBg] = ImVec4(0.2f, 0.2f, 0.2f, style->Colors[ImGuiCol_FrameBg].w);
-    style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_FrameBgHovered].w);
-    style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.4f, 0.4f, 0.4f, style->Colors[ImGuiCol_FrameBgActive].w);
-    style->Colors[ImGuiCol_TitleBg] = ImVec4(0.1f, 0.1f, 0.1f, style->Colors[ImGuiCol_TitleBg].w);
-    style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.1f, 0.1f, 0.1f, style->Colors[ImGuiCol_TitleBgCollapsed].w);
-    style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.15f, 0.15f, 0.15f, style->Colors[ImGuiCol_TitleBgActive].w);
-    style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.1f, 0.1f, 0.1f, style->Colors[ImGuiCol_ScrollbarBg].w);
-    style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.3f, 0.3f, 0.2f, style->Colors[ImGuiCol_ScrollbarGrab].w);
-    style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.5f, 0.5f, 0.35f, style->Colors[ImGuiCol_ScrollbarGrabHovered].w);
-    style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.6f, 0.6f, 0.43f, style->Colors[ImGuiCol_ScrollbarGrabActive].w);
-    style->Colors[ImGuiCol_Button] = ImVec4(0.3f, 0.3f, 0.2f, style->Colors[ImGuiCol_Button].w);
-    style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.5f, 0.5f, 0.35f, style->Colors[ImGuiCol_ButtonHovered].w);
-    style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.6f, 0.6f, 0.43f, style->Colors[ImGuiCol_ButtonActive].w);
-    style->Colors[ImGuiCol_Header] = ImVec4(0.45f, 0.45f, 0.3f, style->Colors[ImGuiCol_Header].w);
-    style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.5f, 0.5f, 0.35f, style->Colors[ImGuiCol_HeaderHovered].w);
-    style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.6f, 0.6f, 0.43f, style->Colors[ImGuiCol_HeaderActive].w);
-    style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.3f, 0.3f, 0.2f, style->Colors[ImGuiCol_ResizeGrip].w);
-    style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.5f, 0.5f, 0.35f, style->Colors[ImGuiCol_ResizeGripHovered].w);
-    style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.6f, 0.6f, 0.43f, style->Colors[ImGuiCol_ResizeGripActive].w);
-    style->Colors[ImGuiCol_CloseButton] = ImVec4(0.3f, 0.3f, 0.2f, style->Colors[ImGuiCol_CloseButton].w);
-    style->Colors[ImGuiCol_CloseButtonHovered] = ImVec4(0.5f, 0.5f, 0.35f, style->Colors[ImGuiCol_CloseButtonHovered].w);
-    style->Colors[ImGuiCol_CloseButtonActive] = ImVec4(0.6f, 0.6f, 0.43f, style->Colors[ImGuiCol_CloseButtonActive].w);
+    ImVec4* colors = ImGui::GetStyle().Colors;
+    colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 0.94f, 1.00f);
+    colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
+    colors[ImGuiCol_ChildBg] = ImVec4(1.00f, 1.00f, 1.00f, 0.00f);
+    colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+    colors[ImGuiCol_Border] = ImVec4(0.47f, 0.47f, 0.31f, 0.50f);
+    colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_FrameBg] = ImVec4(0.16f, 0.16f, 0.11f, 0.54f);
+    colors[ImGuiCol_FrameBgHovered] = ImVec4(0.39f, 0.39f, 0.26f, 0.40f);
+    colors[ImGuiCol_FrameBgActive] = ImVec4(0.39f, 0.39f, 0.26f, 0.67f);
+    colors[ImGuiCol_TitleBg] = ImVec4(0.09f, 0.09f, 0.06f, 1.00f);
+    colors[ImGuiCol_TitleBgActive] = ImVec4(0.24f, 0.24f, 0.16f, 1.00f);
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.09f, 0.09f, 0.06f, 0.51f);
+    colors[ImGuiCol_MenuBarBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.16f, 0.16f, 0.11f, 0.54f);
+    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.39f, 0.39f, 0.26f, 0.69f);
+    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.39f, 0.39f, 0.26f, 0.82f);
+    colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.39f, 0.39f, 0.26f, 1.00f);
+    colors[ImGuiCol_CheckMark] = ImVec4(1.00f, 1.00f, 0.94f, 1.00f);
+    colors[ImGuiCol_SliderGrab] = ImVec4(0.39f, 0.39f, 0.26f, 0.69f);
+    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.39f, 0.39f, 0.26f, 1.00f);
+    colors[ImGuiCol_Button] = ImVec4(0.39f, 0.39f, 0.26f, 0.69f);
+    colors[ImGuiCol_ButtonHovered] = ImVec4(0.39f, 0.39f, 0.26f, 0.82f);
+    colors[ImGuiCol_ButtonActive] = ImVec4(0.39f, 0.39f, 0.26f, 1.00f);
+    colors[ImGuiCol_Header] = ImVec4(0.39f, 0.39f, 0.26f, 0.69f);
+    colors[ImGuiCol_HeaderHovered] = ImVec4(0.39f, 0.39f, 0.26f, 0.82f);
+    colors[ImGuiCol_HeaderActive] = ImVec4(0.39f, 0.39f, 0.26f, 1.00f);
+    colors[ImGuiCol_Separator] = ImVec4(0.47f, 0.47f, 0.31f, 0.50f);
+    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.47f, 0.47f, 0.31f, 0.75f);
+    colors[ImGuiCol_SeparatorActive] = ImVec4(0.47f, 0.47f, 0.31f, 1.00f);
+    colors[ImGuiCol_ResizeGrip] = ImVec4(0.39f, 0.39f, 0.26f, 0.69f);
+    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.39f, 0.39f, 0.26f, 0.82f);
+    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.39f, 0.39f, 0.26f, 1.00f);
+    colors[ImGuiCol_CloseButton] = ImVec4(0.39f, 0.39f, 0.26f, 0.69f);
+    colors[ImGuiCol_CloseButtonHovered] = ImVec4(0.39f, 0.39f, 0.26f, 0.82f);
+    colors[ImGuiCol_CloseButtonActive] = ImVec4(0.39f, 0.39f, 0.26f, 1.00f);
+    colors[ImGuiCol_PlotLines] = ImVec4(1.00f, 1.00f, 0.94f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.82f, 0.82f, 0.55f, 1.00f);
+    colors[ImGuiCol_PlotHistogram] = ImVec4(1.00f, 1.00f, 0.94f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.82f, 0.82f, 0.55f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg] = ImVec4(0.47f, 0.47f, 0.31f, 1.00f);
+    colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_DragDropTarget] = ImVec4(0.82f, 0.82f, 0.55f, 1.00f);
 
     // Load enabled addons
     GetLog()->info("Loading enabled addons");
@@ -219,10 +246,12 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
 
 void PreReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
     ImGui_ImplDX9_InvalidateDeviceObjects();
+    gui::UnloadTextures();
 }
 
 void PostReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
     ImGui_ImplDX9_CreateDeviceObjects();
+    gui::LoadTextures(dllModule, pDeviceInterface);
 }
 
 void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
@@ -250,6 +279,8 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         case DLL_PROCESS_ATTACH: {
             GetLog()->info("GW2 Addon Loader attached");
             LaunchDebugger();
+
+            dllModule = hModule;
             
             hooks::PreCreateDeviceHook = &PreCreateDevice;
             hooks::PostCreateDeviceHook = &PostCreateDevice;

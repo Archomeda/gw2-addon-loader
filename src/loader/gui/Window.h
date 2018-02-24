@@ -17,6 +17,9 @@ namespace loader {
 
             virtual void Render() = 0;
 
+            virtual void BeginStyle() { }
+            virtual void EndStyle() { }
+
             virtual void Show();
             virtual void Close();
             virtual bool IsOpen();

@@ -7,3 +7,6 @@
 [submodule "src/dependencies/spdlog"]
 	path = src/dependencies/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "src/dependencies/IconFontCppHeaders"]
+	path = src/dependencies/IconFontCppHeaders
+	url = https://github.com/juliettef/IconFontCppHeaders.git

@@ -33,13 +33,13 @@
     <ClInclude Include="imgui\stb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\examples\directx9_example\imgui_impl_dx9.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="simpleini\SimpleIni.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="spdlog\include\spdlog\spdlog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconFontCppHeaders\IconsMaterialDesign.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\examples\directx9_example\imgui_impl_dx9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
