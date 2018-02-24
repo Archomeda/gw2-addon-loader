@@ -2,10 +2,8 @@
 ***Note:** This is still a proof of concept. Some features may drastically change over time during their development. Be prepared to frequently reconfigure your installation. Also, expect bugs.*  
 ***Note:** It has **not** been approved for usage with Guild Wars 2 yet. Use at your own risk.*
 
-Tired of maintaining your Guild Wars 2 addons in your installation folder?
-Is it annoying to constantly change the file names in order to properly chain your addons?
-No longer!
-This addon is intended as a master addon that will manage all your Guild Wars 2 addons without going through the hassle of fixing file names, load order, etc.
+Guild Wars 2 Addon Loader is an unofficial addon for Guild Wars 2.
+It acts as a master addon that makes it easy to manage your Guild Wars 2 addons without the need to sort the files manually.
 
 **Note:** For now, existing Guild Wars 2 addons have to be adapted in order to make them compatible with *Guild Wars 2 Addon Loader*.
 This means that older addons will not work without a few changes by their developers.
@@ -13,7 +11,6 @@ There are plans to look into supporting these addons, but due to the complex nat
 Improving stability, applying bugfixes and implementing other missing features have a higher priority.
 
 ## Planned features
-- Adding more D3D9 hooks and exposing them to addons
 - Improving GUI
 - Checking for updates or auto updating of *Guild Wars 2 Addon Loader*
 - Checking for updates or auto updating of addons
