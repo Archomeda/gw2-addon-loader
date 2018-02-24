@@ -281,6 +281,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
             LaunchDebugger();
 
             dllModule = hModule;
+            hooks::InitializeHooks();
             
             hooks::PreCreateDeviceHook = &PreCreateDevice;
             hooks::PostCreateDeviceHook = &PostCreateDevice;

@@ -6,6 +6,7 @@ namespace loader {
 
         extern UINT SDKVersion;
 
+        void InitializeHooks();
         void UninitializeHooks();
 
     }

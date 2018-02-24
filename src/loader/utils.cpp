@@ -88,8 +88,4 @@ namespace loader {
         return result.wstring();
     }
 
-    HMODULE LoadSystemD3D9() {
-        return LoadLibrary(GetSystemPath(TEXT("d3d9")).c_str());
-    }
-
 }

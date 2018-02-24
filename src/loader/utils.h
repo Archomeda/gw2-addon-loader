@@ -11,7 +11,6 @@ namespace loader {
     const std::wstring GetSystemPath();
     const std::string GetSystemPath(const std::string& append);
     const std::wstring GetSystemPath(const std::wstring& append);
-    HMODULE LoadSystemD3D9();
 
 }
 
