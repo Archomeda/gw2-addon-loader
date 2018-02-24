@@ -1,6 +1,9 @@
 #pragma once
 #include "Window.h"
+#include <memory>
 #include <string>
+#include <vector>
+#include "../addons/Addon.h"
 
 namespace loader {
     namespace gui {
@@ -18,7 +21,7 @@ namespace loader {
             int selectedAddon = -1;
             int selectedTab = 0;
 
-            bool ImGuiAddonsList(const char* label, int* current_item, const char* const* items, int items_count, const ImVec2& listBoxSize, float listItemHeight);
+            bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<std::shared_ptr<addons::Addon>> addons, const ImVec2& listBoxSize, float listItemHeight);
             void RenderTabAddons();
             void RenderTabInfo();
             void RenderTabSettings();

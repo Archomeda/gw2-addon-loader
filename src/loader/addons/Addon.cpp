@@ -5,7 +5,6 @@
 #include <string>
 #include <gw2addon-native.h>
 #include "addons_manager.h"
-#include "ProxyDirect3D9.h"
 #include "exceptions.h"
 #include "types/DummyAddonImpl.h"
 #include "types/LegacyAddonImpl.h"
@@ -183,6 +182,22 @@ namespace loader {
             return true;
         }
 
+
+        bool Addon::SupportsLoading() {
+            switch (this->GetAddonType()) {
+            case AddonType::NativeAddon:
+                return true;
+            }
+            return false;
+        }
+
+        bool Addon::SupportsSettings() {
+            return false;
+        }
+
+        bool Addon::SupportsHomepage() {
+            return !this->GetHomepage().empty();
+        }
 
         bool Addon::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             if (this->GetTypeImpl()->GetAddonState() != AddonState::LoadedState) {

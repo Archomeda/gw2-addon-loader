@@ -72,10 +72,10 @@ namespace loader {
             ImFontConfig fontConfigLato;
             ImFontConfig fontConfigMaterial;
       
-            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_LATO), L"TTF", 16);
+            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 18);
             FontMain = io.Fonts->AddFont(&fontConfigLato);
 
-            fontConfigMaterial = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_MATERIAL), L"TTF", 16);
+            fontConfigMaterial = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONTICONS), L"TTF", 16);
             fontConfigMaterial.GlyphRanges = FontMaterialIconsRange;
             fontConfigMaterial.GlyphOffset.y = 3;
             fontConfigMaterial.MergeMode = true;
@@ -83,7 +83,7 @@ namespace loader {
             fontConfigMaterial.OversampleH = 1;
             io.Fonts->AddFont(&fontConfigMaterial);
 
-            fontConfigMaterial = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_MATERIAL), L"TTF", 32);
+            fontConfigMaterial = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONTICONS), L"TTF", 32);
             fontConfigMaterial.GlyphRanges = FontMaterialIconsRange;
             fontConfigMaterial.GlyphOffset.y = -1;
             fontConfigMaterial.GlyphExtraSpacing.x = 2;
@@ -91,8 +91,8 @@ namespace loader {
             fontConfigMaterial.OversampleH = 1;
             FontIconButtons = io.Fonts->AddFont(&fontConfigMaterial);
 
-            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_LATO), L"TTF", 16);
-            fontConfigLato.GlyphOffset.y = -8;
+            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 18);
+            fontConfigLato.GlyphOffset.y = -6;
             fontConfigLato.MergeMode = true;
             io.Fonts->AddFont(&fontConfigLato);
         }

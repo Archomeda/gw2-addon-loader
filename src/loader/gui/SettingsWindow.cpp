@@ -15,6 +15,7 @@
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
+using namespace loader::addons;
 
 namespace loader {
     namespace gui {
@@ -95,7 +96,7 @@ namespace loader {
         }
 
 
-        bool SettingsWindow::ImGuiAddonsList(const char* label, int* current_item, const char* const* items, int items_count, const ImVec2& listBoxSize, float listItemHeight) {
+        bool SettingsWindow::ImGuiAddonsList(const char* label, int* current_item, const vector<shared_ptr<Addon>> addons, const ImVec2& listBoxSize, float listItemHeight) {
             if (!ImGui::ListBoxHeader(label, listBoxSize)) {
                 return false;
             }
@@ -103,25 +104,34 @@ namespace loader {
             ImGuiStyle style = ImGui::GetStyle();
             listItemHeight += style.FramePadding.y * 2;
             bool value_changed = false;
-            ImGuiListClipper clipper(items_count, listItemHeight);
+            ImGuiListClipper clipper(addons.size(), listItemHeight);
             while (clipper.Step()) {
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                     const bool item_selected = (i == *current_item);
-                    const char* item_text = items[i];
+                    auto addon = addons.at(i);
+                    string item_text = ws2s(addon->GetID());
 
                     ImGui::PushID(i);
                     if (ImGui::Selectable("##dummy", item_selected, 0, ImVec2(0, listItemHeight))) {
                         *current_item = i;
                         value_changed = true;
                     }
+
                     ImVec2 oldPos = ImGui::GetCursorPos();
                     ImGui::SetCursorPosY(oldPos.y - listItemHeight);
                     //TODO: Draw temporary icon here until we have addon specific icons
                     ImGui::PushFont(FontIconButtons);
-                    ImGui::Text(ICON_MD_EXTENSION);
+                    if (addon->SupportsLoading()) {
+                        ImGui::Text(ICON_MD_EXTENSION);
+                    }
                     ImGui::PopFont();
                     ImGui::SetCursorPos(ImVec2(oldPos.x + 32 + style.ItemSpacing.x, oldPos.y - style.ItemSpacing.y - ((listItemHeight + ImGui::GetTextLineHeightWithSpacing()) / 2)));
-                    ImGui::Text(item_text);
+                    if (addon->SupportsLoading()) {
+                        ImGui::Text(item_text.c_str());
+                    }
+                    else {
+                        ImGui::TextDisabled(item_text.c_str());
+                    }
                     ImGui::SetCursorPos(oldPos);
                     ImGui::PopID();
                 }
@@ -133,28 +143,20 @@ namespace loader {
         void SettingsWindow::RenderTabAddons() {
             ImGuiStyle style = ImGui::GetStyle();
            
-            // Filter the list first
-            vector<shared_ptr<addons::Addon>> addons;
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-                if ((*it)->GetAddonType() != addons::AddonType::UnknownAddon) {
-                    addons.push_back(*it);
-                }
-            }
-
             // Get selected addon info
             int selectedAddon = this->selectedAddon;
-            shared_ptr<addons::Addon> addon = nullptr;
+            shared_ptr<Addon> addon = nullptr;
             wstring filePath;
             wstring fileName;
-            addons::types::AddonState state;
+            types::AddonState state;
             string stateString;
             string type;
             string id;
             string productName;
             string description;
             wstring homepage;
-            if (selectedAddon > -1 && selectedAddon < static_cast<int>(addons.size())) {
-                addon = addons[selectedAddon];
+            if (selectedAddon > -1 && selectedAddon < static_cast<int>(AddonsList.size())) {
+                addon = AddonsList[selectedAddon];
                 filePath = addon->GetFilePath();
                 fileName = addon->GetFileName();
                 state = addon->GetTypeImpl()->GetAddonState();
@@ -173,7 +175,7 @@ namespace loader {
                 {
                     // Listbox with addons
                     vector<string> names;
-                    for (auto& addon : addons) {
+                    for (auto& addon : AddonsList) {
                         names.push_back(ws2s(addon->GetID()));
                     }
                     vector<char*> cnames;
@@ -181,9 +183,9 @@ namespace loader {
                     for (size_t i = 0; i < names.size(); ++i) {
                         cnames.push_back(const_cast<char*>(names[i].c_str()));
                     }
-                    if (addons.size() > 0) {
+                    if (AddonsList.size() > 0) {
                         ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
-                        ImGuiAddonsList("##Addons", &this->selectedAddon, &cnames[0], static_cast<int>(addons.size()), ImVec2(-1, -1), 32);
+                        ImGuiAddonsList("##Addons", &this->selectedAddon, AddonsList, ImVec2(-1, -1), 32);
                         ImGui::PopStyleColor();
                     }
                 }
@@ -227,27 +229,33 @@ namespace loader {
                         ImGui::Separator();
 
                         // Other stuff
-                        if (!id.empty()) {
+                        if (addon->SupportsLoading()) {
                             ImGui::Text("Status:");
                             ImGui::SameLine();
                             ImColor color(120, 120, 120);
                             switch (state) {
-                            case addons::types::AddonState::LoadingState:
+                            case types::AddonState::LoadingState:
                                 color = ImColor(255, 255, 0);
                                 break;
-                            case addons::types::AddonState::ActivatedOnRestartState:
-                            case addons::types::AddonState::DeactivatedOnRestartState:
+                            case types::AddonState::ActivatedOnRestartState:
+                            case types::AddonState::DeactivatedOnRestartState:
                                 color = ImColor(0, 255, 255);
                                 break;
-                            case addons::types::AddonState::LoadedState:
+                            case types::AddonState::LoadedState:
                                 color = ImColor(0, 255, 0);
                                 break;
-                            case addons::types::AddonState::ErroredState:
+                            case types::AddonState::ErroredState:
                                 color = ImColor(255, 0, 0);
                                 break;
                             }
                             ImGui::TextColored(color, stateString.c_str());
                         }
+                        else {
+                            ImGui::PushTextWrapPos();
+                            ImGui::Text("This addon type is not supported by the addon loader: %s.", type.c_str());
+                            ImGui::PopTextWrapPos();
+                        }
+
                         if (!description.empty()) {
                             ImGui::Spacing();
                             ImGui::TextWrapped(description.c_str());
@@ -257,63 +265,77 @@ namespace loader {
 
                     ImGui::BeginChild("##AddonButtons");
                     {
-                        // Activate / deactivate button
-                        if (state == addons::types::AddonState::LoadedState) {
-                            if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Deactivate", ImVec2(100, 0))) {
-                                AppConfig.SetAddonEnabled(fileName, false);
-                                addon->Unload();
-                                if (addon->GetTypeImpl()->GetAddonState() == addons::types::AddonState::DeactivatedOnRestartState) {
-                                    gui::MessageWindow::ShowMessageWindow(
-                                        L"Deactivate add-on##ActivationPopup",
-                                        L"This add-on cannot be deactivated while Guild Wars 2 is running. A restart is required.");
-                                }
-                            }
-                        }
-                        else if (state == addons::types::AddonState::UnloadedState) {
-                            if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Activate", ImVec2(100, 0))) {
-                                if (addon->Load()) {
-                                    AppConfig.SetAddonEnabled(fileName, false);
-                                    auto state = addon->GetTypeImpl()->GetAddonState();
-                                    if (state == addons::types::AddonState::LoadedState) {
-                                        AppConfig.SetAddonEnabled(fileName, true);
-                                    }
-                                    else if (state == addons::types::AddonState::ActivatedOnRestartState) {
-                                        gui::MessageWindow::ShowMessageWindow(
-                                            L"Activate add-on##ActivationPopup",
-                                            L"This add-on cannot be activated while Guild Wars 2 is running. A restart is required.");
-                                    }
-                                }
-                                else {
+                        if (addon->SupportsLoading()) {
+                            // Activate / deactivate button
+                            if (state == types::AddonState::LoadedState) {
+                                if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Deactivate", ImVec2(100, 0))) {
                                     AppConfig.SetAddonEnabled(fileName, false);
                                     addon->Unload();
+                                    if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::DeactivatedOnRestartState) {
+                                        gui::MessageWindow::ShowMessageWindow(
+                                            L"Deactivate add-on##ActivationPopup",
+                                            L"This add-on cannot be deactivated while Guild Wars 2 is running. A restart is required.");
+                                    }
+                                }
+                            }
+                            else if (state == types::AddonState::UnloadedState) {
+                                if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Activate", ImVec2(100, 0))) {
+                                    if (addon->Load()) {
+                                        AppConfig.SetAddonEnabled(fileName, false);
+                                        auto state = addon->GetTypeImpl()->GetAddonState();
+                                        if (state == types::AddonState::LoadedState) {
+                                            AppConfig.SetAddonEnabled(fileName, true);
+                                        }
+                                        else if (state == types::AddonState::ActivatedOnRestartState) {
+                                            gui::MessageWindow::ShowMessageWindow(
+                                                L"Activate add-on##ActivationPopup",
+                                                L"This add-on cannot be activated while Guild Wars 2 is running. A restart is required.");
+                                        }
+                                    }
+                                    else {
+                                        AppConfig.SetAddonEnabled(fileName, false);
+                                        addon->Unload();
+                                    }
                                 }
                             }
                         }
-                        ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 256 - (2 * style.ItemSpacing.x) - 8); // -8 for the resize grip
 
                         // Settings button
-                        if (ImGui::Button(ICON_MD_SETTINGS " Settings", ImVec2(80, 0))) {
+                        if (addon->SupportsSettings()) {
+                            ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 256 - (2 * style.ItemSpacing.x) - 8); // -8 for the resize grip
+                            if (ImGui::Button(ICON_MD_SETTINGS " Settings", ImVec2(80, 0))) {
+
+                            }
                         }
-                        ImGui::SameLine();
 
                         // Info button
+                        ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 176 - style.ItemSpacing.x - 8); // -8 for the resize grip
                         if (ImGui::Button(ICON_MD_INFO " Details", ImVec2(80, 0))) {
                             AddonInfoWnd->SetSelectedAddon(this->selectedAddon);
                             ShowWindow(AddonInfoWnd);
                         }
-                        ImGui::SameLine();
 
                         // Homepage button
-                        if (ImGui::Button(ICON_MD_HOME " Homepage", ImVec2(96, 0))) {
-                            ShellExecute(0, 0, homepage.c_str(), 0, 0, SW_SHOW);
+                        if (addon->SupportsHomepage()) {
+                            ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 96 - 8); // -8 for the resize grip
+                            if (ImGui::Button(ICON_MD_HOME " Homepage", ImVec2(96, 0))) {
+                                ShellExecute(0, 0, homepage.c_str(), 0, 0, SW_SHOW);
+                            }
                         }
                     }
                     ImGui::EndChild();
                 }
                 ImGui::EndGroup();
             }
+            else if (AddonsList.size() > 0) {
+                ImGui::PushTextWrapPos();
+                ImGui::TextUnformatted("No addon selected. Select an addon in the list to the left.");
+                ImGui::PopTextWrapPos();
+            }
             else {
-
+                ImGui::PushTextWrapPos();
+                ImGui::TextUnformatted("No addons available. Install at least one addon and restart Guild Wars 2.");
+                ImGui::PopTextWrapPos();
             }
         }
 
@@ -353,7 +375,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
                 if ((*it)->GetFilePath() == fileName) {
                     index = static_cast<int>(it - addons::AddonsList.rbegin());
                 }
-                else if (index > -1 && (*it)->GetAddonType() != addons::AddonType::UnknownAddon) {
+                else if (index > -1) {
                     AppConfig.SetAddonOrder((*it)->GetFileName(), addons::AddonsList.size() - (index + 1));
                     iter_swap(addons::AddonsList.rbegin() + index, it);
                     AppConfig.SetAddonOrder((*it)->GetFileName(), addons::AddonsList.size() - (index + 2));
@@ -368,7 +390,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
                 if ((*it)->GetFilePath() == fileName) {
                     index = static_cast<int>(it - addons::AddonsList.begin());
                 }
-                else if (index > -1 && (*it)->GetAddonType() != addons::AddonType::UnknownAddon) {
+                else if (index > -1) {
                     AppConfig.SetAddonOrder((*it)->GetFileName(), index);
                     iter_swap(addons::AddonsList.begin() + index, it);
                     AppConfig.SetAddonOrder((*it)->GetFileName(), index + 1);
@@ -380,11 +402,10 @@ The author of this library is not associated with ArenaNet nor with any of its p
         void SettingsWindow::SelectAddon(const wstring& fileName) {
             int index = -1;
             for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-                if ((*it)->GetAddonType() != addons::AddonType::UnknownAddon) {
-                    index++;
-                }
+                index++;
                 if ((*it)->GetFilePath() == fileName) {
                     this->selectedAddon = index;
+                    break;
                 }
             }
         }

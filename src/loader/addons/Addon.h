@@ -55,6 +55,10 @@ namespace loader {
             bool Load();
             bool Unload();
 
+            bool SupportsLoading();
+            bool SupportsSettings();
+            bool SupportsHomepage();
+
             bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
         private:
