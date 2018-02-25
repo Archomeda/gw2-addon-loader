@@ -22,6 +22,27 @@ namespace loader {
         vector<shared_ptr<Addon>> AddonsList;
         AddonHookCounts ActiveAddonHookCounts = { };
 
+        bool sortAddonsFunc(shared_ptr<Addon> a, shared_ptr<Addon> b) {
+            if ((!a->GetTypeImpl() && b->GetTypeImpl()) || (!a->SupportsLoading() && !b->SupportsLoading())) {
+                return b->GetID() > a->GetID();
+            }
+
+            if (!a->GetTypeImpl()) {
+                return false;
+            }
+            if (!b->GetTypeImpl()) {
+                return true;
+            }
+            if (!a->SupportsLoading()) {
+                return false;
+            }
+            if (!b->SupportsLoading()) {
+                return true;
+            }
+
+            return AppConfig.GetAddonOrder(b->GetFileName()) > AppConfig.GetAddonOrder(a->GetFileName());
+        }
+
         void RefreshAddonList() {
             GetLog()->debug("loader::addons::RefreshAddonList()");
 
@@ -48,10 +69,7 @@ namespace loader {
                     AddonsList.push_back(make_shared<Addon>(pathFile.path().wstring()));
                 }
             }
-
-            sort(AddonsList.begin(), AddonsList.end(), [](shared_ptr<Addon> a, shared_ptr<Addon> b) {
-                return AppConfig.GetAddonOrder(b->GetFileName()) > AppConfig.GetAddonOrder(a->GetFileName());
-            });
+            sort(AddonsList.begin(), AddonsList.end(), sortAddonsFunc);
         }
 
 
@@ -62,6 +80,7 @@ namespace loader {
                 (*it)->SetD3D9(d3d9);
                 (*it)->Initialize();
             }
+            sort(AddonsList.begin(), AddonsList.end(), sortAddonsFunc);
         }
 
         void UninitializeAddons() {

@@ -16,6 +16,9 @@ namespace loader {
         void SetSettingsKeybind(const std::wstring& keys);
         void SetSettingsKeybind(const std::set<uint32_t>& keys);
 
+        bool GetShowUnsupportedAddons() const { return this->showUnsupportedAddons; }
+        void SetShowUnsupportedAddons(bool showUnsupportedAddons);
+
         bool GetAddonEnabled(const std::wstring& fileName) const;
         void SetAddonEnabled(const std::wstring& fileName, bool enabled);
         int GetAddonOrder(const std::wstring& fileName) const;
@@ -33,6 +36,7 @@ namespace loader {
         std::string configImGuiPath;
 
         std::set<uint32_t> settingsKeybind;
+        bool showUnsupportedAddons = false;
 
         CSimpleIni ini;
     };

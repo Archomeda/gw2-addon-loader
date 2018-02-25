@@ -74,6 +74,8 @@ namespace loader {
         // Load settings
         this->ini.SetUnicode();
         this->ini.LoadFile(this->configPath.c_str());
+
+        this->showUnsupportedAddons = this->ini.GetBoolValue(L"addons", L"show_unsupported_addons", false);
     }
 
     void Config::SetSettingsKeybind(const wstring& keys) {
@@ -81,8 +83,15 @@ namespace loader {
     }
 
     void Config::SetSettingsKeybind(const set<uint32_t>& keys) {
+        this->settingsKeybind = keys;
         wstring keybind = this->ToKeybindString(keys);
         this->ini.SetValue(L"keybinds", L"settings_window", keybind.c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetShowUnsupportedAddons(bool showUnsupportedAddons) {
+        this->showUnsupportedAddons = showUnsupportedAddons;
+        this->ini.SetBoolValue(L"addons", L"show_unsupported_addons", showUnsupportedAddons);
         this->ini.SaveFile(this->configPath.c_str());
     }
 
@@ -96,7 +105,7 @@ namespace loader {
     }
 
     int Config::GetAddonOrder(const wstring& fileName) const {
-        return this->ini.GetLongValue(fileName.c_str(), L"order", 0);
+        return this->ini.GetLongValue(fileName.c_str(), L"order", -1);
     }
 
     void Config::SetAddonOrder(const wstring& fileName, int order) {

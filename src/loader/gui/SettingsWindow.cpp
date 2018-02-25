@@ -26,6 +26,10 @@ namespace loader {
         }
 
         void SettingsWindow::Render() {
+            if (!this->initializedState) {
+                this->showUnsupportedAddons = AppConfig.GetShowUnsupportedAddons();
+            }
+
             ImGui::BeginChild("##Tabs", ImVec2(48, -1), false, ImGuiWindowFlags_NoScrollbar);
             {
                 int i = 0;
@@ -143,6 +147,16 @@ namespace loader {
         void SettingsWindow::RenderTabAddons() {
             ImGuiStyle style = ImGui::GetStyle();
            
+            vector<shared_ptr<Addon>> addonsList;
+            for (auto addon : AddonsList) {
+                if (AppConfig.GetShowUnsupportedAddons() || addon->SupportsLoading()) {
+                    addonsList.push_back(addon);
+                }
+                else {
+                    break;
+                }
+            }
+
             // Get selected addon info
             int selectedAddon = this->selectedAddon;
             shared_ptr<Addon> addon = nullptr;
@@ -174,34 +188,36 @@ namespace loader {
                 ImGui::BeginChild("##LeftPanel", ImVec2(200, -ImGui::GetFrameHeightWithSpacing()), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
                 {
                     // Listbox with addons
-                    vector<string> names;
-                    for (auto& addon : AddonsList) {
-                        names.push_back(ws2s(addon->GetID()));
-                    }
-                    vector<char*> cnames;
-                    cnames.reserve(names.size());
-                    for (size_t i = 0; i < names.size(); ++i) {
-                        cnames.push_back(const_cast<char*>(names[i].c_str()));
-                    }
-                    if (AddonsList.size() > 0) {
+                    if (addonsList.size() > 0) {
                         ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
-                        ImGuiAddonsList("##Addons", &this->selectedAddon, AddonsList, ImVec2(-1, -1), 32);
+                        ImGuiAddonsList("##Addons", &this->selectedAddon, addonsList, ImVec2(-1, -1), 32);
                         ImGui::PopStyleColor();
                     }
                 }
                 ImGui::EndChild();
 
                 // Button group for sorting addons
-                if (selectedAddon > -1) {
-                    ImVec2 buttonSize((200 - style.ItemSpacing.x) / 2, 0);
+                ImVec2 buttonSize((200 - style.ItemSpacing.x) / 2, 0);
+                if (selectedAddon > 0 && selectedAddon < addonsList.size() && addon->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_UPWARD, buttonSize)) {
                         this->MoveAddonPositionUp(filePath);
                         this->SelectAddon(filePath);
                     }
-                    ImGui::SameLine();
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Move selected addon up");
+                    }
+                }
+                else {
+                    ImGui::Dummy(buttonSize);
+                }
+                ImGui::SameLine();
+                if (selectedAddon > -1 && selectedAddon < addonsList.size() - 1 && addonsList.at(selectedAddon + 1)->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_DOWNWARD, buttonSize)) {
                         this->MoveAddonPositionDown(filePath);
                         this->SelectAddon(filePath);
+                    }
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Move selected addon down");
                     }
                 }
             }
@@ -327,7 +343,7 @@ namespace loader {
                 }
                 ImGui::EndGroup();
             }
-            else if (AddonsList.size() > 0) {
+            else if (addonsList.size() > 0) {
                 ImGui::PushTextWrapPos();
                 ImGui::TextUnformatted("No addon selected. Select an addon in the list to the left.");
                 ImGui::PopTextWrapPos();
@@ -361,7 +377,9 @@ The author of this library is not associated with ArenaNet nor with any of its p
         }
 
         void SettingsWindow::RenderTabSettings() {
-
+            if (ImGui::Checkbox("Show unsupported addons", &this->showUnsupportedAddons)) {
+                AppConfig.SetShowUnsupportedAddons(this->showUnsupportedAddons);
+            }
         }
 
         void SettingsWindow::RenderTabStats() {

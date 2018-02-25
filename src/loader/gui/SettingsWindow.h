@@ -21,6 +21,9 @@ namespace loader {
             int selectedAddon = -1;
             int selectedTab = 0;
 
+            bool initializedState = false;
+            bool showUnsupportedAddons;
+
             bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<std::shared_ptr<addons::Addon>> addons, const ImVec2& listBoxSize, float listItemHeight);
             void RenderTabAddons();
             void RenderTabInfo();
