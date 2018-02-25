@@ -1,6 +1,7 @@
 #pragma once
 #include "Window.h"
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 #include "../addons/Addon.h"
@@ -23,6 +24,8 @@ namespace loader {
 
             bool initializedState = false;
             bool showUnsupportedAddons;
+            bool windowKeybindEditActive = false;
+            std::set<uint_fast8_t> windowKeybind;
 
             bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<std::shared_ptr<addons::Addon>> addons, const ImVec2& listBoxSize, float listItemHeight);
             void RenderTabAddons();

@@ -11,6 +11,7 @@
 #include "gui/SettingsWindow.h"
 #include "Config.h"
 #include "imgui_impl_dx9.h"
+#include "input.h"
 #include "log.h"
 #include "utils.h"
 
@@ -21,97 +22,40 @@ using namespace loader;
 IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 HMODULE dllModule;
-
-// States
 WNDPROC BaseWndProc;
-set<uint32_t> PressedKeys;
-bool prevCaptureMouse = false;
-CURSORINFO prevCursor;
 
 // We need this here because of out-of-scope issues
 string imGuiConfigFile;
 
 #ifdef _DEBUG
 bool imGuiDemoOpen = false;
-set<uint32_t> imGuiDemoKeybind { VK_SHIFT, VK_MENU, VK_F1 };
+set<uint_fast8_t> imGuiDemoKeybind { VK_SHIFT, VK_MENU, VK_F1 };
 #endif
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    struct EventKey {
-        uint32_t vk: 31;
-        bool down: true;
-    };
+    ProcessInputMessage(msg, wParam, lParam);
 
-    list<EventKey> eventKeys;
+    // Pass event to ImGui
+    ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam);
+    const ImGuiIO io = ImGui::GetIO();
 
-    // Generate our EventKey list for the current message
-    {
-        bool eventDown = false;
-        switch (msg) {
-            case WM_SYSKEYDOWN:
-            case WM_KEYDOWN:
-                eventDown = true;
-            case WM_SYSKEYUP:
-            case WM_KEYUP:
-                if (msg == WM_SYSKEYDOWN || msg == WM_SYSKEYUP)
-                {
-                    if (((lParam >> 29) & 1) == 1)
-                        eventKeys.push_back({ VK_MENU, true });
-                    else
-                        eventKeys.push_back({ VK_MENU, false });
-                }
-
-                eventKeys.push_back({ (uint32_t)wParam, eventDown });
-                break;
-
-            case WM_LBUTTONDOWN:
-                eventDown = true;
-            case WM_LBUTTONUP:
-                eventKeys.push_back({ VK_LBUTTON, eventDown });
-                break;
-            case WM_MBUTTONDOWN:
-                eventDown = true;
-            case WM_MBUTTONUP:
-                eventKeys.push_back({ VK_MBUTTON, eventDown });
-                break;
-            case WM_RBUTTONDOWN:
-                eventDown = true;
-            case WM_RBUTTONUP:
-                eventKeys.push_back({ VK_RBUTTON, eventDown });
-                break;
-            case WM_XBUTTONDOWN:
-                eventDown = true;
-            case WM_XBUTTONUP:
-                eventKeys.push_back({ (uint32_t)(GET_XBUTTON_WPARAM(wParam) == XBUTTON1 ? VK_XBUTTON1 : VK_XBUTTON2), eventDown });
-                break;
-        }
-    }
-
-    // Apply key events now
-    for (const auto& k : eventKeys) {
-        if (k.down) { PressedKeys.insert(k.vk); }
-        else { PressedKeys.erase(k.vk); }
-    }
-
-    // Only run these for key down/key up (incl. mouse buttons) events
-    if (!eventKeys.empty()) {
-        if (PressedKeys == AppConfig.GetSettingsKeybind()) {
+    // Only run these for key down/key up (incl. mouse buttons) events and when ImGui doesn't want to capture the keyboard
+    if (!RepeatedPressedKeys() && !io.WantCaptureKeyboard) {
+        auto pressedKeys = GetPressedKeys();
+        auto settingsKeybind = AppConfig.GetSettingsKeybind();
+        if (pressedKeys == settingsKeybind) {
             gui::IsWindowOpen(gui::SettingsWnd) ? gui::CloseWindow(gui::SettingsWnd) : gui::ShowWindow(gui::SettingsWnd);
             return true;
         }
 
 #ifdef _DEBUG
-        if (PressedKeys == imGuiDemoKeybind) {
+        if (pressedKeys == imGuiDemoKeybind) {
             imGuiDemoOpen = !imGuiDemoOpen;
             return true;
         }
 #endif
     }
-
-
-    ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam);
-    const auto& io = ImGui::GetIO();
 
     // Prevent game from receiving input if ImGui requests capture
     switch (msg) {
@@ -128,16 +72,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         case WM_RBUTTONDBLCLK:
         case WM_MBUTTONDBLCLK:
         case WM_XBUTTONDBLCLK:
-            if (io.WantCaptureMouse) { return true; }
+            if (io.WantCaptureMouse) {
+                return true;
+            }
             break;
         case WM_KEYDOWN:
         case WM_KEYUP:
         case WM_SYSKEYDOWN:
         case WM_SYSKEYUP:
-            if (io.WantCaptureKeyboard) { return true; }
+            if (io.WantCaptureKeyboard) {
+                return true;
+            }
             break;
         case WM_CHAR:
-            if (io.WantTextInput) { return true; }
+            if (io.WantTextInput) {
+                return true;
+            }
             break;
     }
 
@@ -156,7 +106,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             return true;
         }
     }
-
 
     return CallWindowProc(BaseWndProc, hWnd, msg, wParam, lParam);
 }

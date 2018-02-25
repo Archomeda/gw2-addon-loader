@@ -85,14 +85,13 @@ namespace loader {
 
             fontConfigMaterial = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONTICONS), L"TTF", 32);
             fontConfigMaterial.GlyphRanges = FontMaterialIconsRange;
-            fontConfigMaterial.GlyphOffset.y = -1;
-            fontConfigMaterial.GlyphExtraSpacing.x = 2;
+            fontConfigMaterial.GlyphOffset = ImVec2(0, -1);
             fontConfigMaterial.PixelSnapH = true;
             fontConfigMaterial.OversampleH = 1;
             FontIconButtons = io.Fonts->AddFont(&fontConfigMaterial);
 
             fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 18);
-            fontConfigLato.GlyphOffset.y = -6;
+            fontConfigLato.GlyphOffset.y = -10;
             fontConfigLato.MergeMode = true;
             io.Fonts->AddFont(&fontConfigLato);
         }

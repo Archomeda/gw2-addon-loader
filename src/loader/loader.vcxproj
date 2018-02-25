@@ -183,6 +183,7 @@
     <ClInclude Include="hooks\LoaderDirect3D9.h" />
     <ClInclude Include="hooks\LoaderDirect3DDevice9.h" />
     <ClInclude Include="imgui_impl_dx9.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="windows.h" />
     <ClInclude Include="Config.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="hooks\LoaderDirect3D9.cpp" />
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp" />
     <ClCompile Include="imgui_impl_dx9.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="gui\AddonInfoWindow.cpp" />
     <ClCompile Include="hooks\vftable.c">

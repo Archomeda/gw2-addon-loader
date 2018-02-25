@@ -14,37 +14,6 @@ namespace loader {
 
     Config AppConfig;
     
-    Config::Config() {
-        this->settingsKeybind.insert(VK_SHIFT);
-        this->settingsKeybind.insert(VK_MENU);
-        this->settingsKeybind.insert(VK_F11);
-    }
-
-    const set<uint32_t> Config::ParseKeybindString(const wstring& keys) const {
-        set<uint32_t> result;
-        if (keys.length() > 0) {
-            wstringstream ss(keys);
-
-            while (ss.good()) {
-                wstring substr;
-                getline(ss, substr, L'+');
-                int val = stoi(substr);
-                result.insert((uint32_t)val);
-            }
-        }
-        return result;
-    }
-
-    const wstring Config::ToKeybindString(const set<uint32_t>& keys) const {
-        wstring result;
-        for (auto it = keys.begin(); it != keys.end(); ++it) {
-            result += to_wstring(*it);
-            if (next(it) != keys.end()) {
-                result += L"+";
-            }
-        }
-        return result;
-    }
 
     void Config::Initialize() {
         GetLog()->debug("loader::Config::Initialize()");
@@ -75,25 +44,25 @@ namespace loader {
         this->ini.SetUnicode();
         this->ini.LoadFile(this->configPath.c_str());
 
+        this->settingsKeybind = this->ParseKeybindString(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122")); // Alt + Shift + F11
         this->showUnsupportedAddons = this->ini.GetBoolValue(L"addons", L"show_unsupported_addons", false);
     }
 
-    void Config::SetSettingsKeybind(const wstring& keys) {
-        this->SetSettingsKeybind(this->ParseKeybindString(keys));
-    }
 
-    void Config::SetSettingsKeybind(const set<uint32_t>& keys) {
+    void Config::SetSettingsKeybind(const set<uint_fast8_t>& keys) {
         this->settingsKeybind = keys;
         wstring keybind = this->ToKeybindString(keys);
-        this->ini.SetValue(L"keybinds", L"settings_window", keybind.c_str());
+        this->ini.SetValue(L"addons", L"window_keybind", keybind.c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
+
 
     void Config::SetShowUnsupportedAddons(bool showUnsupportedAddons) {
         this->showUnsupportedAddons = showUnsupportedAddons;
         this->ini.SetBoolValue(L"addons", L"show_unsupported_addons", showUnsupportedAddons);
         this->ini.SaveFile(this->configPath.c_str());
     }
+
 
     bool Config::GetAddonEnabled(const wstring& fileName) const {
         return this->ini.GetBoolValue(fileName.c_str(), L"enabled", false);
@@ -111,6 +80,35 @@ namespace loader {
     void Config::SetAddonOrder(const wstring& fileName, int order) {
         this->ini.SetLongValue(fileName.c_str(), L"order", order);
         this->ini.SaveFile(this->configPath.c_str());
+    }
+
+
+    const set<uint_fast8_t> Config::ParseKeybindString(const wstring& keys) const {
+        set<uint_fast8_t> result;
+        if (keys.length() > 0) {
+            wstringstream ss(keys);
+
+            while (ss.good()) {
+                wstring substr;
+                getline(ss, substr, L'+');
+                int val = stoi(substr);
+                if (val >= 0 && val <= 0xFF) {
+                    result.insert(static_cast<uint_fast8_t>(val));
+                }
+            }
+        }
+        return result;
+    }
+
+    const wstring Config::ToKeybindString(const set<uint_fast8_t>& keys) const {
+        wstring result;
+        for (auto it = keys.begin(); it != keys.end(); ++it) {
+            result += to_wstring(*it);
+            if (next(it) != keys.end()) {
+                result += L"+";
+            }
+        }
+        return result;
     }
 
 }
