@@ -1,11 +1,10 @@
 #pragma once
+#include "../windows.h"
+#include <d3d9.h>
 #include <chrono>
-#include <functional>
 #include <memory>
-#include <set>
 #include <string>
 #include "types/ITypeImpl.h"
-#include "../d3d9types.h"
 
 namespace loader {
     namespace addons {

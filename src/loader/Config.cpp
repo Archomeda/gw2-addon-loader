@@ -4,7 +4,6 @@
 #include <Shlwapi.h>
 #include <filesystem> 
 #include <sstream>
-#include <vector>
 #include "log.h"
 
 using namespace std;

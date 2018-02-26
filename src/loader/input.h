@@ -1,8 +1,8 @@
 #pragma once
+#include "windows.h"
 #include <set>
 #include <stdint.h>
 #include <string>
-#include "windows.h"
 
 namespace loader {
 

@@ -24,13 +24,7 @@
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="d3d9types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hooks\vftable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hooks\hooks_manager.h">
@@ -52,15 +46,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\MessageWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="addons\ProxyDirect3D9.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="addons\ProxyDirect3DDevice9.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="addons\AddonDirect3D9.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="addons\types\ITypeImpl.h">
@@ -113,9 +98,6 @@
     <ClCompile Include="log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hooks\vftable.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="hooks\hooks_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -132,15 +114,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\MessageWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\ProxyDirect3D9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\ProxyDirect3DDevice9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\AddonDirect3D9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="addons\types\ITypeImpl.cpp">

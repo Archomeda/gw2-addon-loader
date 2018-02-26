@@ -1,9 +1,7 @@
 #pragma once
 #include "Window.h"
-#include <map>
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 #include "../addons/Addon.h"
 

@@ -1,7 +1,6 @@
 #include "gui_manager.h"
-#include <map>
-#include <set>
 #include <d3dx9tex.h>
+#include <map>
 #include <imgui.h>
 #include "Window.h"
 #include "AddonInfoWindow.h"

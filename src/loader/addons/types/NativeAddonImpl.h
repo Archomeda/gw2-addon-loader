@@ -1,10 +1,7 @@
 #pragma once
 #include <functional>
-#include <set>
-#include <string>
 #include <gw2addon-native.h>
 #include "ITypeImpl.h"
-#include "../../d3d9types.h"
 
 namespace loader {
     namespace addons {

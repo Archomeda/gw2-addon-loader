@@ -173,8 +173,6 @@
     <ClInclude Include="addons\addons_manager.h" />
     <ClInclude Include="addons\exceptions.h" />
     <ClInclude Include="addons\types\NativeAddonImpl.h" />
-    <ClInclude Include="addons\ProxyDirect3D9.h" />
-    <ClInclude Include="addons\ProxyDirect3DDevice9.h" />
     <ClInclude Include="addons\types\DummyAddonImpl.h" />
     <ClInclude Include="addons\types\ITypeImpl.h" />
     <ClInclude Include="addons\types\LegacyAddonImpl.h" />
@@ -187,23 +185,18 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="windows.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="d3d9types.h" />
     <ClInclude Include="hooks\hooks_manager.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="gui\AddonInfoWindow.h" />
-    <ClInclude Include="hooks\vftable.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="gui\Window.h" />
-    <ClInclude Include="addons\AddonDirect3D9.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gui\SettingsWindow.cpp" />
     <ClCompile Include="addons\Addon.cpp" />
     <ClCompile Include="addons\addons_manager.cpp" />
     <ClCompile Include="addons\types\NativeAddonImpl.cpp" />
-    <ClCompile Include="addons\ProxyDirect3D9.cpp" />
-    <ClCompile Include="addons\ProxyDirect3DDevice9.cpp" />
     <ClCompile Include="addons\types\DummyAddonImpl.cpp" />
     <ClCompile Include="addons\types\ITypeImpl.cpp" />
     <ClCompile Include="addons\types\LegacyAddonImpl.cpp" />
@@ -217,24 +210,9 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="gui\AddonInfoWindow.cpp" />
-    <ClCompile Include="hooks\vftable.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ForcedIncludeFiles>
-      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ForcedIncludeFiles>
-      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ForcedIncludeFiles>
-      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ForcedIncludeFiles>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="gui\Window.cpp" />
-    <ClCompile Include="addons\AddonDirect3D9.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

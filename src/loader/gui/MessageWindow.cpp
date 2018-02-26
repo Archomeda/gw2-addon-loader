@@ -1,5 +1,4 @@
 #include "MessageWindow.h"
-#include "gui_manager.h"
 #include "../utils.h"
 
 using namespace std;

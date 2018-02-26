@@ -1,7 +1,5 @@
 #pragma once
 #include "Window.h"
-#include <memory>
-#include <string>
 
 namespace loader {
     namespace gui {

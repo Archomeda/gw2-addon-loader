@@ -1,8 +1,5 @@
 #pragma once
-#include <set>
-#include <string>
 #include "ITypeImpl.h"
-#include "../../d3d9types.h"
 
 namespace loader {
     namespace addons {

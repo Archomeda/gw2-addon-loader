@@ -1,6 +1,5 @@
 #include "Addon.h"
 #include <Strsafe.h>
-#include <Winver.h>
 #include <filesystem>
 #include <string>
 #include <gw2addon-native.h>

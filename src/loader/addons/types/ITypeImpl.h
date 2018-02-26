@@ -1,9 +1,8 @@
 #pragma once
-#include <Windows.h>
+#include "../../windows.h"
 #include <d3d9.h>
 #include <chrono>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 

@@ -1,6 +1,7 @@
 #pragma once
-#include <memory>
+#include "../windows.h"
 #include <d3dx9.h>
+#include <memory>
 #include <imgui.h>
 #include <IconsMaterialDesign.h>
 

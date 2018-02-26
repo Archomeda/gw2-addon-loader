@@ -1,6 +1,5 @@
 #include "hooks_manager.h"
 #include "LoaderDirect3D9.h"
-#include "../d3d9types.h"
 #include "../log.h"
 #include "../utils.h"
 
@@ -8,6 +7,23 @@ using namespace std;
 
 namespace loader {
     namespace hooks {
+
+        typedef void* (WINAPI *Direct3DShaderValidatorCreate9_t)(void); // Unsure, no documentation available
+        typedef void(WINAPI *PSGPError_t)(void); // Unsure, no documentation available
+        typedef void(WINAPI *PSGPSampleTexture_t)(void); // Unsure, no documentation available
+        typedef int(WINAPI *D3DPERF_BeginEvent_t)(D3DCOLOR col, LPCWSTR wszName);
+        typedef int(WINAPI *D3DPERF_EndEvent_t)(void);
+        typedef DWORD(WINAPI *D3DPERF_GetStatus_t)(void);
+        typedef BOOL(WINAPI *D3DPERF_QueryRepeatFrame_t)(void);
+        typedef void(WINAPI *D3DPERF_SetMarker_t)(D3DCOLOR col, LPCWSTR wszName);
+        typedef void(WINAPI *D3DPERF_SetOptions_t)(DWORD dwOptions);
+        typedef void(WINAPI *D3DPERF_SetRegion_t)(D3DCOLOR col, LPCWSTR wszName);
+        typedef void(WINAPI *DebugSetLevel_t)(LONG level); // Unsure, no documentation available
+        typedef void(WINAPI *DebugSetMute_t)(void);
+        typedef void(WINAPI *Direct3D9EnableMaximizedWindowedModeShim_t)(void); // Unsure, no documentation available
+        typedef IDirect3D9* (WINAPI *Direct3DCreate9_t)(UINT SDKVersion);
+        typedef IDirect3D9Ex* (WINAPI *Direct3DCreate9Ex_t)(UINT SDKVersion);
+
 
         UINT SDKVersion;
         HMODULE SystemD3D9 = nullptr;

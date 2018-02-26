@@ -1,5 +1,4 @@
 #include "log.h"
-#include "windows.h"
 #include <Shlwapi.h>
 #include <filesystem>
 

@@ -1,6 +1,8 @@
 #pragma once
-#include <set>
 #include <SimpleIni.h>
+#include <set>
+#include <stdint.h>
+#include <string>
 
 namespace loader {
     class Config {
