@@ -71,7 +71,7 @@ namespace loader {
             ImFontConfig fontConfigLato;
             ImFontConfig fontConfigMaterial;
       
-            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 18);
+            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 16);
             FontMain = io.Fonts->AddFont(&fontConfigLato);
 
             fontConfigMaterial = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONTICONS), L"TTF", 16);
@@ -89,8 +89,8 @@ namespace loader {
             fontConfigMaterial.OversampleH = 1;
             FontIconButtons = io.Fonts->AddFont(&fontConfigMaterial);
 
-            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 18);
-            fontConfigLato.GlyphOffset.y = -10;
+            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 16);
+            fontConfigLato.GlyphOffset.y = -8;
             fontConfigLato.MergeMode = true;
             io.Fonts->AddFont(&fontConfigLato);
         }
