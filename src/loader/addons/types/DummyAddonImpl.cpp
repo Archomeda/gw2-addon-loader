@@ -7,7 +7,7 @@ namespace loader {
     namespace addons {
         namespace types {
 
-            DummyAddonImpl::DummyAddonImpl(const wstring& filePath) {
+            DummyAddonImpl::DummyAddonImpl(const wstring& filePath) : ITypeImpl() {
 
             }
 

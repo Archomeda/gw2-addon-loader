@@ -1,9 +1,11 @@
 #pragma once
 #include <Windows.h>
 #include <d3d9.h>
+#include <chrono>
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace loader {
     namespace addons {
@@ -35,6 +37,8 @@ namespace loader {
 
             class ITypeImpl {
             public:
+                ITypeImpl();
+
                 std::weak_ptr<Addon> GetAddon() const { return this->addon; }
                 void SetAddon(std::weak_ptr<Addon> addon) { this->addon = addon; }
 
@@ -89,9 +93,23 @@ namespace loader {
                 virtual void AdvPreDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) { }
                 virtual void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) { }
 
+                virtual const std::vector<float> GetDurationHistoryDrawFrameBeforeGui() { return this->durationHistoryDrawFrameBeforeGui; }
+                virtual const std::vector<float> GetDurationHistoryDrawFrameBeforePostProcessing() { return this->durationHistoryDrawFrameBeforePostProcessing; }
+                virtual const std::vector<float> GetDurationHistoryDrawFrame() { return this->durationHistoryDrawFrame; }
+
             protected:
                 virtual void ChangeSubType(AddonSubType type) { this->subType = type; }
                 virtual void ChangeState(AddonState state) { this->state = state; }
+
+                std::vector<float> durationHistoryDrawFrameBeforeGui;
+                std::vector<float> durationHistoryDrawFrameBeforePostProcessing;
+                std::vector<float> durationHistoryDrawFrame;
+
+                void AddDurationHistory(std::vector<float>* durationHistory, float value);
+
+                std::chrono::steady_clock::time_point timeMeasureStart;
+                void StartTimeMeasure();
+                float EndTimeMeasure();
 
                 HMODULE handle = nullptr;
 

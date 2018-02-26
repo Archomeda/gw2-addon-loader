@@ -1,8 +1,10 @@
 #include "SettingsWindow.h"
 #include "../windows.h"
 #include <shellapi.h>
+#include <chrono>
 #include <filesystem>
 #include <memory>
+#include <sstream>
 #include <vector>
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -11,6 +13,7 @@
 #include "MessageWindow.h"
 #include "../addons/addons_manager.h"
 #include "../addons/Addon.h"
+#include "../hooks/LoaderDirect3DDevice9.h"
 #include "../Config.h"
 #include "../input.h"
 #include "../utils.h"
@@ -414,7 +417,56 @@ The author of this library is not associated with ArenaNet nor with any of its p
         }
 
         void SettingsWindow::RenderTabStats() {
+            shared_ptr<Addon> selectedAddon;
+            stringstream sstream;
+            sstream << "Guild Wars 2" << '\0' << "Addon Loader" << '\0';
+            int i = 2;
+            for (const auto& addon : AddonsList) {
+                if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::LoadedState) {
+                    sstream << ws2s(addon->GetProductName()) << '\0';
+                    if (this->selectedStatsType == i) {
+                        selectedAddon = addon;
+                    }
+                    ++i;
+                }
+            }
 
+            ImGui::PushItemWidth(-1);
+            string types = sstream.str();
+            ImGui::Combo("##RenderType", &this->selectedStatsType, types.c_str());
+
+            if (this->selectedStatsType == 0) {
+                ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryD3D9Processing[0], static_cast<int>(hooks::DurationHistoryD3D9Processing.size()), 0, "Frame render time (ms)", 0, 100, ImVec2(0, 200));
+
+                ImDrawList* draw = ImGui::GetWindowDrawList();
+                ImGuiStyle style = ImGui::GetStyle();
+                ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+                float yFps30 = plotRect.Max.y - (plotRect.GetSize().y / 3.0f);
+                float yFps60 = plotRect.Max.y - (plotRect.GetSize().y / 6.0f);
+                draw->AddLine(ImVec2(plotRect.Min.x, yFps30), ImVec2(plotRect.Max.x, yFps30), IM_COL32(192, 144, 96, 255));
+                draw->AddText(ImVec2(plotRect.Min.x + 2, yFps30 + 1), IM_COL32(192, 144, 96, 255), "30fps");
+                draw->AddLine(ImVec2(plotRect.Min.x, yFps60), ImVec2(plotRect.Max.x, yFps60), IM_COL32(96, 192, 96, 255));
+                draw->AddText(ImVec2(plotRect.Min.x + 2, yFps60 + 1), IM_COL32(96, 192, 96, 255), "60fps");
+            }
+            else if (this->selectedStatsType == 1) {
+                ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryLoaderDrawFrame[0], static_cast<int>(hooks::DurationHistoryLoaderDrawFrame.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
+            }
+            else if (selectedAddon) {
+                if (ImGui::CollapsingHeader("Draw after Guild Wars 2")) {
+                    const auto durationHistory = selectedAddon->GetTypeImpl()->GetDurationHistoryDrawFrame();
+                    ImGui::PlotLines("##RenderingTime", &durationHistory[0], static_cast<int>(durationHistory.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
+                }
+                if (ImGui::CollapsingHeader("Draw before GUI")) {
+                    const auto durationHistory = selectedAddon->GetTypeImpl()->GetDurationHistoryDrawFrameBeforeGui();
+                    ImGui::PlotLines("##RenderingTimeBeforeGui", &durationHistory[0], static_cast<int>(durationHistory.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
+                }
+                if (ImGui::CollapsingHeader("Draw before post processing")) {
+                    const auto durationHistory = selectedAddon->GetTypeImpl()->GetDurationHistoryDrawFrameBeforePostProcessing();
+                    ImGui::PlotLines("##RenderingTimeBeforePostProcessing", &durationHistory[0], static_cast<int>(durationHistory.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
+                }
+            }
+            
+            ImGui::PopItemWidth();
         }
 
 

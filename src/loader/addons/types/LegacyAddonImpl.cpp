@@ -9,7 +9,7 @@ namespace loader {
     namespace addons {
         namespace types {
 
-            LegacyAddonImpl::LegacyAddonImpl(const wstring& filePath) {
+            LegacyAddonImpl::LegacyAddonImpl(const wstring& filePath) : ITypeImpl() {
                 this->filePath = filePath;
                 this->fileName = path(filePath).filename();
             }

@@ -157,7 +157,9 @@ namespace loader {
             try {
                 auto impl = this->GetTypeImpl();
                 if (impl) {
+                    auto start = chrono::steady_clock::now();
                     impl->Load();
+                    this->durationLoad = (chrono::steady_clock::now() - start).count();
                 }
             }
             catch (const exceptions::AddonLoadingException& ex) {

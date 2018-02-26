@@ -13,7 +13,7 @@ namespace loader {
     namespace addons {
         namespace types {
 
-            NativeAddonImpl::NativeAddonImpl(const wstring& filePath) {
+            NativeAddonImpl::NativeAddonImpl(const wstring& filePath) : ITypeImpl() {
                 this->filePath = filePath;
                 this->fileName = path(filePath).filename();
             }
@@ -266,7 +266,9 @@ namespace loader {
                     return;
                 }
                 this->callDrawFunc([this, device]() {
+                    this->StartTimeMeasure();
                     this->GW2_DrawFrameBeforeGui(device);
+                    this->AddDurationHistory(&this->durationHistoryDrawFrameBeforeGui, this->EndTimeMeasure());
                 });
             }
 
@@ -275,7 +277,9 @@ namespace loader {
                     return;
                 }
                 this->callDrawFunc([this, device]() {
+                    this->StartTimeMeasure();
                     this->GW2_DrawFrameBeforePostProcessing(device);
+                    this->AddDurationHistory(&this->durationHistoryDrawFrameBeforePostProcessing, this->EndTimeMeasure());
                 });
             }
 
@@ -284,7 +288,9 @@ namespace loader {
                     return;
                 }
                 this->callDrawFunc([this, device]() {
+                    this->StartTimeMeasure();
                     this->GW2_DrawFrame(device);
+                    this->AddDurationHistory(&this->durationHistoryDrawFrame, this->EndTimeMeasure());
                 });
             }
 

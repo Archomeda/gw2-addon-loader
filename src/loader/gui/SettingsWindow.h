@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.h"
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -18,9 +19,13 @@ namespace loader {
             void BeginStyle() override;
             void EndStyle() override;
 
-        protected:
+        private:
             int selectedAddon = -1;
             int selectedTab = 0;
+            int selectedStatsType = 0;
+            bool statsDrawFrame = true;
+            bool statsDrawFrameBeforeGui = false;
+            bool statsDrawFrameBeforePostProcessing = false;
 
             bool initializedState = false;
             bool showUnsupportedAddons;

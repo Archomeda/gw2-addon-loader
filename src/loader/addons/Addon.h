@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <set>
@@ -75,6 +76,8 @@ namespace loader {
 
             bool metaDataLoaded = false;
             void LoadMetaData();
+
+            std::chrono::steady_clock::rep durationLoad;
 
             UINT sdkVersion;
             IDirect3D9* d3d9;

@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d9.h>
+#include <vector>
 
 namespace loader {
     namespace hooks {
@@ -18,7 +19,9 @@ namespace loader {
         extern PostReset_t PostResetHook;
         extern PrePresent_t PrePresentHook;
 
-                
+        extern std::vector<float> DurationHistoryD3D9Processing;
+        extern std::vector<float> DurationHistoryLoaderDrawFrame;
+
         class LoaderDirect3DDevice9 : public IDirect3DDevice9
         {
         public:

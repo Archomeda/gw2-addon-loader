@@ -204,10 +204,6 @@ void PostReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPrese
 }
 
 void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
-    pDeviceInterface->BeginScene();
-
-    addons::DrawFrame(pDeviceInterface);
-
     // Draw ImGui stuff
     ImGui_ImplDX9_NewFrame();
 
@@ -219,7 +215,6 @@ void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CON
 #endif
 
     ImGui::Render();
-    pDeviceInterface->EndScene();
 }
 
 
