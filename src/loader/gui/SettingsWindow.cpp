@@ -34,6 +34,7 @@ namespace loader {
             if (!this->initializedState) {
                 this->showUnsupportedAddons = AppConfig.GetShowUnsupportedAddons();
                 this->windowKeybind = AppConfig.GetSettingsKeybind();
+                this->showDebugFeatures = AppConfig.GetShowDebugFeatures();
                 this->initializedState = true;
             }
 
@@ -49,13 +50,18 @@ namespace loader {
                     ImGui::SetTooltip("Addons");
                 }
 
-                this->PushTabStyle(++i);
-                if (ImGui::Button(ICON_MD_SHOW_CHART)) {
-                    this->selectedTab = i;
+                if (AppConfig.GetShowDebugFeatures()) {
+                    this->PushTabStyle(++i);
+                    if (ImGui::Button(ICON_MD_SHOW_CHART)) {
+                        this->selectedTab = i;
+                    }
+                    this->PopTabStyle(i);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Statistics");
+                    }
                 }
-                this->PopTabStyle(i);
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Statistics");
+                else {
+                    ++i;
                 }
 
                 this->PushTabStyle(++i);
@@ -413,6 +419,10 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
             else if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("Click to activate the field and press a new keybind. Use Escape to cancel.");
+            }
+
+            if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
+                AppConfig.SetShowDebugFeatures(this->showDebugFeatures);
             }
         }
 

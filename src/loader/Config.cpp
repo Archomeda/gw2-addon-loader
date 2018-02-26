@@ -45,21 +45,7 @@ namespace loader {
 
         this->settingsKeybind = this->ParseKeybindString(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122")); // Alt + Shift + F11
         this->showUnsupportedAddons = this->ini.GetBoolValue(L"addons", L"show_unsupported_addons", false);
-    }
-
-
-    void Config::SetSettingsKeybind(const set<uint_fast8_t>& keys) {
-        this->settingsKeybind = keys;
-        wstring keybind = this->ToKeybindString(keys);
-        this->ini.SetValue(L"addons", L"window_keybind", keybind.c_str());
-        this->ini.SaveFile(this->configPath.c_str());
-    }
-
-
-    void Config::SetShowUnsupportedAddons(bool showUnsupportedAddons) {
-        this->showUnsupportedAddons = showUnsupportedAddons;
-        this->ini.SetBoolValue(L"addons", L"show_unsupported_addons", showUnsupportedAddons);
-        this->ini.SaveFile(this->configPath.c_str());
+        this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_advanced", false);
     }
 
 
@@ -108,6 +94,26 @@ namespace loader {
             }
         }
         return result;
+    }
+
+
+    void Config::SetSettingsKeybind(const set<uint_fast8_t>& keys) {
+        this->settingsKeybind = keys;
+        wstring keybind = this->ToKeybindString(keys);
+        this->ini.SetValue(L"addons", L"window_keybind", keybind.c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetShowUnsupportedAddons(bool showUnsupportedAddons) {
+        this->showUnsupportedAddons = showUnsupportedAddons;
+        this->ini.SetBoolValue(L"addons", L"show_unsupported_addons", showUnsupportedAddons);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetShowDebugFeatures(bool showDebugFeatures) {
+        this->showDebugFeatures = showDebugFeatures;
+        this->ini.SetBoolValue(L"general", L"show_debug_features", showDebugFeatures);
+        this->ini.SaveFile(this->configPath.c_str());
     }
 
 }

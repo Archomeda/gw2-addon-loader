@@ -14,12 +14,6 @@ namespace loader {
         const std::wstring GetConfigPath() const { return this->configPath; }
         const std::string GetImGuiConfigPath() const { return this->configImGuiPath; }
 
-        const std::set<uint_fast8_t> GetSettingsKeybind() const { return this->settingsKeybind; }
-        void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
-
-        bool GetShowUnsupportedAddons() const { return this->showUnsupportedAddons; }
-        void SetShowUnsupportedAddons(bool showUnsupportedAddons);
-
         bool GetAddonEnabled(const std::wstring& fileName) const;
         void SetAddonEnabled(const std::wstring& fileName, bool enabled);
         int GetAddonOrder(const std::wstring& fileName) const;
@@ -27,6 +21,15 @@ namespace loader {
 
         const std::set<uint_fast8_t> ParseKeybindString(const std::wstring& keys) const;
         const std::wstring ToKeybindString(const std::set<uint_fast8_t>& keys) const;
+
+
+        const std::set<uint_fast8_t> GetSettingsKeybind() const { return this->settingsKeybind; }
+        bool GetShowUnsupportedAddons() const { return this->showUnsupportedAddons; }
+        bool GetShowDebugFeatures() const { return this->showDebugFeatures; }
+        
+        void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
+        void SetShowUnsupportedAddons(bool showUnsupportedAddons);
+        void SetShowDebugFeatures(bool showDebugFeatures);
 
     protected:
         const std::wstring configFolder = L"addons/loader/";
@@ -38,6 +41,7 @@ namespace loader {
 
         std::set<uint_fast8_t> settingsKeybind;
         bool showUnsupportedAddons = false;
+        bool showDebugFeatures = false;
 
         CSimpleIni ini;
     };

@@ -1,4 +1,5 @@
 #include "ITypeImpl.h"
+#include "../../Config.h"
 
 using namespace std;
 
@@ -55,20 +56,27 @@ namespace loader {
             }
 
             void ITypeImpl::AddDurationHistory(vector<float>* durationHistory, float value) {
-                if (durationHistory->size() == 4 * 60) {
-                    durationHistory->erase(durationHistory->begin());
+                if (AppConfig.GetShowDebugFeatures()) {
+                    if (durationHistory->size() == 4 * 60) {
+                        durationHistory->erase(durationHistory->begin());
+                    }
+                    durationHistory->push_back(value);
                 }
-                durationHistory->push_back(value);
             }
 
             void ITypeImpl::StartTimeMeasure() {
-                this->timeMeasureStart = chrono::steady_clock::now();
+                if (AppConfig.GetShowDebugFeatures()) {
+                    this->timeMeasureStart = chrono::steady_clock::now();
+                }
             }
 
             float ITypeImpl::EndTimeMeasure() {
-                auto time = (chrono::steady_clock::now() - this->timeMeasureStart).count();
-                this->timeMeasureStart = {};
-                return (time / 10000) / 100.0f;
+                if (AppConfig.GetShowDebugFeatures()) {
+                    auto time = (chrono::steady_clock::now() - this->timeMeasureStart).count();
+                    this->timeMeasureStart = {};
+                    return (time / 10000) / 100.0f;
+                }
+                return 0;
             }
 
         }

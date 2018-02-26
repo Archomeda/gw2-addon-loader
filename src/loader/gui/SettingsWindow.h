@@ -29,6 +29,7 @@ namespace loader {
             bool showUnsupportedAddons;
             bool windowKeybindEditActive = false;
             std::set<uint_fast8_t> windowKeybind;
+            bool showDebugFeatures;
 
             bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<std::shared_ptr<addons::Addon>> addons, const ImVec2& listBoxSize, float listItemHeight);
             void RenderTabAddons();

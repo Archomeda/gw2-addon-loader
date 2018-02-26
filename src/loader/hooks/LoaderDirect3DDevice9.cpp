@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include "../Config.h"
 #include "../log.h"
 #include "../addons/addons_manager.h"
 
@@ -132,28 +133,36 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::Present(CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
-            if (DurationHistoryD3D9Processing.size() < 4 * 60) {
-                DurationHistoryD3D9Processing.resize(4 * 60);
-                DurationHistoryD3D9Processing.reserve(8 * 60);
+            bool trackStats = AppConfig.GetShowDebugFeatures();
+            if (trackStats) {
+                if (DurationHistoryD3D9Processing.size() < 4 * 60) {
+                    DurationHistoryD3D9Processing.resize(4 * 60);
+                    DurationHistoryD3D9Processing.reserve(8 * 60);
+                }
+                if (DurationHistoryD3D9Processing.size() == 4 * 60) {
+                    DurationHistoryD3D9Processing.erase(DurationHistoryD3D9Processing.begin());
+                }
+                DurationHistoryD3D9Processing.push_back(((chrono::steady_clock::now() - d3d9ProcessingStart).count() / 100000) / 10.0f);
             }
-            if (DurationHistoryD3D9Processing.size() == 4 * 60) {
-                DurationHistoryD3D9Processing.erase(DurationHistoryD3D9Processing.begin());
-            }
-            DurationHistoryD3D9Processing.push_back(((chrono::steady_clock::now() - d3d9ProcessingStart).count() / 100000) / 10.0f);
 
             this->dev->BeginScene();
             addons::DrawFrame(this->dev);
-
-            auto presentStart = chrono::steady_clock::now();
-            PrePresentHook(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-            if (DurationHistoryLoaderDrawFrame.size() < 4 * 60) {
-                DurationHistoryLoaderDrawFrame.resize(4 * 60);
-                DurationHistoryLoaderDrawFrame.reserve(8 * 60);
+           
+            if (trackStats) {
+                auto presentStart = chrono::steady_clock::now();
+                PrePresentHook(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                if (DurationHistoryLoaderDrawFrame.size() < 4 * 60) {
+                    DurationHistoryLoaderDrawFrame.resize(4 * 60);
+                    DurationHistoryLoaderDrawFrame.reserve(8 * 60);
+                }
+                if (DurationHistoryLoaderDrawFrame.size() == 4 * 60) {
+                    DurationHistoryLoaderDrawFrame.erase(DurationHistoryLoaderDrawFrame.begin());
+                }
+                DurationHistoryLoaderDrawFrame.push_back(((chrono::steady_clock::now() - presentStart).count() / 10000) / 100.0f);
             }
-            if (DurationHistoryLoaderDrawFrame.size() == 4 * 60) {
-                DurationHistoryLoaderDrawFrame.erase(DurationHistoryLoaderDrawFrame.begin());
+            else {
+                PrePresentHook(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
             }
-            DurationHistoryLoaderDrawFrame.push_back(((chrono::steady_clock::now() - presentStart).count() / 10000) / 100.0f);
             
             this->dev->EndScene();
 
@@ -177,7 +186,9 @@ namespace loader {
 
         HRESULT LoaderDirect3DDevice9::GetBackBuffer(UINT iSwapChain, UINT iBackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9** ppBackBuffer) {
             // This is the very first call Guild Wars 2 does upon a new frame
-            d3d9ProcessingStart = chrono::steady_clock::now();
+            if (AppConfig.GetShowDebugFeatures()) {
+                d3d9ProcessingStart = chrono::steady_clock::now();
+            }
             return this->dev->GetBackBuffer(iSwapChain, iBackBuffer, Type, ppBackBuffer);
         }
 
