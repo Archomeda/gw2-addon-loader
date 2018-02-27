@@ -6,14 +6,14 @@ namespace loader {
 
         class MessageWindow : public Window {
         public:
-            MessageWindow(const std::wstring& title, const std::wstring& message);
+            MessageWindow(const std::string& title, const std::string& message);
 
             void Render() override;
 
-            static std::shared_ptr<MessageWindow> ShowMessageWindow(const std::wstring& title, const std::wstring& message);
+            static std::shared_ptr<MessageWindow> ShowMessageWindow(const std::string& title, const std::string& message);
 
         protected:
-            const std::wstring Message;
+            const std::string Message;
 
         };
 

@@ -6,7 +6,6 @@
 #include "AddonInfoWindow.h"
 #include "SettingsWindow.h"
 #include "../resource.h"
-#include "../utils.h"
 
 using namespace std;
 
@@ -123,12 +122,12 @@ namespace loader {
                 wnd->BeginStyle();
                 switch (wnd->GetType()) {
                 case WindowType::GenericWindow:
-                    ImGui::Begin(ws2s(wnd->GetTitle()).c_str(), &it->second, wnd->GetFlags());
+                    ImGui::Begin(wnd->GetTitle().c_str(), &it->second, wnd->GetFlags());
                     wnd->Render();
                     ImGui::End();
                     break;
                 case WindowType::ModalWindow: {
-                    string title = ws2s(wnd->GetTitle());
+                    string title = wnd->GetTitle();
                     if (!ImGui::IsPopupOpen(title.c_str())) {
                         ImGui::OpenPopup(title.c_str());
                     }

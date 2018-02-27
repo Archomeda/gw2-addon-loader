@@ -7,10 +7,10 @@ namespace loader {
 
             class DummyAddonImpl : public ITypeImpl {
             public:
-                DummyAddonImpl(const std::wstring& filePath);
+                DummyAddonImpl(const std::string& filePath);
 
-                virtual const std::wstring GetID() const override { return this->fileName; }
-                virtual const std::wstring GetName() const override { return this->fileName; }
+                virtual const std::string GetID() const override { return this->fileName; }
+                virtual const std::string GetName() const override { return this->fileName; }
                 
                 virtual bool SupportsHotLoading() const override { return false; };
                 virtual void Initialize() override;
@@ -19,7 +19,7 @@ namespace loader {
                 virtual void Unload() override;
 
             private:
-                std::wstring fileName;
+                std::string fileName;
 
             };
 

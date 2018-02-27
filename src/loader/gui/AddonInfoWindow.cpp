@@ -3,7 +3,6 @@
 #include <imgui.h>
 #include "../addons/addons_manager.h"
 #include "../addons/Addon.h"
-#include "../utils.h"
 
 using namespace std;
 
@@ -11,7 +10,7 @@ namespace loader {
     namespace gui {
 
         AddonInfoWindow::AddonInfoWindow() {
-            this->SetTitle(L"Addon Info");
+            this->SetTitle("Addon Info");
             this->SetFlags(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
         }
 
@@ -26,12 +25,12 @@ namespace loader {
             string type;
             if (selectedAddon > -1 && selectedAddon < static_cast<int>(addons::AddonsList.size())) {
                 addon = addons::AddonsList[selectedAddon];
-                addonName = ws2s(addon->GetName());
-                addonName = !addonName.empty() ? addonName : ws2s(addon->GetID());
-                version = ws2s(addon->GetVersion());
-                author = ws2s(addon->GetAuthor());
-                fileName = ws2s(addon->GetFileName());
-                type = ws2s(addon->GetAddonTypeString());
+                addonName = addon->GetName();
+                addonName = !addonName.empty() ? addonName : addon->GetID();
+                version = addon->GetVersion();
+                author = addon->GetAuthor();
+                fileName = addon->GetFileName();
+                type = addon->GetAddonTypeString();
             }
 
             // Header

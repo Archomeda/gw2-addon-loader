@@ -9,14 +9,15 @@
 #include "hooks/LoaderDirect3DDevice9.h"
 #include "gui/gui_manager.h"
 #include "gui/SettingsWindow.h"
+#include "utils/debug.h"
 #include "Config.h"
 #include "imgui_impl_dx9.h"
 #include "input.h"
 #include "log.h"
-#include "utils.h"
 
 using namespace std;
 using namespace loader;
+using namespace loader::utils;
 
 
 IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

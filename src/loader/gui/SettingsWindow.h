@@ -37,9 +37,9 @@ namespace loader {
             void RenderTabSettings();
             void RenderTabStats();
 
-            void MoveAddonPositionUp(const std::wstring& fileName);
-            void MoveAddonPositionDown(const std::wstring& fileName);
-            void SelectAddon(const std::wstring& fileName);
+            void MoveAddonPositionUp(const std::string& fileName);
+            void MoveAddonPositionDown(const std::string& fileName);
+            void SelectAddon(const std::string& fileName);
 
             void PushTabStyle(int tabIndex);
             void PopTabStyle(int tabIndex);

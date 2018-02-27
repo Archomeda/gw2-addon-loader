@@ -11,16 +11,16 @@ namespace loader {
 
         void Initialize();
 
-        const std::wstring GetConfigPath() const { return this->configPath; }
+        const std::string GetConfigPath() const { return this->configPath; }
         const std::string GetImGuiConfigPath() const { return this->configImGuiPath; }
 
-        bool GetAddonEnabled(const std::wstring& fileName) const;
-        void SetAddonEnabled(const std::wstring& fileName, bool enabled);
-        int GetAddonOrder(const std::wstring& fileName) const;
-        void SetAddonOrder(const std::wstring& fileName, int order);
+        bool GetAddonEnabled(const std::string& fileName) const;
+        void SetAddonEnabled(const std::string& fileName, bool enabled);
+        int GetAddonOrder(const std::string& fileName) const;
+        void SetAddonOrder(const std::string& fileName, int order);
 
-        const std::set<uint_fast8_t> ParseKeybindString(const std::wstring& keys) const;
-        const std::wstring ToKeybindString(const std::set<uint_fast8_t>& keys) const;
+        const std::set<uint_fast8_t> ParseKeybindString(const std::string& keys) const;
+        const std::string ToKeybindString(const std::set<uint_fast8_t>& keys) const;
 
 
         const std::set<uint_fast8_t> GetSettingsKeybind() const { return this->settingsKeybind; }
@@ -32,11 +32,11 @@ namespace loader {
         void SetShowDebugFeatures(bool showDebugFeatures);
 
     protected:
-        const std::wstring configFolder = L"addons/loader/";
-        const std::wstring configName = L"loader.ini";
-        const std::wstring configImGuiName = L"loader_imgui.ini";
+        const std::string configFolder = "addons/loader/";
+        const std::string configName = "loader.ini";
+        const std::string configImGuiName = "loader_imgui.ini";
 
-        std::wstring configPath;
+        std::string configPath;
         std::string configImGuiPath;
 
         std::set<uint_fast8_t> settingsKeybind;

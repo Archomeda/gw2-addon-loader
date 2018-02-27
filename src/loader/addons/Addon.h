@@ -18,21 +18,21 @@ namespace loader {
 
         class Addon : public std::enable_shared_from_this<Addon> {
         public:
-            Addon(const std::wstring& filePath);
+            Addon(const std::string& filePath);
 
             bool IsEnabledByConfig();
 
-            const std::wstring GetFilePath() const { return this->filePath; }
-            const std::wstring GetFileName() const { return this->fileName; }
-            const std::wstring GetID();
-            const std::wstring GetName();
-            const std::wstring GetAuthor();
-            const std::wstring GetDescription();
-            const std::wstring GetVersion();
-            const std::wstring GetHomepage();
+            const std::string GetFilePath() const { return this->filePath; }
+            const std::string GetFileName() const { return this->fileName; }
+            const std::string GetID();
+            const std::string GetName();
+            const std::string GetAuthor();
+            const std::string GetDescription();
+            const std::string GetVersion();
+            const std::string GetHomepage();
 
             const AddonType GetAddonType();
-            const std::wstring GetAddonTypeString();
+            const std::string GetAddonTypeString();
 
             bool IsLoaded() const;
 
@@ -62,14 +62,14 @@ namespace loader {
             bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
         private:
-            std::wstring filePath;
-            std::wstring fileName;
-            std::wstring id;
-            std::wstring productName;
-            std::wstring author;
-            std::wstring description;
-            std::wstring version;
-            std::wstring homepage;
+            std::string filePath;
+            std::string fileName;
+            std::string id;
+            std::string productName;
+            std::string author;
+            std::string description;
+            std::string version;
+            std::string homepage;
             AddonType addonType = UnknownAddon;
             std::shared_ptr<types::ITypeImpl> typeImpl;
 

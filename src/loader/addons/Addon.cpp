@@ -7,20 +7,21 @@
 #include "exceptions.h"
 #include "types/DummyAddonImpl.h"
 #include "types/NativeAddonImpl.h"
-#include "../log.h"
-#include "../utils.h"
 #include "../Config.h"
+#include "../log.h"
+#include "../utils/encoding.h"
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
 using namespace loader::addons::types;
+using namespace loader::utils;
 
 namespace loader {
     namespace addons {
 
-        Addon::Addon(const std::wstring& fullFileName) {
+        Addon::Addon(const std::string& fullFileName) {
             this->filePath = fullFileName;
-            this->fileName = path(fullFileName).filename();
+            this->fileName = u8path(fullFileName).filename().u8string();
         }
 
 
@@ -29,27 +30,27 @@ namespace loader {
         }
 
 
-        const wstring Addon::GetID() {
+        const string Addon::GetID() {
             return this->GetTypeImpl()->GetID();
         }
 
-        const wstring Addon::GetName() {
+        const string Addon::GetName() {
             return this->GetTypeImpl()->GetName();
         }
 
-        const wstring Addon::GetAuthor() {
+        const string Addon::GetAuthor() {
             return this->GetTypeImpl()->GetAuthor();
         }
 
-        const wstring Addon::GetDescription() {
+        const string Addon::GetDescription() {
             return this->GetTypeImpl()->GetDescription();
         }
 
-        const wstring Addon::GetVersion() {
+        const string Addon::GetVersion() {
             return this->GetTypeImpl()->GetVersion();
         }
 
-        const wstring Addon::GetHomepage() {
+        const string Addon::GetHomepage() {
             return this->GetTypeImpl()->GetHomepage();
         }
 
@@ -58,18 +59,18 @@ namespace loader {
             return this->addonType;
         }
 
-        const wstring Addon::GetAddonTypeString() {
+        const string Addon::GetAddonTypeString() {
             auto impl = this->GetTypeImpl();
-            wstring subType = impl ? impl->GetAddonSubTypeString() : L"";
+            string subType = impl ? impl->GetAddonSubTypeString() : "";
             switch (this->addonType) {
             case AddonType::NativeAddon:
-                return L"Native" + subType;
+                return "Native" + subType;
             case AddonType::LegacyAddon:
-                return L"Legacy" + subType;
+                return "Legacy" + subType;
             case AddonType::ChainAddon:
-                return L"Chain" + subType;
+                return "Chain" + subType;
             default:
-                return L"Unknown";
+                return "Unknown";
             }
         }
 
@@ -106,7 +107,7 @@ namespace loader {
                 this->GetTypeImpl()->Initialize();
             }
             catch (const exceptions::AddonInitializationException& ex) {
-                GetLog()->error("Failed to initialize addon {0}: {1}", ws2s(this->GetFileName()), ex.what());
+                GetLog()->error("Failed to initialize addon {0}: {1}", this->GetFileName(), ex.what());
                 return false;
             }
 
@@ -114,32 +115,32 @@ namespace loader {
         }
 
         bool Addon::Uninitialize() {
-            GetLog()->debug("loader::addons::Addon({0})::Uninitialize()", ws2s(this->GetFileName()));
+            GetLog()->debug("loader::addons::Addon({0})::Uninitialize()", this->GetFileName());
             this->GetTypeImpl()->Uninitialize();
             return true;
         }
 
         bool Addon::Load() {
-            GetLog()->debug("loader::addons::Addon({0})::Load()", ws2s(this->GetFileName()));
+            GetLog()->debug("loader::addons::Addon({0})::Load()", this->GetFileName());
             try {
                 auto start = chrono::steady_clock::now();
                 this->GetTypeImpl()->Load();
                 this->durationLoad = (chrono::steady_clock::now() - start).count();
             }
             catch (const exceptions::AddonLoadingException& ex) {
-                GetLog()->error("Failed to load addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
+                GetLog()->error("Failed to load addon: {0}: {1}", this->GetFileName(), ex.what());
                 return false;
             }
             return true;
         }
 
         bool Addon::Unload() {
-            GetLog()->debug("loader::addons::Addon({0})::Unload()", ws2s(this->GetFileName()));
+            GetLog()->debug("loader::addons::Addon({0})::Unload()", this->GetFileName());
             try {
                 this->GetTypeImpl()->Unload();
             }
             catch (const exceptions::AddonUnloadingException& ex) {
-                GetLog()->error("Failed to unload addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
+                GetLog()->error("Failed to unload addon: {0}: {1}", this->GetFileName(), ex.what());
                 return false;
             }
             return true;
@@ -171,7 +172,7 @@ namespace loader {
                 return this->GetTypeImpl()->HandleWndProc(hWnd, msg, wParam, lParam);
             }
             catch (const exceptions::AddonWndProcException& ex) {
-                GetLog()->error("Failed to handle WndProc in addon: {0}: {1}", ws2s(this->GetFileName()), ex.what());
+                GetLog()->error("Failed to handle WndProc in addon: {0}: {1}", this->GetFileName(), ex.what());
                 GetLog()->error("Addon will be disabled on next restart");
                 AppConfig.SetAddonEnabled(this->GetFileName(), false);
             }
@@ -180,7 +181,8 @@ namespace loader {
 
 
         void Addon::LoadAddonType() {
-            HMODULE hAddon = LoadLibraryEx(this->filePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
+            wstring wFilePath = u16(this->filePath);
+            HMODULE hAddon = LoadLibraryEx(wFilePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
             
             // First check if the addon is native
             if (GetProcAddress(hAddon, GW2ADDON_DLL_Initialize) != nullptr) {

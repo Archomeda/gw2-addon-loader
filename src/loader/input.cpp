@@ -12,17 +12,17 @@ namespace loader {
     set<uint_fast8_t> pressedKeys;
     bool repeatedPressedKeys = false;
 
-    const wchar_t vkStrings[256][16] = {
-        L"M1", L"M2", L"", L"M3", L"M4", L"M5", L"", L"", L"Backspace", L"Tab", L"", L"", L"Clear", L"Enter", L"", L"",
-        L"Shift", L"Ctrl", L"Alt", L"Pause", L"Caps Lock", L"", L"", L"", L"", L"", L"", L"Escape", L"", L"", L"", L"",
-        L"Space", L"Page Up", L"Page Down", L"End", L"Home", L"Left", L"Up", L"Right", L"Down", L"Select", L"", L"", L"Print Screen", L"Insert", L"Delete", L"Help",
-        L"0", L"1", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9", L"", L"", L"", L"", L"", L"",
-        L"", L"A", L"B", L"C", L"D", L"E", L"F", L"G", L"H", L"I", L"J", L"K", L"L", L"M", L"N", L"O",
-        L"P", L"Q", L"R", L"S", L"T", L"U", L"V", L"W", L"X", L"Y", L"Z", L"Left Win", L"Right Win", L"", L"", L"Sleep",
-        L"NUM 0", L"NUM 1", L"NUM 2", L"NUM 3", L"NUM 4", L"NUM 5", L"NUM 6", L"NUM 7", L"NUM 8", L"NUM 9", L"NUM *", L"NUM +", L"", L"NUM -", L"NUM .", L"NUM /",
-        L"F1", L"F2", L"F3", L"F4", L"F5", L"F6", L"F7", L"F8", L"F9", L"F10", L"F11", L"F12", L"F13", L"F14", L"F15", L"F16",
-        L"F17", L"F18", L"F19", L"F20", L"F21", L"F22", L"F23", L"F24", L"", L"", L"", L"", L"", L"", L"", L"",
-        L"Num Lock", L"Scroll Lock"
+    const char vkStrings[256][16] = {
+        "M1", "M2", "", "M3", "M4", "M5", "", "", "Backspace", "Tab", "", "", "Clear", "Enter", "", "",
+        "Shift", "Ctr", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
+        "Space", "Page Up", "Page Down", "End", "Home", "Left", "Up", "Right", "Down", "Select", "", "", "Print Screen", "Insert", "Delete", "Help",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "",
+        "", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "", "M", "N", "O",
+        "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Left Win", "Right Win", "", "", "Sleep",
+        "NUM 0", "NUM 1", "NUM 2", "NUM 3", "NUM 4", "NUM 5", "NUM 6", "NUM 7", "NUM 8", "NUM 9", "NUM *", "NUM +", "", "NUM -", "NUM .", "NUM /",
+        "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16",
+        "F17", "F18", "F19", "F20", "F21", "F22", "F23", "F24", "", "", "", "", "", "", "", "",
+        "Num Lock", "Scroll Lock"
     };
 
     void ProcessInputMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -142,19 +142,19 @@ namespace loader {
         return false;
     }
 
-    wstring GetReadableKeyString(const set<uint_fast8_t>& keys) {
+    string GetReadableKeyString(const set<uint_fast8_t>& keys) {
         set<uint_fast8_t> remaining(keys);
-        wstringstream ws;
+        stringstream ss;
         if (remaining.find(VK_CONTROL) != remaining.end()) {
-            ws << L"Ctrl + ";
+            ss << "Ctrl + ";
             remaining.erase(VK_CONTROL);
         }
         if (remaining.find(VK_MENU) != remaining.end()) {
-            ws << L"Alt + ";
+            ss << "Alt + ";
             remaining.erase(VK_MENU);
         }
         if (remaining.find(VK_SHIFT) != remaining.end()) {
-            ws << L"Shift + ";
+            ss << "Shift + ";
             remaining.erase(VK_SHIFT);
         }
         bool doneFirst = false;
@@ -162,7 +162,7 @@ namespace loader {
             auto str = vkStrings[k];
             if (!str[0]) {
                 if (doneFirst) {
-                    ws << L" + ";
+                    ss << L" + ";
                 }
 
                 // Empty key, try getting the actual translation from Windows
@@ -170,18 +170,18 @@ namespace loader {
                 if (code) {
                     wchar_t chr[8];
                     GetKeyNameText(code << 16, chr, 8);
-                    ws << chr;
+                    ss << chr;
                 }
             } else {
                 if (doneFirst) {
-                    ws << L" + ";
+                    ss << L" + ";
                 }
-                ws << str;
+                ss << str;
             }
             doneFirst = true;
         }
 
-        return ws.str();
+        return ss.str();
     }
 
 }

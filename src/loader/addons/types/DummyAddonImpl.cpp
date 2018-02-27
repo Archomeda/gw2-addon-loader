@@ -9,8 +9,8 @@ namespace loader {
     namespace addons {
         namespace types {
 
-            DummyAddonImpl::DummyAddonImpl(const wstring& filePath) : ITypeImpl() {
-                this->fileName = path(filePath).filename();
+            DummyAddonImpl::DummyAddonImpl(const string& filePath) : ITypeImpl() {
+                this->fileName = u8path(filePath).filename().u8string();
             }
 
             void DummyAddonImpl::Initialize() {

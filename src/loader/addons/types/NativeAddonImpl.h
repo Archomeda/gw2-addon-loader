@@ -9,14 +9,14 @@ namespace loader {
 
             class NativeAddonImpl : public ITypeImpl {
             public:
-                NativeAddonImpl(const std::wstring& filePath);
+                NativeAddonImpl(const std::string& filePath);
 
-                virtual const std::wstring GetID() const override { return this->id; }
-                virtual const std::wstring GetName() const override { return this->name; }
-                virtual const std::wstring GetAuthor() const override { return this->author; }
-                virtual const std::wstring GetDescription() const override { return this->description; }
-                virtual const std::wstring GetVersion() const override { return this->version; }
-                virtual const std::wstring GetHomepage() const override { return this->homepage; }
+                virtual const std::string GetID() const override { return this->id; }
+                virtual const std::string GetName() const override { return this->name; }
+                virtual const std::string GetAuthor() const override { return this->author; }
+                virtual const std::string GetDescription() const override { return this->description; }
+                virtual const std::string GetVersion() const override { return this->version; }
+                virtual const std::string GetHomepage() const override { return this->homepage; }
                 
                 virtual bool SupportsHotLoading() const override { return true; };
                 virtual void Initialize() override;
@@ -62,14 +62,14 @@ namespace loader {
                 virtual void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) override;
 
             private:
-                std::wstring filePath;
-                std::wstring fileName;
-                std::wstring id;
-                std::wstring name;
-                std::wstring author;
-                std::wstring description;
-                std::wstring version;
-                std::wstring homepage;
+                std::string filePath;
+                std::string fileName;
+                std::string id;
+                std::string name;
+                std::string author;
+                std::string description;
+                std::string version;
+                std::string homepage;
 
                 GW2AddonInitialize_t AddonInitialize = nullptr;
                 GW2AddonRelease_t AddonRelease = nullptr;

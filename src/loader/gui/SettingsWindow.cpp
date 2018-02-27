@@ -16,17 +16,18 @@
 #include "../hooks/LoaderDirect3DDevice9.h"
 #include "../Config.h"
 #include "../input.h"
-#include "../utils.h"
+#include "../utils/encoding.h"
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
 using namespace loader::addons;
+using namespace loader::utils;
 
 namespace loader {
     namespace gui {
 
         SettingsWindow::SettingsWindow() {
-            this->SetTitle(L"Addon Loader");
+            this->SetTitle("Addon Loader");
             this->SetFlags(ImGuiWindowFlags_NoCollapse);
         }
 
@@ -126,7 +127,7 @@ namespace loader {
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                     const bool item_selected = (i == *current_item);
                     auto addon = addons.at(i);
-                    string item_text = ws2s(addon->GetID());
+                    string item_text = addon->GetID();
 
                     ImGui::PushID(i);
                     if (ImGui::Selectable("##dummy", item_selected, 0, ImVec2(0, listItemHeight))) {
@@ -173,25 +174,25 @@ namespace loader {
             // Get selected addon info
             int selectedAddon = this->selectedAddon;
             shared_ptr<Addon> addon = nullptr;
-            wstring filePath;
-            wstring fileName;
+            string filePath;
+            string fileName;
             types::AddonState state;
             string stateString;
             string type;
             string id;
             string productName;
             string description;
-            wstring homepage;
+            string homepage;
             if (selectedAddon > -1 && selectedAddon < static_cast<int>(AddonsList.size())) {
                 addon = AddonsList[selectedAddon];
                 filePath = addon->GetFilePath();
                 fileName = addon->GetFileName();
                 state = addon->GetTypeImpl()->GetAddonState();
-                stateString = ws2s(addon->GetTypeImpl()->GetAddonStateString());
-                type = ws2s(addon->GetAddonTypeString());
-                id = ws2s(addon->GetID());
-                productName = ws2s(addon->GetName());
-                description = ws2s(addon->GetDescription());
+                stateString = addon->GetTypeImpl()->GetAddonStateString();
+                type = addon->GetAddonTypeString();
+                id = addon->GetID();
+                productName = addon->GetName();
+                description = addon->GetDescription();
                 homepage = addon->GetHomepage();
             }
 
@@ -302,8 +303,8 @@ namespace loader {
                                     addon->Unload();
                                     if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::DeactivatedOnRestartState) {
                                         gui::MessageWindow::ShowMessageWindow(
-                                            L"Deactivate add-on##ActivationPopup",
-                                            L"This add-on cannot be deactivated while Guild Wars 2 is running. A restart is required.");
+                                            "Deactivate add-on##ActivationPopup",
+                                            "This add-on cannot be deactivated while Guild Wars 2 is running. A restart is required.");
                                     }
                                 }
                             }
@@ -317,8 +318,8 @@ namespace loader {
                                         }
                                         else if (state == types::AddonState::ActivatedOnRestartState) {
                                             gui::MessageWindow::ShowMessageWindow(
-                                                L"Activate add-on##ActivationPopup",
-                                                L"This add-on cannot be activated while Guild Wars 2 is running. A restart is required.");
+                                                "Activate add-on##ActivationPopup",
+                                                "This add-on cannot be activated while Guild Wars 2 is running. A restart is required.");
                                         }
                                     }
                                     else {
@@ -348,7 +349,8 @@ namespace loader {
                         if (addon->SupportsHomepage()) {
                             ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 96 - 8); // -8 for the resize grip
                             if (ImGui::Button(ICON_MD_HOME " Homepage", ImVec2(96, 0))) {
-                                ShellExecute(0, 0, homepage.c_str(), 0, 0, SW_SHOW);
+                                wstring wHomepage = u16(homepage);
+                                ShellExecute(0, 0, wHomepage.c_str(), 0, 0, SW_SHOW);
                             }
                         }
                     }
@@ -395,7 +397,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
 
             set<uint_fast8_t> pressedKeys = GetPressedKeyboardKeys();
-            string keysStr = ws2s(GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind));
+            string keysStr = GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind);
             char keysBuff[64];
             keysStr._Copy_s(keysBuff, sizeof(keysBuff), keysStr.length());
             keysBuff[keysStr.length()] = 0;
@@ -433,7 +435,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             int i = 2;
             for (const auto& addon : AddonsList) {
                 if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::LoadedState) {
-                    sstream << ws2s(addon->GetName()) << '\0';
+                    sstream << addon->GetName() << '\0';
                     if (this->selectedStatsType == i) {
                         selectedAddon = addon;
                     }
@@ -480,7 +482,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
         }
 
 
-        void SettingsWindow::MoveAddonPositionUp(const wstring& fileName) {
+        void SettingsWindow::MoveAddonPositionUp(const string& fileName) {
             int index = -1;
             for (auto it = addons::AddonsList.rbegin(); it != addons::AddonsList.rend(); ++it) {
                 if ((*it)->GetFilePath() == fileName) {
@@ -495,7 +497,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
         }
 
-        void SettingsWindow::MoveAddonPositionDown(const wstring& fileName) {
+        void SettingsWindow::MoveAddonPositionDown(const string& fileName) {
             int index = -1;
             for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
                 if ((*it)->GetFilePath() == fileName) {
@@ -510,7 +512,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
         }
 
-        void SettingsWindow::SelectAddon(const wstring& fileName) {
+        void SettingsWindow::SelectAddon(const string& fileName) {
             int index = -1;
             for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
                 index++;

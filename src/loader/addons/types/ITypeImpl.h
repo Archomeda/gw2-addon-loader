@@ -43,18 +43,18 @@ namespace loader {
 
                 virtual HMODULE GetHandle() const { return this->addonHandle; }
 
-                virtual const std::wstring GetID() const = 0;
-                virtual const std::wstring GetName() const = 0;
-                virtual const std::wstring GetAuthor() const { return L""; }
-                virtual const std::wstring GetDescription() const { return L""; }
-                virtual const std::wstring GetVersion() const { return L""; }
-                virtual const std::wstring GetHomepage() const { return L""; }
+                virtual const std::string GetID() const = 0;
+                virtual const std::string GetName() const = 0;
+                virtual const std::string GetAuthor() const { return ""; }
+                virtual const std::string GetDescription() const { return ""; }
+                virtual const std::string GetVersion() const { return ""; }
+                virtual const std::string GetHomepage() const { return ""; }
 
                 virtual const AddonSubType GetAddonSubType() const { return this->subType; }
-                virtual const std::wstring GetAddonSubTypeString() const;
+                virtual const std::string GetAddonSubTypeString() const;
 
                 virtual const AddonState GetAddonState() const { return this->state; }
-                virtual const std::wstring GetAddonStateString() const;
+                virtual const std::string GetAddonStateString() const;
 
                 virtual bool SupportsHotLoading() const = 0;
                 virtual void Initialize() = 0;

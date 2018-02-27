@@ -4,22 +4,25 @@
 #include "../Addon.h"
 #include "../addons_manager.h"
 #include "../exceptions.h"
-#include "../../utils.h"
+#include "../../utils/encoding.h"
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
+using namespace loader::utils;
 
 namespace loader {
     namespace addons {
         namespace types {
 
-            NativeAddonImpl::NativeAddonImpl(const wstring& filePath) : ITypeImpl() {
+            NativeAddonImpl::NativeAddonImpl(const string& filePath) : ITypeImpl() {
                 this->filePath = filePath;
-                this->fileName = path(filePath).filename();
+                this->fileName = u8path(filePath).filename().u8string();
             }
 
             void NativeAddonImpl::Initialize() {
-                HMODULE h = LoadLibrary(this->filePath.c_str());
+                wstring wFilePath = u16(this->filePath);
+                HMODULE h = LoadLibrary(wFilePath.c_str());
+
                 if (!h) {
                     this->ChangeState(AddonState::ErroredState);
                     throw exceptions::AddonInitializationException("Library handle is empty");
@@ -46,12 +49,12 @@ namespace loader {
 
                 if (addonBase->ver == 1) {
                     GW2AddonAPIV1* v1 = reinterpret_cast<GW2AddonAPIV1*>(addonBase);
-                    this->id = s2ws(v1->id);
-                    this->name = s2ws(v1->name);
-                    this->author = s2ws(v1->author);
-                    this->description = s2ws(v1->description);
-                    this->version = s2ws(v1->version);
-                    this->homepage = s2ws(v1->homepage);
+                    this->id = v1->id;
+                    this->name = v1->name;
+                    this->author = v1->author;
+                    this->description = v1->description;
+                    this->version = v1->version;
+                    this->homepage = v1->homepage;
 
                     this->AddonLoad = v1->Load;
                     this->AddonDrawFrameBeforePostProcessing = v1->DrawFrameBeforePostProcessing;
@@ -269,7 +272,7 @@ namespace loader {
                 }
                 catch (const wchar_t* err) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonWndProcException(ws2s(err));
+                    throw exceptions::AddonWndProcException(err);
                 }
                 catch (...) {
                     this->ChangeState(AddonState::ErroredState);
@@ -597,7 +600,7 @@ namespace loader {
                 }
                 catch (const wchar_t* err) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonDrawException(ws2s(err));
+                    throw exceptions::AddonDrawException(err);
                 }
                 catch (...) {
                     this->ChangeState(AddonState::ErroredState);
@@ -619,7 +622,7 @@ namespace loader {
                 }
                 catch (const wchar_t* err) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonAdvFuncException(funcName, ws2s(err));
+                    throw exceptions::AddonAdvFuncException(funcName, err);
                 }
                 catch (...) {
                     this->ChangeState(AddonState::ErroredState);
@@ -641,7 +644,7 @@ namespace loader {
                 }
                 catch (const wchar_t* err) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonAdvFuncException(funcName, ws2s(err));
+                    throw exceptions::AddonAdvFuncException(funcName, err);
                 }
                 catch (...) {
                     this->ChangeState(AddonState::ErroredState);

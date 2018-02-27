@@ -2,7 +2,7 @@
 #include <Shlwapi.h>
 #include <filesystem>
 
-#define LOG_FILE TEXT("addons/loader/loader.log")
+#define LOG_FILE "addons/loader/loader.log"
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;

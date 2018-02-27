@@ -14,6 +14,6 @@ namespace loader {
     std::set<uint_fast8_t> GetPressedKeyboardKeys();
 
     bool DoKeysContainNonModifiers(const std::set<uint_fast8_t>& keys);
-    std::wstring GetReadableKeyString(const std::set<uint_fast8_t>& keys);
+    std::string GetReadableKeyString(const std::set<uint_fast8_t>& keys);
 
 }

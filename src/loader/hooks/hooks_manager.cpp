@@ -1,9 +1,10 @@
 #include "hooks_manager.h"
+#include <filesystem>
 #include "LoaderDirect3D9.h"
 #include "../log.h"
-#include "../utils.h"
 
 using namespace std;
+using namespace std::experimental::filesystem::v1;
 
 namespace loader {
     namespace hooks {
@@ -51,7 +52,13 @@ namespace loader {
             GetLog()->debug("loader::hooks::InitializeHooks()");
             // It's unadvised to call LoadLibrary in DllMain, because it can cause a deadlock.
             // But eh whatever, we are just a proxy anyway, no one should call us except Guild Wars 2.
-            SystemD3D9 = LoadLibrary(GetSystemPath(TEXT("d3d9")).c_str());
+
+            wchar_t systemDir[MAX_PATH];
+            GetSystemDirectory(systemDir, MAX_PATH);
+            path systemPath(systemDir);
+            systemPath /= "d3d9";
+            wstring wSystemD3D9Path = systemPath.wstring();
+            SystemD3D9 = LoadLibrary(wSystemD3D9Path.c_str());
             if (!SystemD3D9) {
                 GetLog()->error("Failed to load the system d3d9.dll: {0}", LastErrorToString(GetLastError()));
                 return;

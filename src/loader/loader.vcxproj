@@ -182,13 +182,14 @@
     <ClInclude Include="imgui_impl_dx9.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="utils\debug.h" />
+    <ClInclude Include="utils\encoding.h" />
     <ClInclude Include="windows.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="hooks\hooks_manager.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="gui\AddonInfoWindow.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="utils.h" />
     <ClInclude Include="gui\Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -209,8 +210,9 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="gui\AddonInfoWindow.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="utils.cpp" />
     <ClCompile Include="gui\Window.cpp" />
+    <ClCompile Include="utils\debug.cpp" />
+    <ClCompile Include="utils\encoding.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

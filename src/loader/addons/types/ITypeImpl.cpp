@@ -17,41 +17,41 @@ namespace loader {
                 this->durationHistoryDrawFrame.reserve(2 * frames);
             }
 
-            const wstring ITypeImpl::GetAddonStateString() const {
+            const string ITypeImpl::GetAddonStateString() const {
                 switch (this->GetAddonState()) {
                 case AddonState::DeactivatedOnRestartState:
-                    return L"Deactivates on restart";
+                    return "Deactivates on restart";
                 case AddonState::ActivatedOnRestartState:
-                    return L"Activates on restart";
+                    return "Activates on restart";
                 case AddonState::ErroredState:
-                    return L"Errored";
+                    return "Errored";
                 case AddonState::UnloadingState:
-                    return L"Unloading";
+                    return "Unloading";
                 case AddonState::UnloadedState:
-                    return L"Not active";
+                    return "Not active";
                 case AddonState::LoadingState:
-                    return L"Loading";
+                    return "Loading";
                 case AddonState::LoadedState:
-                    return L"Active";
+                    return "Active";
                 default:
-                    return L"Unknown";
+                    return "Unknown";
                 }
             }
 
-            const wstring ITypeImpl::GetAddonSubTypeString() const {
+            const string ITypeImpl::GetAddonSubTypeString() const {
                 switch (this->GetAddonSubType()) {
                 case AddonSubType::GraphicsAddon:
-                    return L"G";
+                    return "G";
                 case AddonSubType::NonGraphicsAddon:
-                    return L"NG";
+                    return "NG";
                 case AddonSubType::PointerReplacingAddon:
-                    return L"PR";
+                    return "PR";
                 case AddonSubType::VirtualTableReplacingAddon:
-                    return L"VTR";
+                    return "VTR";
                 case AddonSubType::WrapperAddon:
-                    return L"WR";
+                    return "WR";
                 default:
-                    return L"";
+                    return "";
                 }
             }
 
