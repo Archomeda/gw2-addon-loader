@@ -1,5 +1,5 @@
 # Guild Wars 2 Addon Loader
-***Note:** This is still a proof of concept. Some features may drastically change over time during their development. Be prepared to frequently reconfigure your installation. Also, expect bugs.*  
+***Note:** This is still in early beta. Some features may drastically change over time during their development. Be prepared to frequently reconfigure your installation. Also, expect bugs.*  
 ***Note:** It has **not** been approved for usage with Guild Wars 2 yet. Use at your own risk.*
 
 Guild Wars 2 Addon Loader is an unofficial addon for Guild Wars 2.
@@ -11,7 +11,7 @@ There are plans to look into supporting these addons, but due to the complex nat
 Improving stability, applying bugfixes and implementing other missing features have a higher priority.
 
 ## Planned features
-- Improving GUI
+- Adding more stuff to the statistics tab
 - Checking for updates or auto updating of *Guild Wars 2 Addon Loader*
 - Checking for updates or auto updating of addons
 - Investigating support for legacy addons (aka arcdps, GW2Mounts, ReShade, GW2Hook, and other d3d9 addons)
@@ -30,9 +30,9 @@ Addons will not be activated by default, you will have to open the addons panel 
 Once an addon is working properly, it will be activated automatically upon every Guild Wars 2 client restart.
 
 ## Developing addons
-The header file *includes/gw2addon-native.h* contains information what to export in your DLL in order to make it compatible with *Guild Wars 2 Addon Loader*.
+The header file *include/gw2addon-native.h* contains information what to export in your DLL in order to make it compatible with *Guild Wars 2 Addon Loader*.
 Keep in mind that during this development phase, this file is likely to (significantly) change over time without keeping a version history.
-By developing addons against *Guild Wars 2 Addon Loader*, you acknowledge that during this phase, you have to keep your addon up-to-date to prevent it from breaking.
+By developing addons against *Guild Wars 2 Addon Loader*, you acknowledge that during this phase, you have to keep your addon up-to-date in order to prevent it from breaking in newer versions.
 
 Inside the *src* folder, there are some examples on how to create native addons.
 There are also a few pre-made addons available inside the same folder.
