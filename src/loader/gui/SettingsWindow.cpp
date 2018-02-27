@@ -122,7 +122,7 @@ namespace loader {
             ImGuiStyle style = ImGui::GetStyle();
             listItemHeight += style.FramePadding.y * 2;
             bool value_changed = false;
-            ImGuiListClipper clipper(addons.size(), listItemHeight);
+            ImGuiListClipper clipper(static_cast<int>(addons.size()), listItemHeight);
             while (clipper.Step()) {
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                     const bool item_selected = (i == *current_item);
@@ -489,9 +489,9 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     index = static_cast<int>(it - addons::AddonsList.rbegin());
                 }
                 else if (index > -1) {
-                    AppConfig.SetAddonOrder((*it)->GetFileName(), addons::AddonsList.size() - (index + 1));
+                    AppConfig.SetAddonOrder((*it)->GetFileName(), static_cast<int>(addons::AddonsList.size() - (index + 1)));
                     iter_swap(addons::AddonsList.rbegin() + index, it);
-                    AppConfig.SetAddonOrder((*it)->GetFileName(), addons::AddonsList.size() - (index + 2));
+                    AppConfig.SetAddonOrder((*it)->GetFileName(), static_cast<int>(addons::AddonsList.size() - (index + 2)));
                     break;
                 }
             }

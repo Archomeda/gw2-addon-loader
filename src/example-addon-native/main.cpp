@@ -47,7 +47,7 @@ void GW2ADDON_CALL DrawBeforePostProcessing(IDirect3DDevice9* pDev) {
     rect.bottom = rect.top + 16;
     D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
     wstring text = L"I am drawn behind the post processing layer";
-    font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 0));
+    font->DrawText(0, text.c_str(), static_cast<INT>(text.length()), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 0));
     font->Release();
 }
 
@@ -66,7 +66,7 @@ void GW2ADDON_CALL DrawBeforeGui(IDirect3DDevice9* pDev) {
     rect.bottom = rect.top + 16;
     D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
     wstring text = L"I am drawn behind the GUI";
-    font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 255));
+    font->DrawText(0, text.c_str(), static_cast<INT>(text.length()), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 255));
     font->Release();
 }
 
@@ -86,7 +86,7 @@ void GW2ADDON_CALL Draw(IDirect3DDevice9* pDev) {
     rect.bottom = rect.top + 16;
     D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
     wstring text = L"Example add-on - frame " + to_wstring(frame) + L" (loader = " + (loader ? L"true" : L"false") + L")";
-    font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 0));
+    font->DrawText(0, text.c_str(), static_cast<INT>(text.length()), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 0));
     font->Release();
 }
 
