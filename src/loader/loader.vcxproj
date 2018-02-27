@@ -175,7 +175,6 @@
     <ClInclude Include="addons\types\NativeAddonImpl.h" />
     <ClInclude Include="addons\types\DummyAddonImpl.h" />
     <ClInclude Include="addons\types\ITypeImpl.h" />
-    <ClInclude Include="addons\types\LegacyAddonImpl.h" />
     <ClInclude Include="gui\gui_manager.h" />
     <ClInclude Include="gui\MessageWindow.h" />
     <ClInclude Include="hooks\LoaderDirect3D9.h" />
@@ -199,7 +198,6 @@
     <ClCompile Include="addons\types\NativeAddonImpl.cpp" />
     <ClCompile Include="addons\types\DummyAddonImpl.cpp" />
     <ClCompile Include="addons\types\ITypeImpl.cpp" />
-    <ClCompile Include="addons\types\LegacyAddonImpl.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="gui\gui_manager.cpp" />
     <ClCompile Include="gui\MessageWindow.cpp" />

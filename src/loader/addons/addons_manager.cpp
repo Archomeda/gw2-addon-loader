@@ -69,7 +69,6 @@ namespace loader {
                     AddonsList.push_back(make_shared<Addon>(pathFile.path().wstring()));
                 }
             }
-            sort(AddonsList.begin(), AddonsList.end(), sortAddonsFunc);
         }
 
 

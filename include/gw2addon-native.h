@@ -18,135 +18,49 @@ Visit https://github.com/Archomeda/gw2-addon-loader for more information.
 
 #define GW2ADDON_RESULT int
 #define GW2ADDON_CALL __stdcall
+#define GW2ADDON_VER 1
 
 /**
-Native addons can be loaded multiple times.
-Therefore, don't depend on DllMain. Use GW2_Load instead for initialization if required.
-And don't forget GW2_Unload to clean up your mess.
+THE STRUCT TO IMPLEMENT CAN BE FOUND AFTER THE FUNCTION TYPEDEFS.
 
-Native addons support versioning in order to keep older compiled addons from breaking whenever something gets added.
-Please always use the newest version whenever you compile your addon by using the latest GW2AddonInfo.
-Required functions need to be exported in order for the addon to work properly.
-Optional functions can be left out of the exported functions if you don't need its functionality.
-
-Please see the examples on how to use this.
+It's not defined how and when native addons are loaded.
+Therefore, do not depend on DllMain for initialization. Use Load instead.
+And don't forget to use Unload to clean up your mess.
 */
 
 
 /**
-GW2AddonInfo is defined by the addon to specify addon information for the loader.
-The addon info is requested by the loader through GW2_GetAddonInfo.
-*/
-typedef struct {
-    const int ver = 0;
-} GW2AddonInfoHeader;
-
-typedef struct {
-    // Versioning, automatically defined.
-    const int ver = 1;
-
-    // Size of the addon ID wide C-string.
-    size_t idSize;
-
-    // The addon ID (wide C-string).
-    // The ID must be unique and fixed as long as it is the same addon.
-    const wchar_t* id;
-
-    // Size of the addon name wide C-string.
-    size_t nameSize;
-
-    // The addon name (wide C-string).
-    const wchar_t* name;
-
-    // Size of the addon author wide C-string.
-    size_t authorSize;
-
-    // The addon author (wide C-string).
-    const wchar_t* author;
-
-    // Size of the addon description wide C-string.
-    size_t descriptionSize;
-
-    // The addon description (wide C-string).
-    const wchar_t* description;
-
-    // Size of the addon version (wide C-string).
-    size_t versionSize;
-
-    // The addon version (wide C-string).
-    const wchar_t* version;
-
-    // Size of the addon homepage URL (wide C-string).
-    size_t homepageSize;
-
-    // The addon homepage URL.
-    const wchar_t* homepage;
-} GW2AddonInfoV1;
-
-typedef GW2AddonInfoV1 GW2AddonInfo;
-
-
-/**
-Exported C-function: GW2_GetAddonInfo. Required.
-Gets the addon info.
-Note: This function needs to be accessible regardless if the addon is initialized or not.
-Make sure to not allocate memory you can't deallocate later. The callee does not clean up any allocations made by the caller.
-This function should return 0 on success. Any other value will be treated as an error.
-*/
-typedef GW2ADDON_RESULT(GW2ADDON_CALL *GW2_GetAddonInfo_t)(GW2AddonInfo** addonInfo);
-#define GW2_DLL_GetAddonInfo "GW2_GetAddonInfo"
-
-/**
-Exported C-function: GW2_Load. Optional.
 Gets called whenever the addon is loading.
 Can be used to initialize the addon when it gets enabled before it gets used.
 This function should return 0 on success. Any other value will be treated as an error.
 */
-typedef GW2ADDON_RESULT(GW2ADDON_CALL *GW2_Load_t)(HWND hFocusWindow, IDirect3DDevice9* pDev);
-#define GW2_DLL_Load "GW2_Load"
+typedef GW2ADDON_RESULT(GW2ADDON_CALL *GW2AddonLoad_t)(HWND hFocusWindow, IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_Unload. Optional.
-Gets called whenever the addon is unloading.
-Can be used to uninitialize the addon when it gets disabled or when Guild Wars 2 shuts down.
-This function should return 0 on success. Any other value will be treated as an error.
-*/
-typedef GW2ADDON_RESULT(GW2ADDON_CALL *GW2_Unload_t)();
-#define GW2_DLL_Unload "GW2_Unload"
-
-/**
-Exported C-function: GW2_DrawFrameBeforePostProcessing. Optional.
 Gets called every frame right before the post processing gets drawn.
 Can be used to draw custom elements in the world that needs to be behind the GUI, or to do some additional postprocessing.
 */
-typedef void(GW2ADDON_CALL *GW2_DrawFrameBeforePostProcessing_t)(IDirect3DDevice9* pDev);
-#define GW2_DLL_DrawFrameBeforePostProcessing "GW2_DrawFrameBeforePostProcessing"
+typedef void(GW2ADDON_CALL *GW2AddonDrawFrameBeforePostProcessing_t)(IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_DrawFrameBeforeGui. Optional.
 Gets called every frame right before the GUI gets drawn.
 Can be used to draw custom elements in the world that needs to be behind the GUI, or to do some additional postprocessing.
 */
-typedef void(GW2ADDON_CALL *GW2_DrawFrameBeforeGui_t)(IDirect3DDevice9* pDev);
-#define GW2_DLL_DrawFrameBeforeGui "GW2_DrawFrameBeforeGui"
+typedef void(GW2ADDON_CALL *GW2AddonDrawFrameBeforeGui_t)(IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_DrawFrame. Optional.
 Gets called every frame whenever the frame needs to be drawn on the D3D9 device.
 Can be used to draw custom elements on the game as an overlay.
 */
-typedef void(GW2ADDON_CALL *GW2_DrawFrame_t)(IDirect3DDevice9* pDev);
-#define GW2_DLL_DrawFrame "GW2_DrawFrame"
+typedef void(GW2ADDON_CALL *GW2AddonDrawFrame_t)(IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_HandleWndProc. Optional.
 Gets called whenever a message in the message loop is being handled by the Guild Wars 2 client.
 Can be used to e.g. intercept mouse and keyboard events.
 This function should return true if it's handled and should not be handled by any other addon or the game itself.
 Return false whenever it should be handled by other addons and the game itself as well.
 */
-typedef bool(GW2ADDON_CALL *GW2_HandleWndProc_t)(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#define GW2_DLL_HandleWndProc "GW2_HandleWndProc"
+typedef bool(GW2ADDON_CALL *GW2AddonHandleWndProc_t)(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 /****************************
@@ -154,82 +68,61 @@ typedef bool(GW2ADDON_CALL *GW2_HandleWndProc_t)(HWND hWnd, UINT msg, WPARAM wPa
 ****************************/
 
 /**
-Exported C-function: GW2_AdvPreBeginScene. Optional.
 Advanced function that gets called before D3D9 processes the BeginScene call.
 Do not call BeginScene yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreBeginScene_t)(IDirect3DDevice9* pDev);
-#define GW2_DLL_AdvPreBeginScene "GW2_AdvPreBeginScene"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreBeginScene_t)(IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_AdvPostBeginScene. Optional.
 Advanced function that gets called after D3D9 has processed the BeginScene call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostBeginScene_t)(IDirect3DDevice9* pDev);
-#define GW2_DLL_AdvPostBeginScene "GW2_AdvPostBeginScene"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostBeginScene_t)(IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_AdvPreEndScene. Optional.
 Advanced function that gets called before D3D9 processes the EndScene call.
 Do not call EndScene yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreEndScene_t)(IDirect3DDevice9* pDev);
-#define GW2_DLL_AdvPreEndScene "GW2_AdvPreEndScene"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreEndScene_t)(IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_AdvPostEndScene. Optional.
 Advanced function that gets called after D3D9 has processed the EndScene call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostEndScene_t)(IDirect3DDevice9* pDev);
-#define GW2_DLL_AdvPostEndScene "GW2_AdvPostEndScene"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostEndScene_t)(IDirect3DDevice9* pDev);
 
 /**
-Exported C-function: GW2_AdvPreClear. Optional.
 Advanced function that gets called before D3D9 processes the Clear call.
 Do not call Clear yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreClear_t)(IDirect3DDevice9* pDev, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
-#define GW2_DLL_AdvPreClear "GW2_AdvPreClear"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreClear_t)(IDirect3DDevice9* pDev, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
 
 /**
-Exported C-function: GW2_AdvPostClear. Optional.
 Advanced function that gets called after D3D9 has processed the Clear call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostClear_t)(IDirect3DDevice9* pDev, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
-#define GW2_DLL_AdvPostClear "GW2_AdvPostClear"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostClear_t)(IDirect3DDevice9* pDev, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
 
 /**
-Exported C-function: GW2_AdvPreReset. Optional.
 Advanced function that gets called before D3D9 processes the Reset call.
 Do not call Reset yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreReset_t)(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters);
-#define GW2_DLL_AdvPreReset "GW2_AdvPreReset"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreReset_t)(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters);
 
 /**
-Exported C-function: GW2_AdvPostReset. Optional.
 Advanced function that gets called after D3D9 has processed the Reset call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostReset_t)(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters);
-#define GW2_DLL_AdvPostReset "GW2_AdvPostReset"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostReset_t)(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters);
 
 /**
-Exported C-function: GW2_AdvPrePresent. Optional.
 Advanced function that gets called before D3D9 processes the Present call.
 Do not call Present yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPrePresent_t)(IDirect3DDevice9* pDev, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-#define GW2_DLL_AdvPrePresent "GW2_AdvPrePresent"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPrePresent_t)(IDirect3DDevice9* pDev, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
 
 /**
-Exported C-function: GW2_AdvPostPresent. Optional.
 Advanced function that gets called after D3D9 has processed the Present call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostPresent_t)(IDirect3DDevice9* pDev, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-#define GW2_DLL_AdvPostPresent "GW2_AdvPostPresent"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostPresent_t)(IDirect3DDevice9* pDev, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
 
 /**
-Exported C-function: GW2_AdvPreCreateTexture. Optional.
 Advanced function that gets called before D3D9 processes the CreateTexture call.
 If the return value does not equal D3D_OK, the call fails.
 
@@ -237,18 +130,14 @@ You can call CreateTexture yourself. If the value of ppTexture is not NULL after
 it is assumed that the addon has created (overridden) the texture instead.
 Calls to remaining addons will be skipped, and the addon loader will not call CreateTexture either.
 */
-typedef HRESULT(GW2ADDON_CALL *GW2_AdvPreCreateTexture_t)(IDirect3DDevice9* pDev, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle);
-#define GW2_DLL_AdvPreCreateTexture "GW2_AdvPreCreateTexture"
+typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreateTexture_t)(IDirect3DDevice9* pDev, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle);
 
 /**
-Exported C-function: GW2_AdvPostCreateTexture. Optional.
 Advanced function that gets called after D3D9 has processed the CreateTexture call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostCreateTexture_t)(IDirect3DDevice9* pDev, IDirect3DTexture9* pTexture, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, HANDLE* pSharedHandle);
-#define GW2_DLL_AdvPostCreateTexture "GW2_AdvPostCreateTexture"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreateTexture_t)(IDirect3DDevice9* pDev, IDirect3DTexture9* pTexture, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, HANDLE* pSharedHandle);
 
 /**
-Exported C-function: GW2_AdvPreCreateVertexShader. Optional.
 Advanced function that gets called before D3D9 processes the CreateVertexShader call.
 If the return value does not equal D3D_OK, the call fails.
 
@@ -256,18 +145,14 @@ You can call CreateVertexShader yourself. If the value of ppShader is not NULL a
 it is assumed that the addon has created (overridden) the shader instead.
 Calls to remaining addons will be skipped, and the addon loader will not call CreateVertexShader either.
 */
-typedef HRESULT(GW2ADDON_CALL *GW2_AdvPreCreateVertexShader_t)(IDirect3DDevice9* pDev, CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader);
-#define GW2_DLL_AdvPreCreateVertexShader "GW2_AdvPreCreateVertexShader"
+typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreateVertexShader_t)(IDirect3DDevice9* pDev, CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader);
 
 /**
-Exported C-function: GW2_AdvPostCreateVertexShader. Optional.
 Advanced function that gets called after D3D9 has processed the CreateVertexShader call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostCreateVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* ppShader, CONST DWORD* pFunction);
-#define GW2_DLL_AdvPostCreateVertexShader "GW2_AdvPostCreateVertexShader"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreateVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* ppShader, CONST DWORD* pFunction);
 
 /**
-Exported C-function: GW2_AdvPreCreatePixelShader. Optional.
 Advanced function that gets called before D3D9 processes the CreatePixelShader call.
 If the return value does not equal D3D_OK, the call fails.
 
@@ -275,18 +160,14 @@ You can call CreatePixelShader yourself. If the value of ppShader is not NULL af
 it is assumed that the addon has created (overridden) the shader instead.
 Calls to remaining addons will be skipped, and the addon loader will not call CreatePixelShader either.
 */
-typedef HRESULT(GW2ADDON_CALL *GW2_AdvPreCreatePixelShader_t)(IDirect3DDevice9* pDev, CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader);
-#define GW2_DLL_AdvPreCreatePixelShader "GW2_AdvPreCreatePixelShader"
+typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreatePixelShader_t)(IDirect3DDevice9* pDev, CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader);
 
 /**
-Exported C-function: GW2_AdvPostCreatePixelShader. Optional.
 Advanced function that gets called after D3D9 has processed the CreatePixelShader call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostCreatePixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* ppShader, CONST DWORD* pFunction);
-#define GW2_DLL_AdvPostCreatePixelShader "GW2_AdvPostCreatePixelShader"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreatePixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* ppShader, CONST DWORD* pFunction);
 
 /**
-Exported C-function: GW2_AdvPreCreateRenderTarget. Optional.
 Advanced function that gets called before D3D9 processes the CreateRenderTarget call.
 If the return value does not equal D3D_OK, the call fails.
 
@@ -294,102 +175,202 @@ You can call CreateRenderTarget yourself. If the value of ppSurface is not NULL 
 it is assumed that the addon has created (overridden) the surface instead.
 Calls to remaining addons will be skipped, and the addon loader will not call CreateRenderTarget either.
 */
-typedef HRESULT(GW2ADDON_CALL *GW2_AdvPreCreateRenderTarget_t)(IDirect3DDevice9* pDev, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle);
-#define GW2_DLL_AdvPreCreateRenderTarget "GW2_AdvPreCreateRenderTarget"
+typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreateRenderTarget_t)(IDirect3DDevice9* pDev, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle);
 
 /**
-Exported C-function: GW2_AdvPostCreateRenderTarget. Optional.
 Advanced function that gets called after D3D9 has processed the CreateRenderTarget call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostCreateRenderTarget_t)(IDirect3DDevice9* pDev, IDirect3DSurface9* ppSurface, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, HANDLE* pSharedHandle);
-#define GW2_DLL_AdvPostCreateRenderTarget "GW2_AdvPostCreateRenderTarget"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreateRenderTarget_t)(IDirect3DDevice9* pDev, IDirect3DSurface9* ppSurface, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, HANDLE* pSharedHandle);
 
 /**
-Exported C-function: GW2_AdvPreSetTexture. Optional.
 Advanced function that gets called before D3D9 processes the SetTexture call.
 Do not call SetTexture yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreSetTexture_t)(IDirect3DDevice9* pDev, DWORD Stage, IDirect3DBaseTexture9* pTexture);
-#define GW2_DLL_AdvPreSetTexture "GW2_AdvPreSetTexture"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetTexture_t)(IDirect3DDevice9* pDev, DWORD Stage, IDirect3DBaseTexture9* pTexture);
 
 /**
-Exported C-function: GW2_AdvPostSetTexture. Optional.
 Advanced function that gets called after D3D9 has processed the SetTexture call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostSetTexture_t)(IDirect3DDevice9* pDev, DWORD Stage, IDirect3DBaseTexture9* pTexture);
-#define GW2_DLL_AdvPostSetTexture "GW2_AdvPostSetTexture"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetTexture_t)(IDirect3DDevice9* pDev, DWORD Stage, IDirect3DBaseTexture9* pTexture);
 
 /**
-Exported C-function: GW2_AdvPreSetVertexShader. Optional.
 Advanced function that gets called before D3D9 processes the SetVertexShader call.
 Do not call SetVertexShader yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreSetVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* pShader);
-#define GW2_DLL_AdvPreSetVertexShader "GW2_AdvPreSetVertexShader"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* pShader);
 
 /**
-Exported C-function: GW2_AdvPostSetVertexShader. Optional.
 Advanced function that gets called after D3D9 has processed the SetVertexShader call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostSetVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* pShader);
-#define GW2_DLL_AdvPostSetVertexShader "GW2_AdvPostSetVertexShader"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* pShader);
 
 /**
-Exported C-function: GW2_AdvPreSetPixelShader. Optional.
 Advanced function that gets called before D3D9 processes the SetPixelShader call.
 Do not call SetPixelShader yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreSetPixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* pShader);
-#define GW2_DLL_AdvPreSetPixelShader "GW2_AdvPreSetPixelShader"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetPixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* pShader);
 
 /**
-Exported C-function: GW2_AdvPostSetPixelShader. Optional.
 Advanced function that gets called after D3D9 has processed the SetPixelShader call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostSetPixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* pShader);
-#define GW2_DLL_AdvPostSetPixelShader "GW2_AdvPostSetPixelShader"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetPixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* pShader);
 
 /**
-Exported C-function: GW2_AdvPreSetRenderTarget. Optional.
 Advanced function that gets called before D3D9 processes the SetRenderTarget call.
 Do not call SetRenderTarget yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreSetRenderTarget_t)(IDirect3DDevice9* pDev, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
-#define GW2_DLL_AdvPreSetRenderTarget "GW2_AdvPreSetRenderTarget"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetRenderTarget_t)(IDirect3DDevice9* pDev, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
 
 /**
-Exported C-function: GW2_AdvPostSetRenderTarget. Optional.
 Advanced function that gets called after D3D9 has processed the SetRenderTarget call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostSetRenderTarget_t)(IDirect3DDevice9* pDev, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
-#define GW2_DLL_AdvPostSetRenderTarget "GW2_AdvPostSetRenderTarget"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetRenderTarget_t)(IDirect3DDevice9* pDev, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
 
 /**
-Exported C-function: GW2_AdvPreSetRenderState. Optional.
 Advanced function that gets called before D3D9 processes the SetRenderState. call.
 Do not call SetRenderState yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreSetRenderState_t)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
-#define GW2_DLL_AdvPreSetRenderState "GW2_AdvPreSetRenderState"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetRenderState_t)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
 
 /**
-Exported C-function: GW2_AdvPostSetRenderState. Optional.
 Advanced function that gets called after D3D9 has processed the SetRenderState call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostSetRenderState_t)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
-#define GW2_DLL_AdvPostSetRenderState "GW2_AdvPostSetRenderState"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetRenderState_t)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
 
 /**
-Exported C-function: GW2_AdvPreDrawIndexedPrimitive. Optional.
 Advanced function that gets called before D3D9 processes the DrawIndexedPrimitive call.
 Do not call DrawIndexedPrimitive yourself. The addon loader does that already after this call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPreDrawIndexedPrimitive_t)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
-#define GW2_DLL_AdvPreDrawIndexedPrimitive "GW2_AdvPreDrawIndexedPrimitive"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPreDrawIndexedPrimitive_t)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
 
 /**
-Exported C-function: GW2_AdvPostDrawIndexedPrimitive. Optional.
 Advanced function that gets called after D3D9 has processed the DrawIndexedPrimitive call.
 */
-typedef void(GW2ADDON_CALL *GW2_AdvPostDrawIndexedPrimitive_t)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
-#define GW2_DLL_AdvPostDrawIndexedPrimitive "GW2_AdvPostDrawIndexedPrimitive"
+typedef void(GW2ADDON_CALL *GW2AddonAdvPostDrawIndexedPrimitive_t)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
+
+
+/**********************
+ END FUNCTION TYPEDEFS
+**********************/
+
+
+/********************************************************************************************************************
+THE FOLLOWING NEEDS TO BE IMPLEMENTED IN YOUR ADDON
+
+Native addons support versioning in order to keep older compiled addons from breaking whenever something gets added.
+Please always use the newest version whenever you compile your addon by using the latest GW2AddonAPI struct.
+Required functions need to be exported in order for the addon to work properly.
+Optional functions can be left out of the exported functions if you don't need its functionality.
+
+Please see the examples on how to use this.
+
+*********************************************************************************************************************/
+
+/**
+GW2AddonAPI is the addon export table. Use the latest version.
+Previous versions are kept for compatibility reasons only.
+*/
+typedef struct {
+    // Versioning, automatically defined
+    const int ver = 0;
+} GW2AddonAPIBase;
+
+typedef struct {
+    // Versioning, automatically defined
+    const int ver = 1;
+
+    /** ADDON INFORMATION **/
+
+    // The addon ID, must be unique and fixed as long as it's the same addon
+    const char* id;
+
+    // The addon name
+    const char* name;
+
+    // The addon author
+    const char* author;
+
+    // The addon description
+    const char* description;
+
+    // The addon version
+    const char* version;
+
+    // The addon homepage URL
+    const char* homepage;
+
+
+    /** ADDON FUNCTION EXPORTS **/
+    GW2AddonLoad_t Load;
+    GW2AddonDrawFrameBeforePostProcessing_t DrawFrameBeforePostProcessing;
+    GW2AddonDrawFrameBeforeGui_t DrawFrameBeforeGui;
+    GW2AddonDrawFrame_t DrawFrame;
+    GW2AddonHandleWndProc_t HandleWndProc;
+
+    GW2AddonAdvPreBeginScene_t AdvPreBeginScene;
+    GW2AddonAdvPostBeginScene_t AdvPostBeginScene;
+    GW2AddonAdvPreEndScene_t AdvPreEndScene;
+    GW2AddonAdvPostEndScene_t AdvPostEndScene;
+    GW2AddonAdvPreClear_t AdvPreClear;
+    GW2AddonAdvPostClear_t AdvPostClear;
+    GW2AddonAdvPreReset_t AdvPreReset;
+    GW2AddonAdvPostReset_t AdvPostReset;
+    GW2AddonAdvPrePresent_t AdvPrePresent;
+    GW2AddonAdvPostPresent_t AdvPostPresent;
+    GW2AddonAdvPreCreateTexture_t AdvPreCreateTexture;
+    GW2AddonAdvPostCreateTexture_t AdvPostCreateTexture;
+    GW2AddonAdvPreCreateVertexShader_t AdvPreCreateVertexShader;
+    GW2AddonAdvPostCreateVertexShader_t AdvPostCreateVertexShader;
+    GW2AddonAdvPreCreatePixelShader_t AdvPreCreatePixelShader;
+    GW2AddonAdvPostCreatePixelShader_t AdvPostCreatePixelShader;
+    GW2AddonAdvPreCreateRenderTarget_t AdvPreCreateRenderTarget;
+    GW2AddonAdvPostCreateRenderTarget_t AdvPostCreateRenderTarget;
+    GW2AddonAdvPreSetTexture_t AdvPreSetTexture;
+    GW2AddonAdvPostSetTexture_t AdvPostSetTexture;
+    GW2AddonAdvPreSetVertexShader_t AdvPreSetVertexShader;
+    GW2AddonAdvPostSetVertexShader_t AdvPostSetVertexShader;
+    GW2AddonAdvPreSetPixelShader_t AdvPreSetPixelShader;
+    GW2AddonAdvPostSetPixelShader_t AdvPostSetPixelShader;
+    GW2AddonAdvPreSetRenderTarget_t AdvPreSetRenderTarget;
+    GW2AddonAdvPostSetRenderTarget_t AdvPostSetRenderTarget;
+    GW2AddonAdvPreSetRenderState_t AdvPreSetRenderState;
+    GW2AddonAdvPostSetRenderState_t AdvPostSetRenderState;
+    GW2AddonAdvPreDrawIndexedPrimitive_t AdvPreDrawIndexedPrimitive;
+    GW2AddonAdvPostDrawIndexedPrimitive_t AdvPostDrawIndexedPrimitive;
+} GW2AddonAPIV1;
+
+/**
+Exported C-function: GW2AddonInitialize. Required.
+Gets called as soon as the addon needs to be initialized.
+This is not the same as the addon being loaded or activated.
+This function provides all the necessary information for the addon loader.
+*/
+typedef GW2AddonAPIBase* (GW2ADDON_CALL *GW2AddonInitialize_t)(int loaderVersion);
+#define GW2ADDON_DLL_Initialize "GW2AddonInitialize"
+
+/**
+Exported C-function: GW2AddonRelease. Required.
+Gets called as soon as the addon needs to be released.
+This is not the same as the addon being unloaded or deactivated.
+This function is your last chance to clean up your stuff.
+*/
+typedef void(GW2ADDON_CALL *GW2AddonRelease_t)();
+#define GW2ADDON_DLL_Release "GW2AddonRelease"
+
+
+/**
+Ensure compiler errors when exported addon functions are wrong.
+*/
+#ifndef _GW2ADDON_IMPORTS
+#if GW2ADDON_VER == 1
+typedef GW2AddonAPIV1 GW2AddonAPI;
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+    GW2ADDON_API GW2AddonAPI* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion);
+    GW2ADDON_API void GW2ADDON_CALL GW2AddonRelease();
+#ifdef __cplusplus
+}
+#endif
+#endif

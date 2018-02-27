@@ -26,7 +26,7 @@ namespace loader {
             string type;
             if (selectedAddon > -1 && selectedAddon < static_cast<int>(addons::AddonsList.size())) {
                 addon = addons::AddonsList[selectedAddon];
-                addonName = ws2s(addon->GetProductName());
+                addonName = ws2s(addon->GetName());
                 addonName = !addonName.empty() ? addonName : ws2s(addon->GetID());
                 version = ws2s(addon->GetVersion());
                 author = ws2s(addon->GetAuthor());

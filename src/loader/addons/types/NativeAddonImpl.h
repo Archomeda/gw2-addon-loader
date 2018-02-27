@@ -11,6 +11,13 @@ namespace loader {
             public:
                 NativeAddonImpl(const std::wstring& filePath);
 
+                virtual const std::wstring GetID() const override { return this->id; }
+                virtual const std::wstring GetName() const override { return this->name; }
+                virtual const std::wstring GetAuthor() const override { return this->author; }
+                virtual const std::wstring GetDescription() const override { return this->description; }
+                virtual const std::wstring GetVersion() const override { return this->version; }
+                virtual const std::wstring GetHomepage() const override { return this->homepage; }
+                
                 virtual bool SupportsHotLoading() const override { return true; };
                 virtual void Initialize() override;
                 virtual void Uninitialize() override;
@@ -57,44 +64,52 @@ namespace loader {
             private:
                 std::wstring filePath;
                 std::wstring fileName;
+                std::wstring id;
+                std::wstring name;
+                std::wstring author;
+                std::wstring description;
+                std::wstring version;
+                std::wstring homepage;
 
-                GW2_Load_t GW2_Load = nullptr;
-                GW2_Unload_t GW2_Unload = nullptr;
-                GW2_DrawFrameBeforeGui_t GW2_DrawFrameBeforeGui = nullptr;
-                GW2_DrawFrameBeforePostProcessing_t GW2_DrawFrameBeforePostProcessing = nullptr;
-                GW2_DrawFrame_t GW2_DrawFrame = nullptr;
-                GW2_HandleWndProc_t GW2_HandleWndProc = nullptr;
+                GW2AddonInitialize_t AddonInitialize = nullptr;
+                GW2AddonRelease_t AddonRelease = nullptr;
 
-                GW2_AdvPreBeginScene_t GW2_AdvPreBeginScene = nullptr;
-                GW2_AdvPostBeginScene_t GW2_AdvPostBeginScene = nullptr;
-                GW2_AdvPreEndScene_t GW2_AdvPreEndScene = nullptr;
-                GW2_AdvPostEndScene_t GW2_AdvPostEndScene = nullptr;
-                GW2_AdvPreClear_t GW2_AdvPreClear = nullptr;
-                GW2_AdvPostClear_t GW2_AdvPostClear = nullptr;
-                GW2_AdvPreReset_t GW2_AdvPreReset = nullptr;
-                GW2_AdvPostReset_t GW2_AdvPostReset = nullptr;
-                GW2_AdvPrePresent_t GW2_AdvPrePresent = nullptr;
-                GW2_AdvPostPresent_t GW2_AdvPostPresent = nullptr;
-                GW2_AdvPreCreateTexture_t GW2_AdvPreCreateTexture = nullptr;
-                GW2_AdvPostCreateTexture_t GW2_AdvPostCreateTexture = nullptr;
-                GW2_AdvPreCreateVertexShader_t GW2_AdvPreCreateVertexShader = nullptr;
-                GW2_AdvPostCreateVertexShader_t GW2_AdvPostCreateVertexShader = nullptr;
-                GW2_AdvPreCreatePixelShader_t GW2_AdvPreCreatePixelShader = nullptr;
-                GW2_AdvPostCreatePixelShader_t GW2_AdvPostCreatePixelShader = nullptr;
-                GW2_AdvPreCreateRenderTarget_t GW2_AdvPreCreateRenderTarget = nullptr;
-                GW2_AdvPostCreateRenderTarget_t GW2_AdvPostCreateRenderTarget = nullptr;
-                GW2_AdvPreSetTexture_t GW2_AdvPreSetTexture = nullptr;
-                GW2_AdvPostSetTexture_t GW2_AdvPostSetTexture = nullptr;
-                GW2_AdvPreSetVertexShader_t GW2_AdvPreSetVertexShader = nullptr;
-                GW2_AdvPostSetVertexShader_t GW2_AdvPostSetVertexShader = nullptr;
-                GW2_AdvPreSetPixelShader_t GW2_AdvPreSetPixelShader = nullptr;
-                GW2_AdvPostSetPixelShader_t GW2_AdvPostSetPixelShader = nullptr;
-                GW2_AdvPreSetRenderTarget_t GW2_AdvPreSetRenderTarget = nullptr;
-                GW2_AdvPostSetRenderTarget_t GW2_AdvPostSetRenderTarget = nullptr;
-                GW2_AdvPreSetRenderState_t GW2_AdvPreSetRenderState = nullptr;
-                GW2_AdvPostSetRenderState_t GW2_AdvPostSetRenderState = nullptr;
-                GW2_AdvPreDrawIndexedPrimitive_t GW2_AdvPreDrawIndexedPrimitive = nullptr;
-                GW2_AdvPostDrawIndexedPrimitive_t GW2_AdvPostDrawIndexedPrimitive = nullptr;
+                GW2AddonLoad_t AddonLoad = nullptr;
+                GW2AddonDrawFrameBeforeGui_t AddonDrawFrameBeforeGui = nullptr;
+                GW2AddonDrawFrameBeforePostProcessing_t AddonDrawFrameBeforePostProcessing = nullptr;
+                GW2AddonDrawFrame_t AddonDrawFrame = nullptr;
+                GW2AddonHandleWndProc_t AddonHandleWndProc = nullptr;
+
+                GW2AddonAdvPreBeginScene_t AddonAdvPreBeginScene = nullptr;
+                GW2AddonAdvPostBeginScene_t AddonAdvPostBeginScene = nullptr;
+                GW2AddonAdvPreEndScene_t AddonAdvPreEndScene = nullptr;
+                GW2AddonAdvPostEndScene_t AddonAdvPostEndScene = nullptr;
+                GW2AddonAdvPreClear_t AddonAdvPreClear = nullptr;
+                GW2AddonAdvPostClear_t AddonAdvPostClear = nullptr;
+                GW2AddonAdvPreReset_t AddonAdvPreReset = nullptr;
+                GW2AddonAdvPostReset_t AddonAdvPostReset = nullptr;
+                GW2AddonAdvPrePresent_t AddonAdvPrePresent = nullptr;
+                GW2AddonAdvPostPresent_t AddonAdvPostPresent = nullptr;
+                GW2AddonAdvPreCreateTexture_t AddonAdvPreCreateTexture = nullptr;
+                GW2AddonAdvPostCreateTexture_t AddonAdvPostCreateTexture = nullptr;
+                GW2AddonAdvPreCreateVertexShader_t AddonAdvPreCreateVertexShader = nullptr;
+                GW2AddonAdvPostCreateVertexShader_t AddonAdvPostCreateVertexShader = nullptr;
+                GW2AddonAdvPreCreatePixelShader_t AddonAdvPreCreatePixelShader = nullptr;
+                GW2AddonAdvPostCreatePixelShader_t AddonAdvPostCreatePixelShader = nullptr;
+                GW2AddonAdvPreCreateRenderTarget_t AddonAdvPreCreateRenderTarget = nullptr;
+                GW2AddonAdvPostCreateRenderTarget_t AddonAdvPostCreateRenderTarget = nullptr;
+                GW2AddonAdvPreSetTexture_t AddonAdvPreSetTexture = nullptr;
+                GW2AddonAdvPostSetTexture_t AddonAdvPostSetTexture = nullptr;
+                GW2AddonAdvPreSetVertexShader_t AddonAdvPreSetVertexShader = nullptr;
+                GW2AddonAdvPostSetVertexShader_t AddonAdvPostSetVertexShader = nullptr;
+                GW2AddonAdvPreSetPixelShader_t AddonAdvPreSetPixelShader = nullptr;
+                GW2AddonAdvPostSetPixelShader_t AddonAdvPostSetPixelShader = nullptr;
+                GW2AddonAdvPreSetRenderTarget_t AddonAdvPreSetRenderTarget = nullptr;
+                GW2AddonAdvPostSetRenderTarget_t AddonAdvPostSetRenderTarget = nullptr;
+                GW2AddonAdvPreSetRenderState_t AddonAdvPreSetRenderState = nullptr;
+                GW2AddonAdvPostSetRenderState_t AddonAdvPostSetRenderState = nullptr;
+                GW2AddonAdvPreDrawIndexedPrimitive_t AddonAdvPreDrawIndexedPrimitive = nullptr;
+                GW2AddonAdvPostDrawIndexedPrimitive_t AddonAdvPostDrawIndexedPrimitive = nullptr;
 
                 void callDrawFunc(const std::function<void(void)>& func);
                 void callAdvFunc(const std::string& funcName, const std::function<void(void)>& func);

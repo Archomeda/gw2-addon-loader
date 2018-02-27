@@ -18,112 +18,103 @@ Make sure to read the comments there as well.
 
 using namespace std;
 
-// We defined our addon info struct globally
-GW2AddonInfo info = {};
-
 // Just a few states
 bool loader = false;
 HWND focusWindow;
 IDirect3DDevice9* device;
 int frame = 0;
 
+GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
+    // Our loading entrypoint.
+    // You can initialize whatever you want to initialize here.
+    focusWindow = hFocusWindow;
+    device = pDev;
+    return 0;
+}
+
+void GW2ADDON_CALL DrawBeforePostProcessing(IDirect3DDevice9* pDev) {
+    // One of our extra draw entrypoints.
+    // This gets called before the game adds post processing.
+    // Do NOT process longstanding tasks here.
+
+    // Drawing this text is painfully slow; this is just an example.
+    // Don't use this in your own addon.
+    LPD3DXFONT font;
+    RECT rect;
+    rect.left = 10;
+    rect.top = 50;
+    rect.right = rect.left + 400;
+    rect.bottom = rect.top + 16;
+    D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
+    wstring text = L"I am drawn behind the post processing layer";
+    font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 0));
+    font->Release();
+}
+
+void GW2ADDON_CALL DrawBeforeGui(IDirect3DDevice9* pDev) {
+    // One of our extra draw entrypoints.
+    // This gets called before the game draws its GUI.
+    // Do NOT process longstanding tasks here.
+
+    // Drawing this text is painfully slow; this is just an example.
+    // Don't use this in your own addon.
+    LPD3DXFONT font;
+    RECT rect;
+    rect.left = 10;
+    rect.top = 30;
+    rect.right = rect.left + 400;
+    rect.bottom = rect.top + 16;
+    D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
+    wstring text = L"I am drawn behind the GUI";
+    font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 255));
+    font->Release();
+}
+
+void GW2ADDON_CALL Draw(IDirect3DDevice9* pDev) {
+    // Our main draw entrypoint.
+    // Here you can draw whatever you want.
+    // Do NOT process longstanding tasks here.
+
+    // Drawing this text is painfully slow; this is just an example.
+    // Don't use this in your own addon.
+    ++frame;
+    LPD3DXFONT font;
+    RECT rect;
+    rect.left = 10;
+    rect.top = 10;
+    rect.right = rect.left + 400;
+    rect.bottom = rect.top + 16;
+    D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
+    wstring text = L"Example add-on - frame " + to_wstring(frame) + L" (loader = " + (loader ? L"true" : L"false") + L")";
+    font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 0));
+    font->Release();
+}
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    GW2ADDON_API GW2ADDON_RESULT GW2ADDON_CALL GW2_GetAddonInfo(GW2AddonInfo** addonInfo) {
-        // Export our info
-
-        // Make sure to check if we've already populated our struct so we don't do this again
-        if (!info.idSize) {
-            info.id = L"example-native";
-            info.idSize = wcslen(info.id);
-            info.name = L"Example Native Addon";
-            info.nameSize = wcslen(info.name);
-            info.author = L"Archomeda";
-            info.authorSize = wcslen(info.author);
-            info.description = L"An example to show how native addons work.";
-            info.descriptionSize = wcslen(info.description);
-            info.version = L"1.0";
-            info.versionSize = wcslen(info.version);
-            info.homepage = L"https://github.com/Archomeda/gw2-addon-loader";
-            info.homepageSize = wcslen(info.homepage);
-        }
-        *addonInfo = &info;
-        return 0;
+    GW2ADDON_API GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
+        // Export our information        
+        static GW2AddonAPIV1 addon;
+        addon.id = "example-native";
+        addon.name = "Example Native Addon";
+        addon.author = "Archomeda";
+        addon.version = "1.0";
+        addon.description = "An example to show how native addons work.";
+        addon.homepage = "https://github.com/Archomeda/gw2-addon-loader";
+        addon.Load = &Load;
+        addon.DrawFrameBeforePostProcessing = &DrawBeforePostProcessing;
+        addon.DrawFrameBeforeGui = &DrawBeforeGui;
+        addon.DrawFrame = &Draw;
+        return &addon;
     }
 
-    GW2ADDON_API GW2ADDON_RESULT GW2ADDON_CALL GW2_Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
-        // Our loading entrypoint.
-        // You can initialize whatever you want to initialize here.
-        focusWindow = hFocusWindow;
-        device = pDev;
-        return 0;
-    }
-
-    GW2ADDON_API GW2ADDON_RESULT GW2ADDON_CALL GW2_Unload() {
+    GW2ADDON_API void GW2ADDON_CALL GW2AddonRelease() {
         // Unload all used resources, do not neglect this.
         focusWindow = NULL;
         device = NULL;
-        return 0;
-    }
-
-    GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrameBeforePostProcessing(IDirect3DDevice9* pDev) {
-        // One of our extra draw entrypoints.
-        // This gets called before the game adds post processing.
-        // Do NOT process longstanding tasks here.
-
-        // Drawing this text is painfully slow; this is just an example.
-        // Don't use this in your own addon.
-        LPD3DXFONT font;
-        RECT rect;
-        rect.left = 10;
-        rect.top = 50;
-        rect.right = rect.left + 400;
-        rect.bottom = rect.top + 16;
-        D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
-        wstring text = L"I am drawn behind the post processing layer";
-        font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 0));
-        font->Release();
-    }
-
-    GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrameBeforeGui(IDirect3DDevice9* pDev) {
-        // One of our extra draw entrypoints.
-        // This gets called before the game draws its GUI.
-        // Do NOT process longstanding tasks here.
-
-        // Drawing this text is painfully slow; this is just an example.
-        // Don't use this in your own addon.
-        LPD3DXFONT font;
-        RECT rect;
-        rect.left = 10;
-        rect.top = 30;
-        rect.right = rect.left + 400;
-        rect.bottom = rect.top + 16;
-        D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
-        wstring text = L"I am drawn behind the GUI";
-        font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 255));
-        font->Release();
-    }
-
-    GW2ADDON_API void GW2ADDON_CALL GW2_DrawFrame(IDirect3DDevice9* pDev) {
-        // Our main draw entrypoint.
-        // Here you can draw whatever you want.
-        // Do NOT process longstanding tasks here.
-
-        // Drawing this text is painfully slow; this is just an example.
-        // Don't use this in your own addon.
-        ++frame;
-        LPD3DXFONT font;
-        RECT rect;
-        rect.left = 10;
-        rect.top = 10;
-        rect.right = rect.left + 400;
-        rect.bottom = rect.top + 16;
-        D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
-        wstring text = L"Example add-on - frame " + to_wstring(frame) + L" (loader = " + (loader ? L"true" : L"false") + L")";
-        font->DrawText(0, text.c_str(), text.length(), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 0));
-        font->Release();
     }
 
 #ifdef __cplusplus

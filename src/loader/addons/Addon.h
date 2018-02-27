@@ -25,7 +25,7 @@ namespace loader {
             const std::wstring GetFilePath() const { return this->filePath; }
             const std::wstring GetFileName() const { return this->fileName; }
             const std::wstring GetID();
-            const std::wstring GetProductName();
+            const std::wstring GetName();
             const std::wstring GetAuthor();
             const std::wstring GetDescription();
             const std::wstring GetVersion();
@@ -73,8 +73,7 @@ namespace loader {
             AddonType addonType = UnknownAddon;
             std::shared_ptr<types::ITypeImpl> typeImpl;
 
-            bool metaDataLoaded = false;
-            void LoadMetaData();
+            void LoadAddonType();
 
             std::chrono::steady_clock::rep durationLoad;
 

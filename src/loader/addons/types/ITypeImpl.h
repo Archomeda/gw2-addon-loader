@@ -41,7 +41,14 @@ namespace loader {
                 std::weak_ptr<Addon> GetAddon() const { return this->addon; }
                 void SetAddon(std::weak_ptr<Addon> addon) { this->addon = addon; }
 
-                virtual HMODULE GetHandle() const { return this->handle; }
+                virtual HMODULE GetHandle() const { return this->addonHandle; }
+
+                virtual const std::wstring GetID() const = 0;
+                virtual const std::wstring GetName() const = 0;
+                virtual const std::wstring GetAuthor() const { return L""; }
+                virtual const std::wstring GetDescription() const { return L""; }
+                virtual const std::wstring GetVersion() const { return L""; }
+                virtual const std::wstring GetHomepage() const { return L""; }
 
                 virtual const AddonSubType GetAddonSubType() const { return this->subType; }
                 virtual const std::wstring GetAddonSubTypeString() const;
@@ -110,7 +117,7 @@ namespace loader {
                 void StartTimeMeasure();
                 float EndTimeMeasure();
 
-                HMODULE handle = nullptr;
+                HMODULE addonHandle = nullptr;
 
             private:
                 AddonSubType subType;

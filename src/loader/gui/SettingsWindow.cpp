@@ -190,7 +190,7 @@ namespace loader {
                 stateString = ws2s(addon->GetTypeImpl()->GetAddonStateString());
                 type = ws2s(addon->GetAddonTypeString());
                 id = ws2s(addon->GetID());
-                productName = ws2s(addon->GetProductName());
+                productName = ws2s(addon->GetName());
                 description = ws2s(addon->GetDescription());
                 homepage = addon->GetHomepage();
             }
@@ -433,7 +433,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             int i = 2;
             for (const auto& addon : AddonsList) {
                 if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::LoadedState) {
-                    sstream << ws2s(addon->GetProductName()) << '\0';
+                    sstream << ws2s(addon->GetName()) << '\0';
                     if (this->selectedStatsType == i) {
                         selectedAddon = addon;
                     }

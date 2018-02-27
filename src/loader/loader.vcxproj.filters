@@ -51,9 +51,6 @@
     <ClInclude Include="addons\types\ITypeImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="addons\types\LegacyAddonImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="addons\exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -117,9 +114,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="addons\types\ITypeImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\types\LegacyAddonImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="addons\types\DummyAddonImpl.cpp">
