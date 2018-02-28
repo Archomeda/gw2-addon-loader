@@ -11,9 +11,7 @@ namespace loader {
 
         enum AddonType {
             UnknownAddon,
-            NativeAddon,
-            LegacyAddon,
-            ChainAddon
+            NativeAddon
         };
 
         class Addon : public std::enable_shared_from_this<Addon> {
@@ -24,15 +22,15 @@ namespace loader {
 
             const std::string GetFilePath() const { return this->filePath; }
             const std::string GetFileName() const { return this->fileName; }
-            const std::string GetID();
-            const std::string GetName();
-            const std::string GetAuthor();
-            const std::string GetDescription();
-            const std::string GetVersion();
-            const std::string GetHomepage();
+            const std::string GetID() const;
+            const std::string GetName() const;
+            const std::string GetAuthor() const;
+            const std::string GetDescription() const;
+            const std::string GetVersion() const;
+            const std::string GetHomepage() const;
 
-            const AddonType GetAddonType();
-            const std::string GetAddonTypeString();
+            const AddonType GetAddonType() const;
+            const std::string GetAddonTypeString() const;
 
             bool IsLoaded() const;
 
@@ -55,9 +53,9 @@ namespace loader {
             bool Load();
             bool Unload();
 
-            bool SupportsLoading();
-            bool SupportsSettings();
-            bool SupportsHomepage();
+            bool SupportsLoading() const;
+            bool SupportsSettings() const;
+            bool SupportsHomepage() const;
 
             bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

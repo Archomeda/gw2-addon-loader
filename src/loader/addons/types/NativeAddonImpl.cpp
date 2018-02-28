@@ -158,13 +158,6 @@ namespace loader {
                     }
                 }
 
-                if (this->AddonDrawFrame) {
-                    this->ChangeSubType(AddonSubType::GraphicsAddon);
-                }
-                else {
-                    this->ChangeSubType(AddonSubType::NonGraphicsAddon);
-                }
-
                 if (this->AddonDrawFrameBeforeGui) ++ActiveAddonHookCounts.DrawFrameBeforeGui;
                 if (this->AddonDrawFrameBeforePostProcessing) ++ActiveAddonHookCounts.DrawFrameBeforePostProcessing;
                 if (this->AddonDrawFrame) ++ActiveAddonHookCounts.DrawFrame;

@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
+using namespace loader::addons;
 using namespace loader::utils;
 
 namespace loader {
@@ -51,26 +52,42 @@ namespace loader {
     }
 
 
-    bool Config::GetAddonEnabled(const string& fileName) const {
-        wstring wFileName = u16(fileName);
-        return this->ini.GetBoolValue(wFileName.c_str(), L"enabled", false);
+    bool Config::GetAddonEnabled(const string& addonId) const {
+        wstring key = u16("addon-" + addonId);
+        return this->ini.GetBoolValue(key.c_str(), L"enabled", false);
     }
 
-    void Config::SetAddonEnabled(const string& fileName, bool enabled) {
-        wstring wFileName = u16(fileName);
-        this->ini.SetBoolValue(wFileName.c_str(), L"enabled", enabled);
+    bool Config::GetAddonEnabled(const Addon* const addon) const {
+        return this->GetAddonEnabled(addon->GetID());
+    }
+
+    void Config::SetAddonEnabled(const string& addonId, bool enabled) {
+        wstring key = u16("addon-" + addonId);
+        this->ini.SetBoolValue(key.c_str(), L"enabled", enabled);
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    int Config::GetAddonOrder(const string& fileName) const {
-        wstring wFileName = u16(fileName);
-        return this->ini.GetLongValue(wFileName.c_str(), L"order", -1);
+    void Config::SetAddonEnabled(const Addon* const addon, bool enabled) {
+        this->SetAddonEnabled(addon->GetID(), enabled);
     }
 
-    void Config::SetAddonOrder(const string& fileName, int order) {
-        wstring wFileName = u16(fileName);
-        this->ini.SetLongValue(wFileName.c_str(), L"order", order);
+    int Config::GetAddonOrder(const string& addonId) const {
+        wstring key = u16("addon-" + addonId);
+        return this->ini.GetLongValue(key.c_str(), L"order", -1);
+    }
+
+    int Config::GetAddonOrder(const Addon* const addon) const {
+        return this->GetAddonOrder(addon->GetID());
+    }
+
+    void Config::SetAddonOrder(const string& addonId, int order) {
+        wstring key = u16("addon-" + addonId);
+        this->ini.SetLongValue(key.c_str(), L"order", order);
         this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetAddonOrder(const Addon* const addon, int order) {
+        this->SetAddonOrder(addon->GetID(), order);
     }
 
 

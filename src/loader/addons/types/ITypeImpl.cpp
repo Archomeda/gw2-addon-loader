@@ -38,23 +38,6 @@ namespace loader {
                 }
             }
 
-            const string ITypeImpl::GetAddonSubTypeString() const {
-                switch (this->GetAddonSubType()) {
-                case AddonSubType::GraphicsAddon:
-                    return "G";
-                case AddonSubType::NonGraphicsAddon:
-                    return "NG";
-                case AddonSubType::PointerReplacingAddon:
-                    return "PR";
-                case AddonSubType::VirtualTableReplacingAddon:
-                    return "VTR";
-                case AddonSubType::WrapperAddon:
-                    return "WR";
-                default:
-                    return "";
-                }
-            }
-
             void ITypeImpl::AddDurationHistory(vector<float>* durationHistory, float value) {
                 if (AppConfig.GetShowDebugFeatures()) {
                     if (durationHistory->size() == 4 * 60) {

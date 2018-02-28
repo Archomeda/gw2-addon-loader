@@ -26,49 +26,44 @@ namespace loader {
 
 
         bool Addon::IsEnabledByConfig() {
-            return AppConfig.GetAddonEnabled(this->GetFileName());
+            return AppConfig.GetAddonEnabled(this);
         }
 
 
-        const string Addon::GetID() {
+        const string Addon::GetID() const {
             return this->GetTypeImpl()->GetID();
         }
 
-        const string Addon::GetName() {
+        const string Addon::GetName() const {
             return this->GetTypeImpl()->GetName();
         }
 
-        const string Addon::GetAuthor() {
+        const string Addon::GetAuthor() const {
             return this->GetTypeImpl()->GetAuthor();
         }
 
-        const string Addon::GetDescription() {
+        const string Addon::GetDescription() const {
             return this->GetTypeImpl()->GetDescription();
         }
 
-        const string Addon::GetVersion() {
+        const string Addon::GetVersion() const {
             return this->GetTypeImpl()->GetVersion();
         }
 
-        const string Addon::GetHomepage() {
+        const string Addon::GetHomepage() const {
             return this->GetTypeImpl()->GetHomepage();
         }
 
 
-        const AddonType Addon::GetAddonType() {
+        const AddonType Addon::GetAddonType() const {
             return this->addonType;
         }
 
-        const string Addon::GetAddonTypeString() {
+        const string Addon::GetAddonTypeString() const {
             auto impl = this->GetTypeImpl();
-            string subType = impl ? impl->GetAddonSubTypeString() : "";
             switch (this->addonType) {
             case AddonType::NativeAddon:
-                return "Native" + subType;
-            case AddonType::LegacyAddon:
-                return "Legacy" + subType;
-            case AddonType::ChainAddon:
-                return "Chain" + subType;
+                return "Native";
             default:
                 return "Unknown";
             }
@@ -86,12 +81,9 @@ namespace loader {
             case AddonType::NativeAddon:
                 this->typeImpl = make_shared<types::NativeAddonImpl>(this->filePath);
                 break;
-            case AddonType::LegacyAddon:
-            case AddonType::ChainAddon:
-                // Our addon is not native
-                //TODO: Reserved to possible future use
             default:
                 this->typeImpl = make_shared<types::DummyAddonImpl>(this->filePath);
+                break;
             }
             this->typeImpl->SetAddon(this->shared_from_this());           
         }
@@ -147,7 +139,7 @@ namespace loader {
         }
 
 
-        bool Addon::SupportsLoading() {
+        bool Addon::SupportsLoading() const {
             switch (this->GetAddonType()) {
             case AddonType::NativeAddon:
                 return true;
@@ -155,11 +147,11 @@ namespace loader {
             return false;
         }
 
-        bool Addon::SupportsSettings() {
+        bool Addon::SupportsSettings() const {
             return false;
         }
 
-        bool Addon::SupportsHomepage() {
+        bool Addon::SupportsHomepage() const {
             return !this->GetHomepage().empty();
         }
 
@@ -174,7 +166,7 @@ namespace loader {
             catch (const exceptions::AddonWndProcException& ex) {
                 GetLog()->error("Failed to handle WndProc in addon: {0}: {1}", this->GetFileName(), ex.what());
                 GetLog()->error("Addon will be disabled on next restart");
-                AppConfig.SetAddonEnabled(this->GetFileName(), false);
+                AppConfig.SetAddonEnabled(this, false);
             }
             return false;
         }

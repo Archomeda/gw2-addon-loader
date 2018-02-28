@@ -114,7 +114,7 @@ namespace loader {
         }
 
 
-        bool SettingsWindow::ImGuiAddonsList(const char* label, int* current_item, const vector<shared_ptr<Addon>> addons, const ImVec2& listBoxSize, float listItemHeight) {
+        bool SettingsWindow::ImGuiAddonsList(const char* label, int* current_item, const vector<Addon*> addons, const ImVec2& listBoxSize, float listItemHeight) {
             if (!ImGui::ListBoxHeader(label, listBoxSize)) {
                 return false;
             }
@@ -127,7 +127,6 @@ namespace loader {
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                     const bool item_selected = (i == *current_item);
                     auto addon = addons.at(i);
-                    string item_text = addon->GetID();
 
                     ImGui::PushID(i);
                     if (ImGui::Selectable("##dummy", item_selected, 0, ImVec2(0, listItemHeight))) {
@@ -145,10 +144,10 @@ namespace loader {
                     ImGui::PopFont();
                     ImGui::SetCursorPos(ImVec2(oldPos.x + 32 + style.ItemSpacing.x, oldPos.y - style.ItemSpacing.y - ((listItemHeight + ImGui::GetTextLineHeightWithSpacing()) / 2)));
                     if (addon->SupportsLoading()) {
-                        ImGui::Text(item_text.c_str());
+                        ImGui::Text(addon->GetName().c_str());
                     }
                     else {
-                        ImGui::TextDisabled(item_text.c_str());
+                        ImGui::TextDisabled(addon->GetName().c_str());
                     }
                     ImGui::SetCursorPos(oldPos);
                     ImGui::PopID();
@@ -161,10 +160,10 @@ namespace loader {
         void SettingsWindow::RenderTabAddons() {
             ImGuiStyle style = ImGui::GetStyle();
            
-            vector<shared_ptr<Addon>> addonsList;
+            vector<Addon*> addonsList;
             for (auto addon : AddonsList) {
                 if (AppConfig.GetShowUnsupportedAddons() || addon->SupportsLoading()) {
-                    addonsList.push_back(addon);
+                    addonsList.push_back(addon.get());
                 }
                 else {
                     break;
@@ -172,28 +171,9 @@ namespace loader {
             }
 
             // Get selected addon info
-            int selectedAddon = this->selectedAddon;
-            shared_ptr<Addon> addon = nullptr;
-            string filePath;
-            string fileName;
-            types::AddonState state;
-            string stateString;
-            string type;
-            string id;
-            string productName;
-            string description;
-            string homepage;
-            if (selectedAddon > -1 && selectedAddon < static_cast<int>(AddonsList.size())) {
-                addon = AddonsList[selectedAddon];
-                filePath = addon->GetFilePath();
-                fileName = addon->GetFileName();
-                state = addon->GetTypeImpl()->GetAddonState();
-                stateString = addon->GetTypeImpl()->GetAddonStateString();
-                type = addon->GetAddonTypeString();
-                id = addon->GetID();
-                productName = addon->GetName();
-                description = addon->GetDescription();
-                homepage = addon->GetHomepage();
+            Addon* addon = nullptr;
+            if (this->selectedAddon >= static_cast<int>(addonsList.size())) {
+                this->selectedAddon = -1;
             }
 
             // Left side-panel
@@ -209,13 +189,18 @@ namespace loader {
                     }
                 }
                 ImGui::EndChild();
+                
+                if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size())) {
+                    // Set the selected addon after the listbox, in case the listbox selection has changed in this frame
+                    addon = addonsList[this->selectedAddon];
+                }
 
                 // Button group for sorting addons
                 ImVec2 buttonSize((200 - style.ItemSpacing.x) / 2, 0);
-                if (selectedAddon > 0 && selectedAddon < addonsList.size() && addon->SupportsLoading()) {
+                if (this->selectedAddon > 0 && this->selectedAddon < addonsList.size() && addon->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_UPWARD, buttonSize)) {
-                        this->MoveAddonPositionUp(filePath);
-                        this->SelectAddon(filePath);
+                        this->MoveAddonPositionUp(addon);
+                        this->SelectAddon(addon);
                     }
                     if (ImGui::IsItemHovered()) {
                         ImGui::SetTooltip("Move selected addon up");
@@ -225,10 +210,10 @@ namespace loader {
                     ImGui::Dummy(buttonSize);
                 }
                 ImGui::SameLine();
-                if (selectedAddon > -1 && selectedAddon < addonsList.size() - 1 && addonsList.at(selectedAddon + 1)->SupportsLoading()) {
+                if (this->selectedAddon > -1 && this->selectedAddon < addonsList.size() - 1 && addonsList.at(this->selectedAddon + 1)->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_DOWNWARD, buttonSize)) {
-                        this->MoveAddonPositionDown(filePath);
-                        this->SelectAddon(filePath);
+                        this->MoveAddonPositionDown(addon);
+                        this->SelectAddon(addon);
                     }
                     if (ImGui::IsItemHovered()) {
                         ImGui::SetTooltip("Move selected addon down");
@@ -239,23 +224,14 @@ namespace loader {
             ImGui::SameLine();
 
             // Main panel
-            if (selectedAddon > -1) {
+            if (this->selectedAddon > -1) {
                 ImGui::BeginGroup();
                 {
                     // Addon information
                     ImGui::BeginChild("##Addon", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
                     {
                         // Header
-                        ImGui::BeginGroup();
-                        {
-                            if (!productName.empty()) {
-                                ImGui::Text(productName.c_str());
-                            }
-                            else {
-                                ImGui::Text(id.c_str());
-                            }
-                        }
-                        ImGui::EndGroup();
+                        ImGui::Text((addon->GetName() + " " + addon->GetVersion()).c_str());
                         ImGui::Separator();
 
                         // Other stuff
@@ -263,7 +239,7 @@ namespace loader {
                             ImGui::Text("Status:");
                             ImGui::SameLine();
                             ImColor color(120, 120, 120);
-                            switch (state) {
+                            switch (addon->GetTypeImpl()->GetAddonState()) {
                             case types::AddonState::LoadingState:
                                 color = ImColor(255, 255, 0);
                                 break;
@@ -278,17 +254,17 @@ namespace loader {
                                 color = ImColor(255, 0, 0);
                                 break;
                             }
-                            ImGui::TextColored(color, stateString.c_str());
+                            ImGui::TextColored(color, addon->GetTypeImpl()->GetAddonStateString().c_str());
                         }
                         else {
                             ImGui::PushTextWrapPos();
-                            ImGui::Text("This addon type is not supported by the addon loader: %s.", type.c_str());
+                            ImGui::Text("This addon type is not supported by the addon loader: %s.", addon->GetAddonTypeString().c_str());
                             ImGui::PopTextWrapPos();
                         }
 
-                        if (!description.empty()) {
+                        if (!addon->GetDescription().empty()) {
                             ImGui::Spacing();
-                            ImGui::TextWrapped(description.c_str());
+                            ImGui::TextWrapped(addon->GetDescription().c_str());
                         }
                     }
                     ImGui::EndChild();
@@ -297,9 +273,9 @@ namespace loader {
                     {
                         if (addon->SupportsLoading()) {
                             // Activate / deactivate button
-                            if (state == types::AddonState::LoadedState) {
+                            if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::LoadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Deactivate", ImVec2(100, 0))) {
-                                    AppConfig.SetAddonEnabled(fileName, false);
+                                    AppConfig.SetAddonEnabled(addon, false);
                                     addon->Unload();
                                     if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::DeactivatedOnRestartState) {
                                         gui::MessageWindow::ShowMessageWindow(
@@ -308,13 +284,13 @@ namespace loader {
                                     }
                                 }
                             }
-                            else if (state == types::AddonState::UnloadedState) {
+                            else if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::UnloadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Activate", ImVec2(100, 0))) {
                                     if (addon->Load()) {
-                                        AppConfig.SetAddonEnabled(fileName, false);
+                                        AppConfig.SetAddonEnabled(addon, false);
                                         auto state = addon->GetTypeImpl()->GetAddonState();
                                         if (state == types::AddonState::LoadedState) {
-                                            AppConfig.SetAddonEnabled(fileName, true);
+                                            AppConfig.SetAddonEnabled(addon, true);
                                         }
                                         else if (state == types::AddonState::ActivatedOnRestartState) {
                                             gui::MessageWindow::ShowMessageWindow(
@@ -323,7 +299,7 @@ namespace loader {
                                         }
                                     }
                                     else {
-                                        AppConfig.SetAddonEnabled(fileName, false);
+                                        AppConfig.SetAddonEnabled(addon, false);
                                         addon->Unload();
                                     }
                                 }
@@ -341,7 +317,7 @@ namespace loader {
                         // Info button
                         ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 176 - style.ItemSpacing.x - 8); // -8 for the resize grip
                         if (ImGui::Button(ICON_MD_INFO " Details", ImVec2(80, 0))) {
-                            AddonInfoWnd->SetSelectedAddon(this->selectedAddon);
+                            AddonInfoWnd->SetAddon(addon);
                             ShowWindow(AddonInfoWnd);
                         }
 
@@ -349,7 +325,7 @@ namespace loader {
                         if (addon->SupportsHomepage()) {
                             ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 96 - 8); // -8 for the resize grip
                             if (ImGui::Button(ICON_MD_HOME " Homepage", ImVec2(96, 0))) {
-                                wstring wHomepage = u16(homepage);
+                                wstring wHomepage = u16(addon->GetHomepage());
                                 ShellExecute(0, 0, wHomepage.c_str(), 0, 0, SW_SHOW);
                             }
                         }
@@ -392,10 +368,6 @@ The author of this library is not associated with ArenaNet nor with any of its p
         }
 
         void SettingsWindow::RenderTabSettings() {
-            if (ImGui::Checkbox("Show unsupported addons", &this->showUnsupportedAddons)) {
-                AppConfig.SetShowUnsupportedAddons(this->showUnsupportedAddons);
-            }
-
             set<uint_fast8_t> pressedKeys = GetPressedKeyboardKeys();
             string keysStr = GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind);
             char keysBuff[64];
@@ -421,6 +393,10 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
             else if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("Click to activate the field and press a new keybind. Use Escape to cancel.");
+            }
+
+            if (ImGui::Checkbox("Show unsupported addons", &this->showUnsupportedAddons)) {
+                AppConfig.SetShowUnsupportedAddons(this->showUnsupportedAddons);
             }
 
             if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
@@ -482,41 +458,41 @@ The author of this library is not associated with ArenaNet nor with any of its p
         }
 
 
-        void SettingsWindow::MoveAddonPositionUp(const string& fileName) {
+        void SettingsWindow::MoveAddonPositionUp(const Addon* const addon) {
             int index = -1;
             for (auto it = addons::AddonsList.rbegin(); it != addons::AddonsList.rend(); ++it) {
-                if ((*it)->GetFilePath() == fileName) {
+                if ((*it)->GetID() == addon->GetID()) {
                     index = static_cast<int>(it - addons::AddonsList.rbegin());
                 }
                 else if (index > -1) {
-                    AppConfig.SetAddonOrder((*it)->GetFileName(), static_cast<int>(addons::AddonsList.size() - (index + 1)));
+                    AppConfig.SetAddonOrder(it->get(), static_cast<int>(addons::AddonsList.size() - (index + 1)));
                     iter_swap(addons::AddonsList.rbegin() + index, it);
-                    AppConfig.SetAddonOrder((*it)->GetFileName(), static_cast<int>(addons::AddonsList.size() - (index + 2)));
+                    AppConfig.SetAddonOrder(it->get(), static_cast<int>(addons::AddonsList.size() - (index + 2)));
                     break;
                 }
             }
         }
 
-        void SettingsWindow::MoveAddonPositionDown(const string& fileName) {
+        void SettingsWindow::MoveAddonPositionDown(const Addon* const addon) {
             int index = -1;
             for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-                if ((*it)->GetFilePath() == fileName) {
+                if ((*it)->GetID() == addon->GetID()) {
                     index = static_cast<int>(it - addons::AddonsList.begin());
                 }
                 else if (index > -1) {
-                    AppConfig.SetAddonOrder((*it)->GetFileName(), index);
+                    AppConfig.SetAddonOrder(it->get(), index);
                     iter_swap(addons::AddonsList.begin() + index, it);
-                    AppConfig.SetAddonOrder((*it)->GetFileName(), index + 1);
+                    AppConfig.SetAddonOrder(it->get(), index + 1);
                     break;
                 }
             }
         }
 
-        void SettingsWindow::SelectAddon(const string& fileName) {
+        void SettingsWindow::SelectAddon(const Addon* const addon) {
             int index = -1;
             for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
                 index++;
-                if ((*it)->GetFilePath() == fileName) {
+                if ((*it)->GetID() == addon->GetID()) {
                     this->selectedAddon = index;
                     break;
                 }

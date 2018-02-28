@@ -14,15 +14,6 @@ namespace loader {
 
         namespace types {
 
-            enum AddonSubType {
-                NoSubType,
-                GraphicsAddon,
-                NonGraphicsAddon,
-                PointerReplacingAddon,
-                VirtualTableReplacingAddon,
-                WrapperAddon
-            };
-
             enum AddonState {
                 UnknownState,
                 DeactivatedOnRestartState,
@@ -49,9 +40,6 @@ namespace loader {
                 virtual const std::string GetDescription() const { return ""; }
                 virtual const std::string GetVersion() const { return ""; }
                 virtual const std::string GetHomepage() const { return ""; }
-
-                virtual const AddonSubType GetAddonSubType() const { return this->subType; }
-                virtual const std::string GetAddonSubTypeString() const;
 
                 virtual const AddonState GetAddonState() const { return this->state; }
                 virtual const std::string GetAddonStateString() const;
@@ -104,7 +92,6 @@ namespace loader {
                 virtual const std::vector<float> GetDurationHistoryDrawFrame() { return this->durationHistoryDrawFrame; }
 
             protected:
-                virtual void ChangeSubType(AddonSubType type) { this->subType = type; }
                 virtual void ChangeState(AddonState state) { this->state = state; }
 
                 std::vector<float> durationHistoryDrawFrameBeforeGui;
@@ -120,7 +107,6 @@ namespace loader {
                 HMODULE addonHandle = nullptr;
 
             private:
-                AddonSubType subType;
                 AddonState state = AddonState::UnloadedState;
                 std::weak_ptr<Addon> addon;
             };

@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.h"
+#include "../addons/addon.h"
 
 namespace loader {
     namespace gui {
@@ -8,12 +9,12 @@ namespace loader {
         public:
             AddonInfoWindow();
 
-            void SetSelectedAddon(int selectedAddon) { this->selectedAddon = selectedAddon; }
+            void SetAddon(const addons::Addon* const addon) { this->addon = addon; }
 
             void Render() override;
 
         protected:
-            int selectedAddon = -1;
+            const addons::Addon* addon = nullptr;
         };
     
     }

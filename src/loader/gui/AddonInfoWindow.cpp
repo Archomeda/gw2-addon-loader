@@ -15,40 +15,25 @@ namespace loader {
         }
 
         void AddonInfoWindow::Render() {
-            // Get selected addon info
-            int selectedAddon = this->selectedAddon;
-            shared_ptr<addons::Addon> addon = nullptr;
-            string addonName;
-            string version;
-            string author;
-            string fileName;
-            string type;
-            if (selectedAddon > -1 && selectedAddon < static_cast<int>(addons::AddonsList.size())) {
-                addon = addons::AddonsList[selectedAddon];
-                addonName = addon->GetName();
-                addonName = !addonName.empty() ? addonName : addon->GetID();
-                version = addon->GetVersion();
-                author = addon->GetAuthor();
-                fileName = addon->GetFileName();
-                type = addon->GetAddonTypeString();
-            }
-
             // Header
-            ImGui::Text(addonName.c_str());
+            ImGui::Text(this->addon->GetName().c_str());
             ImGui::Separator();
 
             // Other stuff
-            if (!version.empty()) {
-                ImGui::Text("Version: %s", version.c_str());
+            if (!this->addon->GetID().empty()) {
+                ImGui::Text("ID: %s", this->addon->GetID().c_str());
             }
-            if (!author.empty()) {
-                ImGui::Text("Author: %s", author.c_str());
+            if (!this->addon->GetVersion().empty()) {
+                ImGui::Text("Version: %s", this->addon->GetVersion().c_str());
             }
-            if (!fileName.empty()) {
-                ImGui::Text("File name: %s", fileName.c_str());
+            if (!this->addon->GetAuthor().empty()) {
+                ImGui::Text("Author: %s", this->addon->GetAuthor().c_str());
             }
-            if (!type.empty()) {
-                ImGui::Text("Type: %s", type.c_str());
+            if (!this->addon->GetFileName().empty()) {
+                ImGui::Text("File name: %s", this->addon->GetFileName().c_str());
+            }
+            if (!this->addon->GetAddonTypeString().empty()) {
+                ImGui::Text("Type: %s", this->addon->GetAddonTypeString().c_str());
             }
         }
     }
