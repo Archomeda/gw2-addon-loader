@@ -26,6 +26,12 @@ namespace loader {
     };
 
     void ProcessInputMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+        if (msg == WM_KILLFOCUS) {
+            // Lost focus, reset our pressed keys
+            pressedKeys.clear();
+            return;
+        }
+
         struct EventKey {
             uint_fast8_t vk;
             bool down;
