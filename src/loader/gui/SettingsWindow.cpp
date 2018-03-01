@@ -136,12 +136,19 @@ namespace loader {
 
                     ImVec2 oldPos = ImGui::GetCursorPos();
                     ImGui::SetCursorPosY(oldPos.y - listItemHeight);
-                    //TODO: Draw temporary icon here until we have addon specific icons
-                    ImGui::PushFont(FontIconButtons);
-                    if (addon->SupportsLoading()) {
-                        ImGui::Text(ICON_MD_EXTENSION);
+                    IDirect3DTexture9* icon = addon->GetIcon();
+                    if (icon) {
+                        // Dedicated addon icon
+                        ImGui::Image(icon, ImVec2(32, 32));
                     }
-                    ImGui::PopFont();
+                    else {
+                        // Fallback generic icon
+                        ImGui::PushFont(FontIconButtons);
+                        if (addon->SupportsLoading()) {
+                            ImGui::Text(ICON_MD_EXTENSION);
+                        }
+                        ImGui::PopFont();
+                    }
                     ImGui::SetCursorPos(ImVec2(oldPos.x + 32 + style.ItemSpacing.x, oldPos.y - style.ItemSpacing.y - ((listItemHeight + ImGui::GetTextLineHeightWithSpacing()) / 2)));
                     if (addon->SupportsLoading()) {
                         ImGui::Text(addon->GetName().c_str());

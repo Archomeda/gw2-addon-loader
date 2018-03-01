@@ -299,8 +299,17 @@ typedef struct {
     // The addon homepage URL
     const char* homepage;
 
-    void* icon; // Reserved
-    void* iconSize; // Reserved
+    // The addon icon, should be 32x32 pixels
+    // This is a pointer that should point to either:
+    //  - The already loaded image in memory
+    //    In this case set the iconSize to the image size in bytes
+    //    NOTE: You are responsible for releasing the original image data in memory, if needed
+    //  - The already loaded texture in memory (type should be IDirect3DTexture9*)
+    //    In this case leave the iconSize as -1
+    //    NOTE: You are responsible for releasing the D3D9 texture
+    // Supported image types can be found at https://msdn.microsoft.com/en-US/library/windows/desktop/bb172803(v=vs.85).aspx under the Remarks section
+    void* icon;
+    int iconSize = -1;
 
     void* updateMethod; // Reserved
 

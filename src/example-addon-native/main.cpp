@@ -12,6 +12,7 @@ Make sure to read the comments there as well.
 #include <d3d9.h>
 #include <d3dx9core.h>
 #include <string>
+#include "resource.h"
 
 // This is our addon include file
 #include "../../include/gw2addon-native.h"
@@ -19,6 +20,7 @@ Make sure to read the comments there as well.
 using namespace std;
 
 // Just a few states
+HMODULE dllModule;
 bool loader = false;
 HWND focusWindow;
 IDirect3DDevice9* device;
@@ -108,6 +110,14 @@ extern "C" {
         addon.DrawFrameBeforePostProcessing = &DrawBeforePostProcessing;
         addon.DrawFrameBeforeGui = &DrawBeforeGui;
         addon.DrawFrame = &Draw;
+
+        HRSRC hIconResInfo = FindResource(dllModule, MAKEINTRESOURCE(IDB_PNGICON), L"PNG");
+        HGLOBAL hIconRes = hIconResInfo ? LoadResource(dllModule, hIconResInfo) : NULL;
+        if (hIconRes) {
+            addon.icon = LockResource(hIconRes);
+            addon.iconSize = SizeofResource(dllModule, hIconResInfo);
+        }
+
         return &addon;
     }
 
@@ -147,6 +157,8 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
             // Loaded through other means.
             loader = false;
         }
+
+        dllModule = hModule;
 
         break;
     case DLL_PROCESS_DETACH:

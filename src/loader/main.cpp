@@ -119,14 +119,14 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
         SetWindowLongPtr(hFocusWindow, GWLP_WNDPROC, (LONG_PTR)&WndProc);
     }
 
-    // Initialize addons
-    GetLog()->info("Initializing addons");
-    addons::InitializeAddons(hooks::SDKVersion, d3d9);
-
     return D3D_OK;
 }
 
 void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
+    // Initialize addons
+    GetLog()->info("Initializing addons");
+    addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
+
     // Create textures
     gui::LoadTextures(dllModule, pDeviceInterface);
 

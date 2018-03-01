@@ -1,4 +1,5 @@
 #include "NativeAddonImpl.h"
+#include <d3dx9tex.h>
 #include <exception>
 #include <filesystem>
 #include "../Addon.h"
@@ -92,6 +93,20 @@ namespace loader {
                     this->AddonAdvPostSetRenderState = v1->AdvPostSetRenderState;
                     this->AddonAdvPreDrawIndexedPrimitive = v1->AdvPreDrawIndexedPrimitive;
                     this->AddonAdvPostDrawIndexedPrimitive = v1->AdvPostDrawIndexedPrimitive;
+
+                    if (v1->icon) {
+                        this->iconManaged = v1->iconSize > -1;
+                        if (this->iconManaged) {
+                            // Icon is just image data, we have to create the texture
+                            auto addon = this->GetAddon().lock();
+                            D3DXCreateTextureFromFileInMemory(addon->GetD3DDevice9(), v1->icon, v1->iconSize, &this->icon);
+                            this->iconManaged = true;
+                        }
+                        else {
+                            // Icon is already a loaded texture
+                            this->icon = reinterpret_cast<IDirect3DTexture9*>(v1->icon);
+                        }
+                    }
                 }
                 else {
                     this->ChangeState(AddonState::ErroredState);

@@ -17,7 +17,8 @@ namespace loader {
                 virtual const std::string GetDescription() const override { return this->description; }
                 virtual const std::string GetVersion() const override { return this->version; }
                 virtual const std::string GetHomepage() const override { return this->homepage; }
-                
+                virtual IDirect3DTexture9* GetIcon() const override { return this->icon; }
+
                 virtual bool SupportsHotLoading() const override { return true; };
                 virtual void Initialize() override;
                 virtual void Uninitialize() override;
@@ -65,14 +66,16 @@ namespace loader {
                 virtual void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) override;
 
             private:
-                std::string filePath;
-                std::string fileName;
-                std::string id;
-                std::string name;
-                std::string author;
-                std::string description;
-                std::string version;
-                std::string homepage;
+                std::string filePath = "";
+                std::string fileName = "";
+                std::string id = "";
+                std::string name = "";
+                std::string author = "";
+                std::string description = "";
+                std::string version = "";
+                std::string homepage = "";
+                IDirect3DTexture9* icon = nullptr;
+                bool iconManaged = false;
 
                 GW2AddonInitialize_t AddonInitialize = nullptr;
                 GW2AddonRelease_t AddonRelease = nullptr;

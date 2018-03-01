@@ -22,12 +22,13 @@ namespace loader {
 
             const std::string GetFilePath() const { return this->filePath; }
             const std::string GetFileName() const { return this->fileName; }
-            const std::string GetID() const;
-            const std::string GetName() const;
-            const std::string GetAuthor() const;
-            const std::string GetDescription() const;
-            const std::string GetVersion() const;
-            const std::string GetHomepage() const;
+            const std::string GetID() const { return this->GetTypeImpl()->GetID(); }
+            const std::string GetName() const { return this->GetTypeImpl()->GetName(); }
+            const std::string GetAuthor() const { return this->GetTypeImpl()->GetAuthor(); }
+            const std::string GetDescription() const { return this->GetTypeImpl()->GetDescription(); }
+            const std::string GetVersion() const { return this->GetTypeImpl()->GetVersion(); }
+            const std::string GetHomepage() const { return this->GetTypeImpl()->GetHomepage(); }
+            IDirect3DTexture9* GetIcon() const { return this->GetTypeImpl()->GetIcon(); }
 
             const AddonType GetAddonType() const;
             const std::string GetAddonTypeString() const;
@@ -43,8 +44,6 @@ namespace loader {
             void SetSdkVersion(UINT sdkVersion) { this->sdkVersion = sdkVersion; }
             IDirect3D9* GetD3D9() const { return this->d3d9; }
             void SetD3D9(IDirect3D9* d3d9) { this->d3d9 = d3d9; }
-            IDirect3D9Ex* GetD3D9Ex() const { return this->d3d9Ex; }
-            void SetD3D9Ex(IDirect3D9Ex* d3d9Ex) { this->d3d9Ex = d3d9Ex; }
             IDirect3DDevice9* GetD3DDevice9() const { return this->d3ddevice9; }
             void SetD3DDevice9(IDirect3DDevice9* device) { this->d3ddevice9 = device; }
             HWND GetFocusWindow() const { return this->focusWindow; }
@@ -64,12 +63,6 @@ namespace loader {
         private:
             std::string filePath;
             std::string fileName;
-            std::string id;
-            std::string productName;
-            std::string author;
-            std::string description;
-            std::string version;
-            std::string homepage;
             AddonType addonType = UnknownAddon;
             std::shared_ptr<types::ITypeImpl> typeImpl;
 

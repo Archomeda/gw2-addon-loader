@@ -71,11 +71,12 @@ namespace loader {
         }
 
 
-        void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9) {
+        void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9, IDirect3DDevice9* device) {
             GetLog()->debug("loader::addons::InitializeAddons()");
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                 (*it)->SetSdkVersion(sdkVersion);
                 (*it)->SetD3D9(d3d9);
+                (*it)->SetD3DDevice9(device);
                 (*it)->Initialize();
             }
             sort(AddonsList.begin(), AddonsList.end(), sortAddonsFunc);
@@ -83,14 +84,14 @@ namespace loader {
 
         void UninitializeAddons() {
             GetLog()->debug("loader::addons::UninitializeAddons()");
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                 (*it)->Uninitialize();
             }
         }
 
         void LoadAddons(HWND hFocusWindow) {
             GetLog()->debug("loader::addons::LoadAddons()");
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                 (*it)->SetFocusWindow(hFocusWindow);
                 if ((*it)->IsEnabledByConfig()) {
                     (*it)->Load();
@@ -100,7 +101,7 @@ namespace loader {
 
         void UnloadAddons() {
             GetLog()->debug("loader::addons::UnloadAddons()");
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                 (*it)->Unload();
             }
         }

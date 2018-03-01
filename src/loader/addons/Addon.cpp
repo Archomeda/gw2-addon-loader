@@ -30,31 +30,6 @@ namespace loader {
         }
 
 
-        const string Addon::GetID() const {
-            return this->GetTypeImpl()->GetID();
-        }
-
-        const string Addon::GetName() const {
-            return this->GetTypeImpl()->GetName();
-        }
-
-        const string Addon::GetAuthor() const {
-            return this->GetTypeImpl()->GetAuthor();
-        }
-
-        const string Addon::GetDescription() const {
-            return this->GetTypeImpl()->GetDescription();
-        }
-
-        const string Addon::GetVersion() const {
-            return this->GetTypeImpl()->GetVersion();
-        }
-
-        const string Addon::GetHomepage() const {
-            return this->GetTypeImpl()->GetHomepage();
-        }
-
-
         const AddonType Addon::GetAddonType() const {
             return this->addonType;
         }

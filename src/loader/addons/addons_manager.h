@@ -52,7 +52,7 @@ namespace loader {
 
         void RefreshAddonList();
 
-        void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9);
+        void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9, IDirect3DDevice9* device);
         void UninitializeAddons();
         void LoadAddons(HWND hFocusWindow);
         void UnloadAddons();

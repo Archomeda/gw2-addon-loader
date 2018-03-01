@@ -39,6 +39,7 @@ namespace loader {
                 virtual const std::string GetDescription() const { return ""; }
                 virtual const std::string GetVersion() const { return ""; }
                 virtual const std::string GetHomepage() const { return ""; }
+                virtual IDirect3DTexture9* GetIcon() const { return nullptr; }
 
                 virtual const AddonState GetAddonState() const { return this->state; }
                 virtual const std::string GetAddonStateString() const;
