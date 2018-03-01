@@ -333,7 +333,16 @@ namespace loader {
                     return false;
                 }
                 try {
-                    return this->AddonHandleWndProc(hWnd, msg, wParam, lParam);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeWndProc.StartFrame();
+                        this->timeWndProc.StartMeasurement();
+                    }
+                    bool result = this->AddonHandleWndProc(hWnd, msg, wParam, lParam);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeWndProc.EndMeasurement();
+                        this->timeWndProc.EndFrame();
+                    }
+                    return result;
                 }
                 catch (const exception& ex) {
                     this->ChangeState(AddonState::ErroredState);

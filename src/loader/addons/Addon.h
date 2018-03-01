@@ -32,6 +32,8 @@ namespace loader {
             const AddonType GetAddonType() const;
             const std::string GetAddonTypeString() const;
 
+            const std::chrono::steady_clock::rep GetLoadDuration() const { return this->durationLoad; }
+
             bool IsLoaded() const;
 
             const std::shared_ptr<types::ITypeImpl>& GetTypeImpl() const { return this->typeImpl; }

@@ -124,6 +124,8 @@ namespace loader {
                 virtual const TimeMeasure GetTimeAdvPreDrawIndexedPrimitive() { return this->timeAdvPreDrawIndexedPrimitive; }
                 virtual const TimeMeasure GetTimeAdvPostDrawIndexedPrimitive() { return this->timeAdvPostDrawIndexedPrimitive; }
 
+                virtual const TimeMeasure GetTimeWndProc() { return this->timeWndProc; }
+
             protected:
                 virtual void ChangeState(AddonState state) { this->state = state; }
 
@@ -161,6 +163,8 @@ namespace loader {
                 TimeMeasure timeAdvPostSetRenderState;
                 TimeMeasure timeAdvPreDrawIndexedPrimitive;
                 TimeMeasure timeAdvPostDrawIndexedPrimitive;
+
+                TimeMeasure timeWndProc;
 
                 HMODULE addonHandle = nullptr;
 

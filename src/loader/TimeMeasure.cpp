@@ -28,7 +28,7 @@ namespace loader {
     }
 
     void TimeMeasure::EndMeasurement() {
-        this->currentMeasure += (chrono::steady_clock::now() - this->measureStart).count() / 1000 / 1000.0f; // Precise to a microsecond
+        this->currentMeasure += (chrono::steady_clock::now() - this->measureStart).count() / 1000.0f; // Precise to a nanosecond
         ++this->calls;
     }
 

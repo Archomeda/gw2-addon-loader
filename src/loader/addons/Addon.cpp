@@ -119,7 +119,7 @@ namespace loader {
             try {
                 auto start = chrono::steady_clock::now();
                 this->GetTypeImpl()->Load();
-                this->durationLoad = (chrono::steady_clock::now() - start).count();
+                this->durationLoad = (chrono::steady_clock::now() - start).count() / 1000;
             }
             catch (const exceptions::AddonLoadingException& ex) {
                 GetLog()->error("Failed to load addon: {0}: {1}", this->GetFileName(), ex.what());
