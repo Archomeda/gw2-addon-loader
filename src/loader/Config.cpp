@@ -48,7 +48,7 @@ namespace loader {
 
         this->settingsKeybind = this->ParseKeybindString(u8(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122"))); // Alt + Shift + F11
         this->showUnsupportedAddons = this->ini.GetBoolValue(L"addons", L"show_unsupported_addons", false);
-        this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_advanced", false);
+        this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
     }
 
 
