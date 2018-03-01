@@ -299,8 +299,17 @@ typedef struct {
     // The addon homepage URL
     const char* homepage;
 
+    void* icon; // Reserved
+    void* iconSize; // Reserved
+
+    void* updateMethod; // Reserved
+
 
     /** ADDON FUNCTION EXPORTS **/
+    void* OpenSettings; // Reserved
+    void* CheckUpdate; // Reserved
+    void* DownloadUpdate; // Reserved
+
     GW2AddonLoad_t Load;
     GW2AddonDrawFrameBeforePostProcessing_t DrawFrameBeforePostProcessing;
     GW2AddonDrawFrameBeforeGui_t DrawFrameBeforeGui;
