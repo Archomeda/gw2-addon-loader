@@ -67,11 +67,11 @@ namespace loader {
 
         void LoadFonts(HMODULE hModule) {
             ImGuiIO io = ImGui::GetIO();
-            ImFontConfig fontConfigLato;
+            ImFontConfig fontConfigMain;
             ImFontConfig fontConfigMaterial;
       
-            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 16);
-            FontMain = io.Fonts->AddFont(&fontConfigLato);
+            fontConfigMain = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 16);
+            FontMain = io.Fonts->AddFont(&fontConfigMain);
 
             fontConfigMaterial = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONTICONS), L"TTF", 16);
             fontConfigMaterial.GlyphRanges = FontMaterialIconsRange;
@@ -88,10 +88,10 @@ namespace loader {
             fontConfigMaterial.OversampleH = 1;
             FontIconButtons = io.Fonts->AddFont(&fontConfigMaterial);
 
-            fontConfigLato = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 16);
-            fontConfigLato.GlyphOffset.y = -8;
-            fontConfigLato.MergeMode = true;
-            io.Fonts->AddFont(&fontConfigLato);
+            fontConfigMain = GetFontConfig(hModule, MAKEINTRESOURCE(IDR_FONT), L"TTF", 16);
+            fontConfigMain.GlyphOffset.y = -8;
+            fontConfigMain.MergeMode = true;
+            io.Fonts->AddFont(&fontConfigMain);
         }
 
         HRESULT LoadTexture(HMODULE hModule, IDirect3DDevice9* pDev, LPCWSTR lpName, LPCWSTR lpType, LPDIRECT3DTEXTURE9* ppTexture) {
