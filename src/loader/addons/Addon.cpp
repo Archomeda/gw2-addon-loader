@@ -108,7 +108,9 @@ namespace loader {
 
         bool Addon::Uninitialize() {
             GetLog()->debug("loader::addons::Addon({0})::Uninitialize()", this->GetFileName());
-            this->GetTypeImpl()->Uninitialize();
+            if (this->GetTypeImpl()) {
+                this->GetTypeImpl()->Uninitialize();
+            }
             return true;
         }
 
@@ -129,7 +131,9 @@ namespace loader {
         bool Addon::Unload() {
             GetLog()->debug("loader::addons::Addon({0})::Unload()", this->GetFileName());
             try {
-                this->GetTypeImpl()->Unload();
+                if (this->IsLoaded()) {
+                    this->GetTypeImpl()->Unload();
+                }
             }
             catch (const exceptions::AddonUnloadingException& ex) {
                 GetLog()->error("Failed to unload addon: {0}: {1}", this->GetFileName(), ex.what());
