@@ -340,10 +340,12 @@ namespace loader {
                         }
 
                         // Settings button
-                        if (addon->SupportsSettings()) {
+                        if (addon->IsLoaded() && addon->SupportsSettings()) {
                             ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 256 - (2 * style.ItemSpacing.x) - 8); // -8 for the resize grip
                             if (ImGui::Button(ICON_MD_SETTINGS " Settings", ImVec2(80, 0))) {
-
+                                // Close ourselves and show the addon settings
+                                this->Close();
+                                addon->GetTypeImpl()->OpenSettings();
                             }
                         }
 

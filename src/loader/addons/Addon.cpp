@@ -127,7 +127,7 @@ namespace loader {
         }
 
         bool Addon::SupportsSettings() const {
-            return false;
+            return this->GetTypeImpl()->SupportsSettings();
         }
 
         bool Addon::SupportsHomepage() const {

@@ -45,6 +45,8 @@ namespace loader {
                 virtual const std::string GetAddonStateString() const;
 
                 virtual bool SupportsHotLoading() const = 0;
+                virtual bool SupportsSettings() const = 0;
+
                 virtual void Initialize() = 0;
                 virtual void Uninitialize() = 0;
                 virtual void Load() = 0;
@@ -53,11 +55,13 @@ namespace loader {
                 virtual void OnStartFrame(IDirect3DDevice9* device) { }
                 virtual void OnEndFrame(IDirect3DDevice9* device) { }
 
-                virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) { return false; }
-
                 virtual void DrawFrameBeforeGui(IDirect3DDevice9* device) { }
                 virtual void DrawFrameBeforePostProcessing(IDirect3DDevice9* device) { }
                 virtual void DrawFrame(IDirect3DDevice9* device) { }
+
+                virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) { return false; }
+
+                virtual void OpenSettings() { }
 
                 virtual void AdvPreBeginScene(IDirect3DDevice9* device) { }
                 virtual void AdvPostBeginScene(IDirect3DDevice9* device) { }

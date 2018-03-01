@@ -62,6 +62,12 @@ Return false whenever it should be handled by other addons and the game itself a
 */
 typedef bool(GW2ADDON_CALL *GW2AddonHandleWndProc_t)(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+/**
+Gets called whenever the user clicks on the settings button in the addon loader.
+Can be used as an alternative to or together with keybinds.
+*/
+typedef void(GW2ADDON_CALL *GW2AddonOpenSettings_t)();
+
 
 /****************************
   Advanced functions follow
@@ -315,7 +321,7 @@ typedef struct {
 
 
     /** ADDON FUNCTION EXPORTS **/
-    void* OpenSettings; // Reserved
+    GW2AddonOpenSettings_t OpenSettings;
     void* CheckUpdate; // Reserved
     void* DownloadUpdate; // Reserved
 

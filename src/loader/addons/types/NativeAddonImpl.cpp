@@ -63,6 +63,7 @@ namespace loader {
                     this->AddonDrawFrameBeforeGui = v1->DrawFrameBeforeGui;
                     this->AddonDrawFrame = v1->DrawFrame;
                     this->AddonHandleWndProc = v1->HandleWndProc;
+                    this->AddonOpenSettings = v1->OpenSettings;
                     this->AddonAdvPreBeginScene = v1->AdvPreBeginScene;
                     this->AddonAdvPostBeginScene = v1->AdvPostBeginScene;
                     this->AddonAdvPreEndScene = v1->AdvPreEndScene;
@@ -122,6 +123,7 @@ namespace loader {
                 this->AddonDrawFrameBeforeGui = nullptr;
                 this->AddonDrawFrameBeforePostProcessing = nullptr;
                 this->AddonHandleWndProc = nullptr;
+                this->AddonOpenSettings = nullptr;
                 this->AddonAdvPreBeginScene = nullptr;
                 this->AddonAdvPostBeginScene = nullptr;
                 this->AddonAdvPreEndScene = nullptr;
@@ -152,6 +154,12 @@ namespace loader {
                 this->AddonAdvPostSetRenderState = nullptr;
                 this->AddonAdvPreDrawIndexedPrimitive = nullptr;
                 this->AddonAdvPostDrawIndexedPrimitive = nullptr;
+
+                if (this->iconManaged) {
+                    this->icon->Release();
+                    this->icon = nullptr;
+                    this->iconManaged = false;
+                }
                 
                 if (this->addonHandle) {
                     FreeLibrary(this->addonHandle);
@@ -343,41 +351,6 @@ namespace loader {
             }
 
 
-            bool NativeAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-                if (!this->AddonHandleWndProc) {
-                    return false;
-                }
-                try {
-                    if (AppConfig.GetShowDebugFeatures()) {
-                        this->timeWndProc.StartFrame();
-                        this->timeWndProc.StartMeasurement();
-                    }
-                    bool result = this->AddonHandleWndProc(hWnd, msg, wParam, lParam);
-                    if (AppConfig.GetShowDebugFeatures()) {
-                        this->timeWndProc.EndMeasurement();
-                        this->timeWndProc.EndFrame();
-                    }
-                    return result;
-                }
-                catch (const exception& ex) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonWndProcException(ex.what());
-                }
-                catch (const char* err) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonWndProcException(err);
-                }
-                catch (const wchar_t* err) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonWndProcException(err);
-                }
-                catch (...) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonWndProcException("Unknown error");
-                }
-            }
-
-
             void NativeAddonImpl::DrawFrameBeforeGui(IDirect3DDevice9* device) {
                 if (!this->AddonDrawFrameBeforeGui) {
                     return;
@@ -427,6 +400,48 @@ namespace loader {
                         this->timeOverall.EndMeasurement();
                     }
                 });
+            }
+
+
+            bool NativeAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+                if (!this->AddonHandleWndProc) {
+                    return false;
+                }
+                try {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeWndProc.StartFrame();
+                        this->timeWndProc.StartMeasurement();
+                    }
+                    bool result = this->AddonHandleWndProc(hWnd, msg, wParam, lParam);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeWndProc.EndMeasurement();
+                        this->timeWndProc.EndFrame();
+                    }
+                    return result;
+                }
+                catch (const exception& ex) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonWndProcException(ex.what());
+                }
+                catch (const char* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonWndProcException(err);
+                }
+                catch (const wchar_t* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonWndProcException(err);
+                }
+                catch (...) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonWndProcException("Unknown error");
+                }
+            }
+
+
+            void NativeAddonImpl::OpenSettings() {
+                if (this->AddonOpenSettings) {
+                    this->AddonOpenSettings();
+                }
             }
 
 

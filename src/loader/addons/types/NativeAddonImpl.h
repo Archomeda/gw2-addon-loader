@@ -20,6 +20,8 @@ namespace loader {
                 virtual IDirect3DTexture9* GetIcon() const override { return this->icon; }
 
                 virtual bool SupportsHotLoading() const override { return true; };
+                virtual bool SupportsSettings() const override { return this->AddonOpenSettings != nullptr; }
+
                 virtual void Initialize() override;
                 virtual void Uninitialize() override;
                 virtual void Load() override;
@@ -28,11 +30,13 @@ namespace loader {
                 virtual void OnStartFrame(IDirect3DDevice9* device) override;
                 virtual void OnEndFrame(IDirect3DDevice9* device) override;
 
-                virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
-
                 virtual void DrawFrameBeforeGui(IDirect3DDevice9* device) override;
                 virtual void DrawFrameBeforePostProcessing(IDirect3DDevice9* device) override;
                 virtual void DrawFrame(IDirect3DDevice9* device) override;
+
+                virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+
+                virtual void OpenSettings() override;
 
                 virtual void AdvPreBeginScene(IDirect3DDevice9* device) override;
                 virtual void AdvPostBeginScene(IDirect3DDevice9* device) override;
@@ -85,6 +89,7 @@ namespace loader {
                 GW2AddonDrawFrameBeforePostProcessing_t AddonDrawFrameBeforePostProcessing = nullptr;
                 GW2AddonDrawFrame_t AddonDrawFrame = nullptr;
                 GW2AddonHandleWndProc_t AddonHandleWndProc = nullptr;
+                GW2AddonOpenSettings_t AddonOpenSettings = nullptr;
 
                 GW2AddonAdvPreBeginScene_t AddonAdvPreBeginScene = nullptr;
                 GW2AddonAdvPostBeginScene_t AddonAdvPostBeginScene = nullptr;
