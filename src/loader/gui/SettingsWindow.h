@@ -31,6 +31,8 @@ namespace loader {
             bool showDebugFeatures;
 
             bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<addons::Addon*> addons, const ImVec2& listBoxSize, float listItemHeight);
+            void ImGuiAddonStatLine(const char* label, const TimeMeasure& measure, bool calls);
+
             void RenderTabAddons();
             void RenderTabInfo();
             void RenderTabSettings();

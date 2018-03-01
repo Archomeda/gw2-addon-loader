@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "../../TimeMeasure.h"
 
 namespace loader {
     namespace addons {
@@ -27,8 +28,6 @@ namespace loader {
 
             class ITypeImpl {
             public:
-                ITypeImpl();
-
                 std::weak_ptr<Addon> GetAddon() const { return this->addon; }
                 void SetAddon(std::weak_ptr<Addon> addon) { this->addon = addon; }
 
@@ -49,6 +48,9 @@ namespace loader {
                 virtual void Uninitialize() = 0;
                 virtual void Load() = 0;
                 virtual void Unload() = 0;
+
+                virtual void OnStartFrame(IDirect3DDevice9* device) { }
+                virtual void OnEndFrame(IDirect3DDevice9* device) { }
 
                 virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) { return false; }
 
@@ -87,22 +89,78 @@ namespace loader {
                 virtual void AdvPreDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) { }
                 virtual void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) { }
 
-                virtual const std::vector<float> GetDurationHistoryDrawFrameBeforeGui() { return this->durationHistoryDrawFrameBeforeGui; }
-                virtual const std::vector<float> GetDurationHistoryDrawFrameBeforePostProcessing() { return this->durationHistoryDrawFrameBeforePostProcessing; }
-                virtual const std::vector<float> GetDurationHistoryDrawFrame() { return this->durationHistoryDrawFrame; }
+                virtual const TimeMeasure GetTimeOverall() { return this->timeOverall; }
+                virtual const TimeMeasure GetTimeDrawFrameBeforeGui() { return this->timeDrawFrameBeforeGui; }
+                virtual const TimeMeasure GetTimeDrawFrameBeforePostProcessing() { return this->timeDrawFrameBeforePostProcessing; }
+                virtual const TimeMeasure GetTimeDrawFrame() { return this->timeDrawFrame; }
+                virtual const TimeMeasure GetTimeAdvPreBeginScene() { return this->timeAdvPreBeginScene; }
+                virtual const TimeMeasure GetTimeAdvPostBeginScene() { return this->timeAdvPostBeginScene; }
+                virtual const TimeMeasure GetTimeAdvPreEndScene() { return this->timeAdvPreEndScene; }
+                virtual const TimeMeasure GetTimeAdvPostEndScene() { return this->timeAdvPostEndScene; }
+                virtual const TimeMeasure GetTimeAdvPreClear() { return this->timeAdvPreClear; }
+                virtual const TimeMeasure GetTimeAdvPostClear() { return this->timeAdvPostClear; }
+                virtual const TimeMeasure GetTimeAdvPreReset() { return this->timeAdvPreReset; }
+                virtual const TimeMeasure GetTimeAdvPostReset() { return this->timeAdvPostReset; }
+                virtual const TimeMeasure GetTimeAdvPrePresent() { return this->timeAdvPrePresent; }
+                virtual const TimeMeasure GetTimeAdvPostPresent() { return this->timeAdvPostPresent; }
+                virtual const TimeMeasure GetTimeAdvPreCreateTexture() { return this->timeAdvPreCreateTexture; }
+                virtual const TimeMeasure GetTimeAdvPostCreateTexture() { return this->timeAdvPostCreateTexture; }
+                virtual const TimeMeasure GetTimeAdvPreCreateVertexShader() { return this->timeAdvPreCreateVertexShader; }
+                virtual const TimeMeasure GetTimeAdvPostCreateVertexShader() { return this->timeAdvPostCreateVertexShader; }
+                virtual const TimeMeasure GetTimeAdvPreCreatePixelShader() { return this->timeAdvPreCreatePixelShader; }
+                virtual const TimeMeasure GetTimeAdvPostCreatePixelShader() { return this->timeAdvPostCreatePixelShader; }
+                virtual const TimeMeasure GetTimeAdvPreCreateRenderTarget() { return this->timeAdvPreCreateRenderTarget; }
+                virtual const TimeMeasure GetTimeAdvPostCreateRenderTarget() { return this->timeAdvPostCreateRenderTarget; }
+                virtual const TimeMeasure GetTimeAdvPreSetTexture() { return this->timeAdvPreSetTexture; }
+                virtual const TimeMeasure GetTimeAdvPostSetTexture() { return this->timeAdvPostSetTexture; }
+                virtual const TimeMeasure GetTimeAdvPreSetVertexShader() { return this->timeAdvPreSetVertexShader; }
+                virtual const TimeMeasure GetTimeAdvPostSetVertexShader() { return this->timeAdvPostSetVertexShader; }
+                virtual const TimeMeasure GetTimeAdvPreSetPixelShader() { return this->timeAdvPreSetPixelShader; }
+                virtual const TimeMeasure GetTimeAdvPostSetPixelShader() { return this->timeAdvPostSetPixelShader; }
+                virtual const TimeMeasure GetTimeAdvPreSetRenderTarget() { return this->timeAdvPreSetRenderTarget; }
+                virtual const TimeMeasure GetTimeAdvPostSetRenderTarget() { return this->timeAdvPostSetRenderTarget; }
+                virtual const TimeMeasure GetTimeAdvPreSetRenderState() { return this->timeAdvPreSetRenderState; }
+                virtual const TimeMeasure GetTimeAdvPostSetRenderState() { return this->timeAdvPostSetRenderState; }
+                virtual const TimeMeasure GetTimeAdvPreDrawIndexedPrimitive() { return this->timeAdvPreDrawIndexedPrimitive; }
+                virtual const TimeMeasure GetTimeAdvPostDrawIndexedPrimitive() { return this->timeAdvPostDrawIndexedPrimitive; }
 
             protected:
                 virtual void ChangeState(AddonState state) { this->state = state; }
 
-                std::vector<float> durationHistoryDrawFrameBeforeGui;
-                std::vector<float> durationHistoryDrawFrameBeforePostProcessing;
-                std::vector<float> durationHistoryDrawFrame;
-
-                void AddDurationHistory(std::vector<float>* durationHistory, float value);
-
-                std::chrono::steady_clock::time_point timeMeasureStart;
-                void StartTimeMeasure();
-                float EndTimeMeasure();
+                TimeMeasure timeOverall;
+                TimeMeasure timeDrawFrameBeforeGui;
+                TimeMeasure timeDrawFrameBeforePostProcessing;
+                TimeMeasure timeDrawFrame;
+                TimeMeasure timeAdvPreBeginScene;
+                TimeMeasure timeAdvPostBeginScene;
+                TimeMeasure timeAdvPreEndScene;
+                TimeMeasure timeAdvPostEndScene;
+                TimeMeasure timeAdvPreClear;
+                TimeMeasure timeAdvPostClear;
+                TimeMeasure timeAdvPreReset;
+                TimeMeasure timeAdvPostReset;
+                TimeMeasure timeAdvPrePresent;
+                TimeMeasure timeAdvPostPresent;
+                TimeMeasure timeAdvPreCreateTexture;
+                TimeMeasure timeAdvPostCreateTexture;
+                TimeMeasure timeAdvPreCreateVertexShader;
+                TimeMeasure timeAdvPostCreateVertexShader;
+                TimeMeasure timeAdvPreCreatePixelShader;
+                TimeMeasure timeAdvPostCreatePixelShader;
+                TimeMeasure timeAdvPreCreateRenderTarget;
+                TimeMeasure timeAdvPostCreateRenderTarget;
+                TimeMeasure timeAdvPreSetTexture;
+                TimeMeasure timeAdvPostSetTexture;
+                TimeMeasure timeAdvPreSetVertexShader;
+                TimeMeasure timeAdvPostSetVertexShader;
+                TimeMeasure timeAdvPreSetPixelShader;
+                TimeMeasure timeAdvPostSetPixelShader;
+                TimeMeasure timeAdvPreSetRenderTarget;
+                TimeMeasure timeAdvPostSetRenderTarget;
+                TimeMeasure timeAdvPreSetRenderState;
+                TimeMeasure timeAdvPostSetRenderState;
+                TimeMeasure timeAdvPreDrawIndexedPrimitive;
+                TimeMeasure timeAdvPostDrawIndexedPrimitive;
 
                 HMODULE addonHandle = nullptr;
 

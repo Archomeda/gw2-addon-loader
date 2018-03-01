@@ -84,6 +84,9 @@
     <ClInclude Include="utils\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TimeMeasure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -144,6 +147,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utils\debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeMeasure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

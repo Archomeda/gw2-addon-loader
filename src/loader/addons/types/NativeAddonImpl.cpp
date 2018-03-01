@@ -4,6 +4,7 @@
 #include "../Addon.h"
 #include "../addons_manager.h"
 #include "../exceptions.h"
+#include "../../Config.h"
 #include "../../utils/encoding.h"
 
 using namespace std;
@@ -248,6 +249,85 @@ namespace loader {
             }
 
 
+            void NativeAddonImpl::OnStartFrame(IDirect3DDevice9* device) {
+                if (AppConfig.GetShowDebugFeatures()) {
+                    this->timeOverall.StartFrame();
+                    this->timeDrawFrameBeforeGui.StartFrame();
+                    this->timeDrawFrameBeforePostProcessing.StartFrame();
+                    this->timeDrawFrame.StartFrame();
+                    this->timeAdvPreBeginScene.StartFrame();
+                    this->timeAdvPostBeginScene.StartFrame();
+                    this->timeAdvPreEndScene.StartFrame();
+                    this->timeAdvPostEndScene.StartFrame();
+                    this->timeAdvPreClear.StartFrame();
+                    this->timeAdvPostClear.StartFrame();
+                    this->timeAdvPreReset.StartFrame();
+                    this->timeAdvPostReset.StartFrame();
+                    this->timeAdvPrePresent.StartFrame();
+                    this->timeAdvPostPresent.StartFrame();
+                    this->timeAdvPreCreateTexture.StartFrame();
+                    this->timeAdvPostCreateTexture.StartFrame();
+                    this->timeAdvPreCreateVertexShader.StartFrame();
+                    this->timeAdvPostCreateVertexShader.StartFrame();
+                    this->timeAdvPreCreatePixelShader.StartFrame();
+                    this->timeAdvPostCreatePixelShader.StartFrame();
+                    this->timeAdvPreCreateRenderTarget.StartFrame();
+                    this->timeAdvPostCreateRenderTarget.StartFrame();
+                    this->timeAdvPreSetTexture.StartFrame();
+                    this->timeAdvPostSetTexture.StartFrame();
+                    this->timeAdvPreSetVertexShader.StartFrame();
+                    this->timeAdvPostSetVertexShader.StartFrame();
+                    this->timeAdvPreSetPixelShader.StartFrame();
+                    this->timeAdvPostSetPixelShader.StartFrame();
+                    this->timeAdvPreSetRenderTarget.StartFrame();
+                    this->timeAdvPostSetRenderTarget.StartFrame();
+                    this->timeAdvPreSetRenderState.StartFrame();
+                    this->timeAdvPostSetRenderState.StartFrame();
+                    this->timeAdvPreDrawIndexedPrimitive.StartFrame();
+                    this->timeAdvPostDrawIndexedPrimitive.StartFrame();
+                }
+            }
+
+            void NativeAddonImpl::OnEndFrame(IDirect3DDevice9* device) {
+                if (AppConfig.GetShowDebugFeatures()) {
+                    this->timeOverall.EndFrame();
+                    this->timeDrawFrameBeforeGui.EndFrame();
+                    this->timeDrawFrameBeforePostProcessing.EndFrame();
+                    this->timeDrawFrame.EndFrame();
+                    this->timeAdvPreBeginScene.EndFrame();
+                    this->timeAdvPostBeginScene.EndFrame();
+                    this->timeAdvPreEndScene.EndFrame();
+                    this->timeAdvPostEndScene.EndFrame();
+                    this->timeAdvPreClear.EndFrame();
+                    this->timeAdvPostClear.EndFrame();
+                    this->timeAdvPreReset.EndFrame();
+                    this->timeAdvPostReset.EndFrame();
+                    this->timeAdvPrePresent.EndFrame();
+                    this->timeAdvPostPresent.EndFrame();
+                    this->timeAdvPreCreateTexture.EndFrame();
+                    this->timeAdvPostCreateTexture.EndFrame();
+                    this->timeAdvPreCreateVertexShader.EndFrame();
+                    this->timeAdvPostCreateVertexShader.EndFrame();
+                    this->timeAdvPreCreatePixelShader.EndFrame();
+                    this->timeAdvPostCreatePixelShader.EndFrame();
+                    this->timeAdvPreCreateRenderTarget.EndFrame();
+                    this->timeAdvPostCreateRenderTarget.EndFrame();
+                    this->timeAdvPreSetTexture.EndFrame();
+                    this->timeAdvPostSetTexture.EndFrame();
+                    this->timeAdvPreSetVertexShader.EndFrame();
+                    this->timeAdvPostSetVertexShader.EndFrame();
+                    this->timeAdvPreSetPixelShader.EndFrame();
+                    this->timeAdvPostSetPixelShader.EndFrame();
+                    this->timeAdvPreSetRenderTarget.EndFrame();
+                    this->timeAdvPostSetRenderTarget.EndFrame();
+                    this->timeAdvPreSetRenderState.EndFrame();
+                    this->timeAdvPostSetRenderState.EndFrame();
+                    this->timeAdvPreDrawIndexedPrimitive.EndFrame();
+                    this->timeAdvPostDrawIndexedPrimitive.EndFrame();
+                }
+            }
+
+
             bool NativeAddonImpl::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 if (!this->AddonHandleWndProc) {
                     return false;
@@ -279,9 +359,15 @@ namespace loader {
                     return;
                 }
                 this->callDrawFunc([this, device]() {
-                    this->StartTimeMeasure();
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeDrawFrameBeforeGui.StartMeasurement();
+                    }
                     this->AddonDrawFrameBeforeGui(device);
-                    this->AddDurationHistory(&this->durationHistoryDrawFrameBeforeGui, this->EndTimeMeasure());
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeDrawFrameBeforeGui.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -290,9 +376,15 @@ namespace loader {
                     return;
                 }
                 this->callDrawFunc([this, device]() {
-                    this->StartTimeMeasure();
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeDrawFrameBeforePostProcessing.StartMeasurement();
+                    }
                     this->AddonDrawFrameBeforePostProcessing(device);
-                    this->AddDurationHistory(&this->durationHistoryDrawFrameBeforePostProcessing, this->EndTimeMeasure());
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeDrawFrameBeforePostProcessing.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -301,9 +393,15 @@ namespace loader {
                     return;
                 }
                 this->callDrawFunc([this, device]() {
-                    this->StartTimeMeasure();
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeDrawFrame.StartMeasurement();
+                    }
                     this->AddonDrawFrame(device);
-                    this->AddDurationHistory(&this->durationHistoryDrawFrame, this->EndTimeMeasure());
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeDrawFrame.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -313,7 +411,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreBeginScene", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreBeginScene.StartMeasurement();
+                    }
                     this->AddonAdvPreBeginScene(device);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreBeginScene.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -322,7 +428,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostBeginScene", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostBeginScene.StartMeasurement();
+                    }
                     this->AddonAdvPostBeginScene(device);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostBeginScene.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -331,7 +445,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreEndScene", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreEndScene.StartMeasurement();
+                    }
                     this->AddonAdvPreEndScene(device);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreEndScene.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -340,7 +462,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostEndScene", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostEndScene.StartMeasurement();
+                    }
                     this->AddonAdvPostEndScene(device);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostEndScene.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -349,7 +479,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreClear", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreClear.StartMeasurement();
+                    }
                     this->AddonAdvPreClear(device, Count, pRects, Flags, Color, Z, Stencil);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreClear.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -358,7 +496,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostClear", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostClear.StartMeasurement();
+                    }
                     this->AddonAdvPostClear(device, Count, pRects, Flags, Color, Z, Stencil);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostClear.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -367,7 +513,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreReset", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreReset.StartMeasurement();
+                    }
                     this->AddonAdvPreReset(device, pPresentationParameters);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreReset.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -376,7 +530,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostReset", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostReset.StartMeasurement();
+                    }
                     this->AddonAdvPostReset(device, pPresentationParameters);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostReset.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -385,7 +547,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PrePresent", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPrePresent.StartMeasurement();
+                    }
                     this->AddonAdvPrePresent(device, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPrePresent.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -394,7 +564,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostPresent", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostPresent.StartMeasurement();
+                    }
                     this->AddonAdvPostPresent(device, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostPresent.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -403,7 +581,15 @@ namespace loader {
                     return D3D_OK;
                 }
                 return this->callAdvFuncWithResult("PreCreateTexture", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreCreateTexture.StartMeasurement();
+                    }
                     return this->AddonAdvPreCreateTexture(device, Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreCreateTexture.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -412,7 +598,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostCreateTexture", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostCreateTexture.StartMeasurement();
+                    }
                     this->AddonAdvPostCreateTexture(device, pTexture, Width, Height, Levels, Usage, Format, Pool, pSharedHandle);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostCreateTexture.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -421,7 +615,15 @@ namespace loader {
                     return D3D_OK;
                 }
                 return this->callAdvFuncWithResult("PreCreateVertexShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreCreateVertexShader.StartMeasurement();
+                    }
                     return this->AddonAdvPreCreateVertexShader(device, pFunction, ppShader);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreCreateVertexShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -430,7 +632,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostCreateVertexShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostCreateVertexShader.StartMeasurement();
+                    }
                     this->AddonAdvPostCreateVertexShader(device, pShader, pFunction);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostCreateVertexShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -438,8 +648,16 @@ namespace loader {
                 if (!this->AddonAdvPreCreatePixelShader) {
                     return D3D_OK;
                 }
-                return this->callAdvFuncWithResult("PreCraetePixelShader", [=]() {
+                return this->callAdvFuncWithResult("PreCreatePixelShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreCreatePixelShader.StartMeasurement();
+                    }
                     return this->AddonAdvPreCreatePixelShader(device, pFunction, ppShader);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreCreatePixelShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -447,8 +665,16 @@ namespace loader {
                 if (!this->AddonAdvPostCreatePixelShader) {
                     return;
                 }
-                this->callAdvFunc("PostCraetePixelShader", [=]() {
+                this->callAdvFunc("PostCreatePixelShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostCreatePixelShader.StartMeasurement();
+                    }
                     this->AddonAdvPostCreatePixelShader(device, pShader, pFunction);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostCreatePixelShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -457,7 +683,15 @@ namespace loader {
                     return D3D_OK;
                 }
                 return this->callAdvFuncWithResult("PreCreateRenderTarget", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreCreateRenderTarget.StartMeasurement();
+                    }
                     return this->AddonAdvPreCreateRenderTarget(device, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreCreateRenderTarget.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -466,7 +700,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostCreateRenderTarget", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostCreateRenderTarget.StartMeasurement();
+                    }
                     this->AddonAdvPostCreateRenderTarget(device, pSurface, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, pSharedHandle);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostCreateRenderTarget.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -475,7 +717,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreSetTexture", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreSetTexture.StartMeasurement();
+                    }
                     this->AddonAdvPreSetTexture(device, Stage, pTexture);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreSetTexture.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -484,7 +734,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostSetTexture", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostSetTexture.StartMeasurement();
+                    }
                     this->AddonAdvPostSetTexture(device, Stage, pTexture);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostSetTexture.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -493,7 +751,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreSetVertexShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreSetVertexShader.StartMeasurement();
+                    }
                     this->AddonAdvPreSetVertexShader(device, pShader);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreSetVertexShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -502,7 +768,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostSetVertexShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostSetVertexShader.StartMeasurement();
+                    }
                     this->AddonAdvPostSetVertexShader(device, pShader);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostSetVertexShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -511,7 +785,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreSetPixelShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreSetPixelShader.StartMeasurement();
+                    }
                     this->AddonAdvPreSetPixelShader(device, pShader);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreSetPixelShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -520,7 +802,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostSetPixelShader", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostSetPixelShader.StartMeasurement();
+                    }
                     this->AddonAdvPostSetPixelShader(device, pShader);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostSetPixelShader.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -529,7 +819,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreSetRenderTarget", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreSetRenderTarget.StartMeasurement();
+                    }
                     this->AddonAdvPreSetRenderTarget(device, RenderTargetIndex, pRenderTarget);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreSetRenderTarget.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -538,7 +836,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostSetRenderTarget", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostSetRenderTarget.StartMeasurement();
+                    }
                     this->AddonAdvPostSetRenderTarget(device, RenderTargetIndex, pRenderTarget);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostSetRenderTarget.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -547,7 +853,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreSetRenderState", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreSetRenderState.StartMeasurement();
+                    }
                     this->AddonAdvPreSetRenderState(device, State, Value);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreSetRenderState.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -556,7 +870,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostSetRenderState", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostSetRenderState.StartMeasurement();
+                    }
                     this->AddonAdvPostSetRenderState(device, State, Value);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostSetRenderState.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -565,7 +887,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PreDrawIndexedPrimitive", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPreDrawIndexedPrimitive.StartMeasurement();
+                    }
                     this->AddonAdvPreDrawIndexedPrimitive(device, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPreDrawIndexedPrimitive.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 
@@ -574,7 +904,15 @@ namespace loader {
                     return;
                 }
                 this->callAdvFunc("PostDrawIndexedPrimitive", [=]() {
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeOverall.StartMeasurement();
+                        this->timeAdvPostDrawIndexedPrimitive.StartMeasurement();
+                    }
                     this->AddonAdvPostDrawIndexedPrimitive(device, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+                    if (AppConfig.GetShowDebugFeatures()) {
+                        this->timeAdvPostDrawIndexedPrimitive.EndMeasurement();
+                        this->timeOverall.EndMeasurement();
+                    }
                 });
             }
 

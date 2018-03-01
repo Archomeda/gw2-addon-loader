@@ -182,6 +182,7 @@
     <ClInclude Include="imgui_impl_dx9.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TimeMeasure.h" />
     <ClInclude Include="utils\debug.h" />
     <ClInclude Include="utils\encoding.h" />
     <ClInclude Include="windows.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="gui\AddonInfoWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui\Window.cpp" />
+    <ClCompile Include="TimeMeasure.cpp" />
     <ClCompile Include="utils\debug.cpp" />
     <ClCompile Include="utils\encoding.cpp" />
   </ItemGroup>

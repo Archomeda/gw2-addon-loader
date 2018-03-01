@@ -180,7 +180,8 @@ namespace loader {
             PrePresentGuiDone = 0;
             PrePostProcessingDone = 0;
             d3d9ProcessingStart = {};
-            
+            addons::OnEndFrame(this->dev);
+
             return hr;
         }
 
@@ -189,6 +190,8 @@ namespace loader {
             if (AppConfig.GetShowDebugFeatures()) {
                 d3d9ProcessingStart = chrono::steady_clock::now();
             }
+            addons::OnStartFrame(this->dev);
+
             return this->dev->GetBackBuffer(iSwapChain, iBackBuffer, Type, ppBackBuffer);
         }
 

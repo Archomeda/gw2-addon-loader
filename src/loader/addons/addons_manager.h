@@ -57,6 +57,8 @@ namespace loader {
         void LoadAddons(HWND hFocusWindow);
         void UnloadAddons();
 
+        void OnStartFrame(IDirect3DDevice9* device);
+        void OnEndFrame(IDirect3DDevice9* device);
 
         void DrawFrameBeforePostProcessing(IDirect3DDevice9* device);
         void DrawFrameBeforeGui(IDirect3DDevice9* device);

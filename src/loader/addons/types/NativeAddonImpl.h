@@ -24,6 +24,9 @@ namespace loader {
                 virtual void Load() override;
                 virtual void Unload() override;
 
+                virtual void OnStartFrame(IDirect3DDevice9* device) override;
+                virtual void OnEndFrame(IDirect3DDevice9* device) override;
+
                 virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 
                 virtual void DrawFrameBeforeGui(IDirect3DDevice9* device) override;

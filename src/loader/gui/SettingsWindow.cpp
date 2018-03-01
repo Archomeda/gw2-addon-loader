@@ -157,6 +157,32 @@ namespace loader {
             return value_changed;
         }
 
+        void SettingsWindow::ImGuiAddonStatLine(const char* label, const TimeMeasure& measure, bool calls = true) {
+            ImGui::TextUnformatted(label);
+            ImGui::NextColumn();
+            if (measure.GetLast() > 0.5f) {
+                ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), "%.3f ms", measure.GetLast());
+            }
+            else {
+                ImGui::Text("%.3f ms", measure.GetLast());
+            }
+            ImGui::NextColumn();
+            if (measure.GetMovingAverage() > 0.5f) {
+                ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), "%.3f ms", measure.GetMovingAverage());
+            }
+            else {
+                ImGui::Text("%.3f ms", measure.GetMovingAverage());
+            }
+            ImGui::NextColumn();
+            ImGui::Text("%.3f ms", measure.GetOverallMaximum());
+            ImGui::NextColumn();
+            if (calls) {
+                ImGui::Text("%llu", measure.GetCalls());
+            }
+            ImGui::NextColumn();
+        }
+
+
         void SettingsWindow::RenderTabAddons() {
             ImGuiStyle style = ImGui::GetStyle();
            
@@ -440,18 +466,54 @@ The author of this library is not associated with ArenaNet nor with any of its p
                 ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryLoaderDrawFrame[0], static_cast<int>(hooks::DurationHistoryLoaderDrawFrame.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
             }
             else if (selectedAddon) {
-                if (ImGui::CollapsingHeader("Draw after Guild Wars 2")) {
-                    const auto durationHistory = selectedAddon->GetTypeImpl()->GetDurationHistoryDrawFrame();
-                    ImGui::PlotLines("##RenderingTime", &durationHistory[0], static_cast<int>(durationHistory.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
-                }
-                if (ImGui::CollapsingHeader("Draw before GUI")) {
-                    const auto durationHistory = selectedAddon->GetTypeImpl()->GetDurationHistoryDrawFrameBeforeGui();
-                    ImGui::PlotLines("##RenderingTimeBeforeGui", &durationHistory[0], static_cast<int>(durationHistory.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
-                }
-                if (ImGui::CollapsingHeader("Draw before post processing")) {
-                    const auto durationHistory = selectedAddon->GetTypeImpl()->GetDurationHistoryDrawFrameBeforePostProcessing();
-                    ImGui::PlotLines("##RenderingTimeBeforePostProcessing", &durationHistory[0], static_cast<int>(durationHistory.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
-                }
+                const auto history = selectedAddon->GetTypeImpl()->GetTimeOverall().GetMovingHistory();
+                ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Addon frame render time (ms)", 0, 10, ImVec2(0, 100));
+                ImGui::Columns(5);
+                ImGui::SetColumnWidth(0, 180);
+                ImGui::NextColumn();
+                ImGui::TextUnformatted("Current");
+                ImGui::NextColumn();
+                ImGui::TextUnformatted("Exp. moving average");
+                ImGui::NextColumn();
+                ImGui::TextUnformatted("Overall maximum");
+                ImGui::NextColumn();
+                ImGui::TextUnformatted("Calls");
+                ImGui::NextColumn();
+
+                this->ImGuiAddonStatLine("Total", selectedAddon->GetTypeImpl()->GetTimeOverall(), false);
+                this->ImGuiAddonStatLine("DrawBeforePostProcessing", selectedAddon->GetTypeImpl()->GetTimeDrawFrameBeforePostProcessing());
+                this->ImGuiAddonStatLine("DrawBeforeGui", selectedAddon->GetTypeImpl()->GetTimeDrawFrameBeforeGui());
+                this->ImGuiAddonStatLine("Draw", selectedAddon->GetTypeImpl()->GetTimeDrawFrame());
+                this->ImGuiAddonStatLine("AdvPreBeginScene", selectedAddon->GetTypeImpl()->GetTimeAdvPreBeginScene());
+                this->ImGuiAddonStatLine("AdvPostBeginScene", selectedAddon->GetTypeImpl()->GetTimeAdvPostBeginScene());
+                this->ImGuiAddonStatLine("AdvPreEndScene", selectedAddon->GetTypeImpl()->GetTimeAdvPreEndScene());
+                this->ImGuiAddonStatLine("AdvPostEndScene", selectedAddon->GetTypeImpl()->GetTimeAdvPostEndScene());
+                this->ImGuiAddonStatLine("AdvPreClear", selectedAddon->GetTypeImpl()->GetTimeAdvPreClear());
+                this->ImGuiAddonStatLine("AdvPostClear", selectedAddon->GetTypeImpl()->GetTimeAdvPostClear());
+                this->ImGuiAddonStatLine("AdvPreReset", selectedAddon->GetTypeImpl()->GetTimeAdvPreReset());
+                this->ImGuiAddonStatLine("AdvPostReset", selectedAddon->GetTypeImpl()->GetTimeAdvPostReset());
+                this->ImGuiAddonStatLine("AdvPrePresent", selectedAddon->GetTypeImpl()->GetTimeAdvPrePresent());
+                this->ImGuiAddonStatLine("AdvPostPresent", selectedAddon->GetTypeImpl()->GetTimeAdvPostPresent());
+                this->ImGuiAddonStatLine("AdvPreCreateTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreateTexture());
+                this->ImGuiAddonStatLine("AdvPostCreateTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreateTexture());
+                this->ImGuiAddonStatLine("AdvPreCreateVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreateVertexShader());
+                this->ImGuiAddonStatLine("AdvPostCreateVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreateVertexShader());
+                this->ImGuiAddonStatLine("AdvPreCreatePixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreatePixelShader());
+                this->ImGuiAddonStatLine("AdvPostCreatePixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreatePixelShader());
+                this->ImGuiAddonStatLine("AdvPreCreateRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreateRenderTarget());
+                this->ImGuiAddonStatLine("AdvPostCreateRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreateRenderTarget());
+                this->ImGuiAddonStatLine("AdvPreSetTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetTexture());
+                this->ImGuiAddonStatLine("AdvPostSetTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetTexture());
+                this->ImGuiAddonStatLine("AdvPreSetVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetVertexShader());
+                this->ImGuiAddonStatLine("AdvPostSetVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetVertexShader());
+                this->ImGuiAddonStatLine("AdvPreSetPixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetPixelShader());
+                this->ImGuiAddonStatLine("AdvPostSetPixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetPixelShader());
+                this->ImGuiAddonStatLine("AdvPreSetRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetRenderTarget());
+                this->ImGuiAddonStatLine("AdvPostSetRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetRenderTarget());
+                this->ImGuiAddonStatLine("AdvPreSetRenderState", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetRenderState());
+                this->ImGuiAddonStatLine("AdvPostSetRenderState", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetRenderState());
+                this->ImGuiAddonStatLine("AdvPreDrawIndexedPrimitive", selectedAddon->GetTypeImpl()->GetTimeAdvPreDrawIndexedPrimitive());
+                this->ImGuiAddonStatLine("AdvPostDrawIndexedPrimitive", selectedAddon->GetTypeImpl()->GetTimeAdvPostDrawIndexedPrimitive());
             }
             
             ImGui::PopItemWidth();

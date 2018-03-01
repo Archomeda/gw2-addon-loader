@@ -106,6 +106,23 @@ namespace loader {
         }
 
         
+        void OnStartFrame(IDirect3DDevice9* device) {
+            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
+                if ((*it)->IsLoaded()) {
+                    (*it)->GetTypeImpl()->OnStartFrame(device);
+                }
+            }
+        }
+
+        void OnEndFrame(IDirect3DDevice9* device) {
+            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
+                if ((*it)->IsLoaded()) {
+                    (*it)->GetTypeImpl()->OnEndFrame(device);
+                }
+            }
+        }
+
+
         void DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
             if (ActiveAddonHookCounts.DrawFrameBeforePostProcessing > 0) {
                 for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
