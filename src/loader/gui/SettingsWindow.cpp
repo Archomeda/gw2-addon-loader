@@ -223,7 +223,7 @@ namespace loader {
 
                 // Button group for sorting addons
                 ImVec2 buttonSize((200 - style.ItemSpacing.x) / 2, 0);
-                if (this->selectedAddon > 0 && this->selectedAddon < addonsList.size() && addon->SupportsLoading()) {
+                if (this->selectedAddon > 0 && this->selectedAddon < static_cast<int>(addonsList.size()) && addon->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_UPWARD, buttonSize)) {
                         this->MoveAddonPositionUp(addon);
                         this->SelectAddon(addon);
@@ -236,7 +236,7 @@ namespace loader {
                     ImGui::Dummy(buttonSize);
                 }
                 ImGui::SameLine();
-                if (this->selectedAddon > -1 && this->selectedAddon < addonsList.size() - 1 && addonsList.at(this->selectedAddon + 1)->SupportsLoading()) {
+                if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size()) - 1 && addonsList.at(this->selectedAddon + 1)->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_DOWNWARD, buttonSize)) {
                         this->MoveAddonPositionDown(addon);
                         this->SelectAddon(addon);
