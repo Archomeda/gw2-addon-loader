@@ -8,10 +8,10 @@
 #include "hooks/LoaderDirect3D9.h"
 #include "hooks/LoaderDirect3DDevice9.h"
 #include "gui/gui_manager.h"
+#include "gui/imgui.h"
 #include "gui/SettingsWindow.h"
 #include "utils/debug.h"
 #include "Config.h"
-#include "imgui_impl_dx9.h"
 #include "input.h"
 #include "log.h"
 
@@ -19,8 +19,6 @@ using namespace std;
 using namespace loader;
 using namespace loader::utils;
 
-
-IMGUI_API LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 HMODULE dllModule;
 WNDPROC BaseWndProc;
@@ -38,7 +36,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     ProcessInputMessage(msg, wParam, lParam);
 
     // Pass event to ImGui
-    ImGui_ImplDX9_WndProcHandler(hWnd, msg, wParam, lParam);
+    gui::imgui::ProcessWndProc(msg, wParam, lParam);
     const ImGuiIO io = ImGui::GetIO();
 
     // Only run these for key down/key up (incl. mouse buttons) events and when ImGui doesn't want to capture the keyboard
@@ -93,10 +91,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     }
 
     // Make sure to show a decent cursor when ImGui has mouse focus
-    if (msg == WM_SETCURSOR || msg == WM_MOUSEMOVE) {
-        if (io.WantCaptureMouse) {
-            HCURSOR systemCursor = LoadCursor(NULL, IDC_ARROW);
-            SetCursor(systemCursor);
+    if ((msg == WM_SETCURSOR || msg == WM_MOUSEMOVE) && io.WantCaptureMouse) {
+        if (gui::imgui::UpdateMouseCursor()) {
             return true;
         }
     }
@@ -136,7 +132,7 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     imio.IniFilename = imGuiConfigFile.c_str();
 
     gui::LoadFonts(dllModule);
-    ImGui_ImplDX9_Init(hFocusWindow, pDeviceInterface);
+    gui::imgui::Initialize(hFocusWindow, pDeviceInterface);
 
     ImGuiStyle* style = &ImGui::GetStyle();
     style->WindowRounding = 2;
@@ -195,18 +191,18 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
 
 
 void PreReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
-    ImGui_ImplDX9_InvalidateDeviceObjects();
+    gui::imgui::InvalidateDeviceObjects();
     gui::UnloadTextures();
 }
 
 void PostReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
-    ImGui_ImplDX9_CreateDeviceObjects();
+    gui::imgui::CreateDeviceObjects();
     gui::LoadTextures(dllModule, pDeviceInterface);
 }
 
 void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
     // Draw ImGui stuff
-    ImGui_ImplDX9_NewFrame();
+    gui::imgui::NewFrame();
 
     gui::Render();
 #ifdef _DEBUG
@@ -244,7 +240,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         }
         break;
         case DLL_PROCESS_DETACH: {
-            ImGui::Shutdown();
+            gui::imgui::Shutdown();
             GetLog()->info("Unloading and uninitializing addons");
             addons::UnloadAddons();
             addons::UninitializeAddons();

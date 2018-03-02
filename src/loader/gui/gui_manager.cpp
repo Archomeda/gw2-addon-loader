@@ -17,7 +17,6 @@ namespace loader {
 
         map<shared_ptr<Window>, bool> openWindows;
 
-
         shared_ptr<AddonInfoWindow> AddonInfoWnd = make_shared<AddonInfoWindow>();
         shared_ptr<SettingsWindow> SettingsWnd = make_shared<SettingsWindow>();
 
