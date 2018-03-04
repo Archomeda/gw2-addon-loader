@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="gui\BitmapFont.h" />
     <ClInclude Include="gui\imgui.h" />
     <ClInclude Include="gui\SettingsWindow.h" />
     <ClInclude Include="addons\Addon.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="gui\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="gui\BitmapFont.cpp" />
     <ClCompile Include="gui\imgui.cpp" />
     <ClCompile Include="gui\SettingsWindow.cpp" />
     <ClCompile Include="addons\Addon.cpp" />
@@ -217,6 +219,8 @@
     <ClCompile Include="utils\encoding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\resources\fonts\gw2-trebuchet_18.pbf" />
+    <None Include="..\..\resources\fonts\materialicons_16.pbf" />
     <None Include="exports.def" />
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +230,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="loader.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\resources\fonts\originals\MaterialIcons-Regular.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

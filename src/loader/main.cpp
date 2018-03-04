@@ -123,16 +123,12 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     GetLog()->info("Initializing addons");
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
 
-    // Create textures
-    gui::LoadTextures(dllModule, pDeviceInterface);
-
     // Set up ImGui
     ImGuiIO imio = ImGui::GetIO();
     imGuiConfigFile = AppConfig.GetImGuiConfigPath();
     imio.IniFilename = imGuiConfigFile.c_str();
 
-    gui::LoadFonts(dllModule);
-    gui::imgui::Initialize(hFocusWindow, pDeviceInterface);
+    gui::imgui::Initialize(dllModule, hFocusWindow, pDeviceInterface);
 
     ImGuiStyle* style = &ImGui::GetStyle();
     style->WindowRounding = 2;
@@ -192,12 +188,10 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
 
 void PreReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
     gui::imgui::InvalidateDeviceObjects();
-    gui::UnloadTextures();
 }
 
 void PostReset(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters) {
     gui::imgui::CreateDeviceObjects();
-    gui::LoadTextures(dllModule, pDeviceInterface);
 }
 
 void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {

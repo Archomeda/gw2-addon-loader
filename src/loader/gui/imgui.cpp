@@ -1,7 +1,12 @@
 // The code in this file is mostly from ImGui's example
 
 #include "imgui.h"
+#include <map>
 #include <imgui.h>
+#include "BitmapFont.h"
+#include "../resource.h"
+
+using namespace std;
 
 namespace loader {
     namespace gui {
@@ -9,13 +14,21 @@ namespace loader {
 
             static INT64 imGuiFrequency;
             static INT64 imGuiTime;
-            static IDirect3DDevice9* d3dDevice;
+            static HMODULE imGuiModule;
             static HWND imGuiWnd;
+            static IDirect3DDevice9* imGuiDevice;
             static IDirect3DVertexBuffer9* imGuiVertexBuffer;
             static IDirect3DIndexBuffer9* imGuiIndexBuffer;
             static IDirect3DTexture9* imGuiFontTexture;
             static int imGuiVertexBufferSize = 5000;
             static int imGuiIndexBufferSize = 10000;
+
+            static BitmapFont bitmapFontMaterial16;
+            static BitmapFont bitmapFontGw2Trebuchet18;
+            static map<uint32_t, int> bitmapFontGlyphMapMain;
+
+            ImFont* FontMain;
+            ImFont* FontIconButtons;
 
             struct ImGuiVertex {
                 float pos[3];
@@ -24,9 +37,136 @@ namespace loader {
             };
 #define D3DFVF_IMGUIVERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
-            bool CreateFonts() {
-                // Build texture atlas
+            void* LoadEmbeddedResource(HMODULE hModule, LPCWSTR lpName, LPCWSTR lpType, UINT* pSize) {
+                HRSRC resource = FindResource(hModule, lpName, lpType);
+                if (!resource) {
+                    return nullptr;
+                }
+                *pSize = SizeofResource(hModule, resource);
+                if (!*pSize) {
+                    return nullptr;
+                }
+                HGLOBAL resourceData = LoadResource(hModule, resource);
+                if (!resourceData) {
+                    return nullptr;
+                }
+                void* binaryData = LockResource(resourceData);
+                if (!binaryData) {
+                    return nullptr;
+                }
+                return binaryData;
+            }
+
+            ImFontConfig GetFontConfig(HMODULE hModule, LPCWSTR lpName, LPCWSTR lpType, float fontSize) {
+                UINT size;
+                ImFontConfig fontConfig = {};
+                fontConfig.FontData = LoadEmbeddedResource(hModule, lpName, lpType, &size);
+                fontConfig.FontDataSize = size;
+                fontConfig.FontDataOwnedByAtlas = false; // Don't let ImGui take over our resource memory, the OS handles this
+                fontConfig.SizePixels = fontSize;
+                return fontConfig;
+            }
+
+            BitmapFont LoadBitmapFont(HMODULE hModule, LPCWSTR lpName, ImFont* font, map<uint32_t, int>* glyphMap) {
                 ImGuiIO& io = ImGui::GetIO();
+                
+                BitmapFont bmf;
+                UINT size;
+                void* pbf = LoadEmbeddedResource(hModule, lpName, L"PBF", &size);
+                bmf.ReadFromMemory(static_cast<const uint8_t*>(pbf), size);
+
+                auto bmfGlyphs = bmf.GetGlyphs();
+                for (size_t i = 0; i < bmfGlyphs.size(); ++i) {
+                    auto glyph = bmfGlyphs[i];
+                    int rectId = io.Fonts->AddCustomRectFontGlyph(font, glyph.id, glyph.width, glyph.height, glyph.xAdvance, ImVec2(glyph.xOffset, glyph.yOffset));
+                    glyphMap->emplace(glyph.id, rectId);
+                }
+
+                return bmf;
+            }
+
+            bool CopyBitmapFontTexture(IDirect3DTexture9* destTexture, int bytesPerPixel, BitmapFont* font, map<uint32_t, int>* glyphMap) {
+                ImGuiIO& io = ImGui::GetIO();
+              
+                IDirect3DTexture9* currSrcTexture = nullptr;
+                IDirect3DSurface9* srcSurface = nullptr;
+                IDirect3DSurface9* destSurface;
+                destTexture->GetSurfaceLevel(0, &destSurface);
+
+                auto bitmapGlyphs = font->GetGlyphs();
+                for (size_t i = 0; i < font->GetGlyphs().size(); ++i) {
+                    BitmapFontGlyph glyph = bitmapGlyphs[i];
+                    IDirect3DTexture9* texture = font->GetTexture(glyph.page, imGuiDevice);
+                    if (currSrcTexture != texture) {
+                        currSrcTexture = texture;
+                        if (srcSurface != nullptr) {
+                            srcSurface->Release();
+                        }
+                        currSrcTexture->GetSurfaceLevel(0, &srcSurface);
+                    }
+
+                    auto glyphRect = io.Fonts->GetCustomRectByIndex(glyphMap->at(glyph.id));
+                    RECT srcRect;
+                    srcRect.left = glyph.x;
+                    srcRect.top = glyph.y;
+                    srcRect.right = glyph.x + glyph.width;
+                    srcRect.bottom = glyph.y + glyph.height;
+                    RECT destRect;
+                    destRect.left = glyphRect->X;
+                    destRect.top = glyphRect->Y;
+                    destRect.right = glyphRect->X + glyphRect->Width;
+                    destRect.bottom = glyphRect->Y + glyphRect->Height;
+
+                    D3DLOCKED_RECT srcLockedRect;
+                    D3DLOCKED_RECT destLockedRect;
+                    if (texture->LockRect(0, &srcLockedRect, &srcRect, 0) != D3D_OK) {
+                        return false;
+                    }
+                    if (destTexture->LockRect(0, &destLockedRect, &destRect, 0) != D3D_OK) {
+                        texture->UnlockRect(0);
+                        return false;
+                    }
+                    for (int y = 0; y < glyphRect->Height; ++y) {
+                        memcpy(static_cast<unsigned char*>(destLockedRect.pBits) + destLockedRect.Pitch * y, static_cast<unsigned char*>(srcLockedRect.pBits) + srcLockedRect.Pitch * y, glyphRect->Width * bytesPerPixel);
+                    }
+                    texture->UnlockRect(0);
+                    destTexture->UnlockRect(0);
+                }
+                font->ClearTextures();
+                if (srcSurface != nullptr) {
+                    srcSurface->Release();
+                }
+                destSurface->Release();
+
+                return true;
+            }
+
+
+            void InitFonts() {
+                ImGuiIO& io = ImGui::GetIO();
+                ImFontConfig fontConfigMaterial;
+
+                // Create font for normal text, which is bitmap based for crisp looking text
+                ImFontConfig fontConfig = {};
+                fontConfig.GlyphRanges = {};
+                fontConfig.SizePixels = 16;
+                fontConfig.OversampleH = 1;
+                FontMain = io.Fonts->AddFontDefault(&fontConfig);
+                bitmapFontGw2Trebuchet18 = LoadBitmapFont(imGuiModule, MAKEINTRESOURCE(IDF_GW2TREBUCHET18), FontMain, &bitmapFontGlyphMapMain);
+                bitmapFontMaterial16 = LoadBitmapFont(imGuiModule, MAKEINTRESOURCE(IDF_MATERIAL16), FontMain, &bitmapFontGlyphMapMain);
+
+                // Create font for big icons
+                fontConfigMaterial = GetFontConfig(imGuiModule, MAKEINTRESOURCE(IDR_FONTICONS), L"TTF", 32);
+                fontConfigMaterial.GlyphRanges = FontMaterialIconsRange;
+                fontConfigMaterial.PixelSnapH = true;
+                fontConfigMaterial.OversampleH = 1;
+                FontIconButtons = io.Fonts->AddFont(&fontConfigMaterial);
+            }
+
+            bool CreateFonts() {
+                ImGuiIO& io = ImGui::GetIO();
+
+                // Build texture atlas
                 unsigned char* pixels;
                 int width;
                 int height;
@@ -35,7 +175,7 @@ namespace loader {
 
                 // Upload texture to graphics system
                 imGuiFontTexture = nullptr;
-                if (d3dDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &imGuiFontTexture, NULL) < 0) {
+                if (imGuiDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &imGuiFontTexture, NULL) < 0) {
                     return false;
                 }
                 D3DLOCKED_RECT rect;
@@ -46,6 +186,14 @@ namespace loader {
                     memcpy(static_cast<unsigned char*>(rect.pBits) + rect.Pitch * y, pixels + (width * bytesPerPixel) * y, (width * bytesPerPixel));
                 }
                 imGuiFontTexture->UnlockRect(0);
+
+                // Copy bitmap font glyphs
+                if (!CopyBitmapFontTexture(imGuiFontTexture, bytesPerPixel, &bitmapFontGw2Trebuchet18, &bitmapFontGlyphMapMain)) {
+                    return false;
+                }
+                if (!CopyBitmapFontTexture(imGuiFontTexture, bytesPerPixel, &bitmapFontMaterial16, &bitmapFontGlyphMapMain)) {
+                    return false;
+                }
 
                 // Store our identifier
                 io.Fonts->TexID = static_cast<void *>(imGuiFontTexture);
@@ -68,7 +216,7 @@ namespace loader {
                         imGuiVertexBuffer = nullptr;
                     }
                     imGuiVertexBufferSize = drawData->TotalVtxCount + 5000;
-                    if (d3dDevice->CreateVertexBuffer(imGuiVertexBufferSize * sizeof(ImGuiVertex), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, D3DFVF_IMGUIVERTEX, D3DPOOL_DEFAULT, &imGuiVertexBuffer, NULL) < 0) {
+                    if (imGuiDevice->CreateVertexBuffer(imGuiVertexBufferSize * sizeof(ImGuiVertex), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, D3DFVF_IMGUIVERTEX, D3DPOOL_DEFAULT, &imGuiVertexBuffer, NULL) < 0) {
                         return;
                     }
                 }
@@ -78,14 +226,14 @@ namespace loader {
                         imGuiIndexBuffer = nullptr;
                     }
                     imGuiIndexBufferSize = drawData->TotalIdxCount + 5000;
-                    if (d3dDevice->CreateIndexBuffer(imGuiIndexBufferSize * sizeof(ImDrawIdx), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, sizeof(ImDrawIdx) == 2 ? D3DFMT_INDEX16 : D3DFMT_INDEX32, D3DPOOL_DEFAULT, &imGuiIndexBuffer, NULL) < 0) {
+                    if (imGuiDevice->CreateIndexBuffer(imGuiIndexBufferSize * sizeof(ImDrawIdx), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, sizeof(ImDrawIdx) == 2 ? D3DFMT_INDEX16 : D3DFMT_INDEX32, D3DPOOL_DEFAULT, &imGuiIndexBuffer, NULL) < 0) {
                         return;
                     }
                 }
 
                 // Back up the DX9 state
                 IDirect3DStateBlock9* stateBlock = nullptr;
-                if (d3dDevice->CreateStateBlock(D3DSBT_ALL, &stateBlock) < 0) {
+                if (imGuiDevice->CreateStateBlock(D3DSBT_ALL, &stateBlock) < 0) {
                     return;
                 }
 
@@ -116,9 +264,9 @@ namespace loader {
                 }
                 imGuiVertexBuffer->Unlock();
                 imGuiIndexBuffer->Unlock();
-                d3dDevice->SetStreamSource(0, imGuiVertexBuffer, 0, sizeof(ImGuiVertex));
-                d3dDevice->SetIndices(imGuiIndexBuffer);
-                d3dDevice->SetFVF(D3DFVF_IMGUIVERTEX);
+                imGuiDevice->SetStreamSource(0, imGuiVertexBuffer, 0, sizeof(ImGuiVertex));
+                imGuiDevice->SetIndices(imGuiIndexBuffer);
+                imGuiDevice->SetFVF(D3DFVF_IMGUIVERTEX);
 
                 // Set up viewport
                 D3DVIEWPORT9 viewport;
@@ -128,28 +276,28 @@ namespace loader {
                 viewport.Height = static_cast<DWORD>(io.DisplaySize.y);
                 viewport.MinZ = 0;
                 viewport.MaxZ = 1;
-                d3dDevice->SetViewport(&viewport);
+                imGuiDevice->SetViewport(&viewport);
 
                 // Set up render state: fixed-pipeline, alpha-blending, no face culling, no depth testing
-                d3dDevice->SetPixelShader(NULL);
-                d3dDevice->SetVertexShader(NULL);
-                d3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-                d3dDevice->SetRenderState(D3DRS_LIGHTING, false);
-                d3dDevice->SetRenderState(D3DRS_ZENABLE, false);
-                d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
-                d3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
-                d3dDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-                d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-                d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-                d3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, true);
-                d3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-                d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-                d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-                d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-                d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-                d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-                d3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-                d3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+                imGuiDevice->SetPixelShader(NULL);
+                imGuiDevice->SetVertexShader(NULL);
+                imGuiDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+                imGuiDevice->SetRenderState(D3DRS_LIGHTING, false);
+                imGuiDevice->SetRenderState(D3DRS_ZENABLE, false);
+                imGuiDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+                imGuiDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+                imGuiDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+                imGuiDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+                imGuiDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+                imGuiDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, true);
+                imGuiDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+                imGuiDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                imGuiDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+                imGuiDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+                imGuiDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+                imGuiDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+                imGuiDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+                imGuiDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
                 // Set up orthographic projection matrix
                 // Being agnostic of whether <d3dx9.h> or <DirectXMath.h> can be used, we aren't relying on D3DXMatrixIdentity()/D3DXMatrixOrthoOffCenterLH() or DirectX::XMMatrixIdentity()/DirectX::XMMatrixOrthographicOffCenterLH()
@@ -165,9 +313,9 @@ namespace loader {
                         0.0f, 0.0f, 0.5f, 0.0f,
                         (L + R) / (L - R), (T + B) / (B - T), 0.5f, 1.0f
                     };
-                    d3dDevice->SetTransform(D3DTS_WORLD, &identityMatrix);
-                    d3dDevice->SetTransform(D3DTS_VIEW, &identityMatrix);
-                    d3dDevice->SetTransform(D3DTS_PROJECTION, &projectionMatrix);
+                    imGuiDevice->SetTransform(D3DTS_WORLD, &identityMatrix);
+                    imGuiDevice->SetTransform(D3DTS_VIEW, &identityMatrix);
+                    imGuiDevice->SetTransform(D3DTS_PROJECTION, &projectionMatrix);
                 }
 
                 // Render command lists
@@ -182,9 +330,9 @@ namespace loader {
                         }
                         else {
                             const RECT r = { static_cast<LONG>(cmd->ClipRect.x), static_cast<LONG>(cmd->ClipRect.y), static_cast<LONG>(cmd->ClipRect.z), static_cast<LONG>(cmd->ClipRect.w) };
-                            d3dDevice->SetTexture(0, static_cast<IDirect3DTexture9*>(cmd->TextureId));
-                            d3dDevice->SetScissorRect(&r);
-                            d3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexOffset, 0, static_cast<UINT>(cmdList->VtxBuffer.Size), indexOffset, cmd->ElemCount / 3);
+                            imGuiDevice->SetTexture(0, static_cast<IDirect3DTexture9*>(cmd->TextureId));
+                            imGuiDevice->SetScissorRect(&r);
+                            imGuiDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexOffset, 0, static_cast<UINT>(cmdList->VtxBuffer.Size), indexOffset, cmd->ElemCount / 3);
                         }
                         indexOffset += cmd->ElemCount;
                     }
@@ -271,9 +419,10 @@ namespace loader {
             }
 
 
-            bool Initialize(HWND hWnd, IDirect3DDevice9* device) {
+            bool Initialize(HMODULE hModule, HWND hWnd, IDirect3DDevice9* device) {
+                imGuiModule = hModule;
                 imGuiWnd = hWnd;
-                d3dDevice = device;
+                imGuiDevice = device;
 
                 if (!QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&imGuiFrequency))) {
                     return false;
@@ -306,6 +455,8 @@ namespace loader {
                 io.RenderDrawListsFn = &ImGuiRenderDrawLists;
                 io.ImeWindowHandle = hWnd;
 
+                InitFonts();
+
                 return true;
             }
 
@@ -320,7 +471,7 @@ namespace loader {
                 }
 
                 ImGui::Shutdown();
-                d3dDevice = nullptr;
+                imGuiDevice = nullptr;
                 imGuiWnd = NULL;
             }
 
@@ -395,7 +546,7 @@ namespace loader {
             }
 
             bool CreateDeviceObjects() {
-                if (!d3dDevice) {
+                if (!imGuiDevice) {
                     return false;
                 }
                 if (!CreateFonts()) {
@@ -405,7 +556,7 @@ namespace loader {
             }
 
             void InvalidateDeviceObjects() {
-                if (!d3dDevice) {
+                if (!imGuiDevice) {
                     return;
                 }
                 if (imGuiVertexBuffer) {

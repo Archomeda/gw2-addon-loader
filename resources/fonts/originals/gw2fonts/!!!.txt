@@ -1,0 +1,9 @@
+SMALL FONT: Trebuchet at 16
+NORMAL FONT: Trebuchet at 18
+LARGE FONT: Trebuchet at 19
+LARGER FONT: Trebuchet at 20
+
+SMALL MAP FONT: Menomonia at 33
+NORMAL MAP FONT: Menomonia at 33
+LARGE MAP FONT: Menomonia at 35
+LARGER MAP FONT: Menomonia at 37

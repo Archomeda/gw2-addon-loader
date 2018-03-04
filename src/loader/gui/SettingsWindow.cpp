@@ -6,7 +6,7 @@
 #include <memory>
 #include <sstream>
 #include <vector>
-#include <imgui.h>
+#include "imgui.h"
 #include <imgui_internal.h>
 #include "gui_manager.h"
 #include "AddonInfoWindow.h"
@@ -143,7 +143,7 @@ namespace loader {
                     }
                     else {
                         // Fallback generic icon
-                        ImGui::PushFont(FontIconButtons);
+                        ImGui::PushFont(imgui::FontIconButtons);
                         if (addon->SupportsLoading()) {
                             ImGui::Text(ICON_MD_EXTENSION);
                         }
@@ -609,7 +609,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_ButtonHovered].w));
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_ButtonActive].w));
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.69f, 0.69f, 0.46f, 1.00f));
-            ImGui::PushFont(FontIconButtons);
+            ImGui::PushFont(imgui::FontIconButtons);
         }
 
         void SettingsWindow::PopTabStyle(int tabIndex) {
