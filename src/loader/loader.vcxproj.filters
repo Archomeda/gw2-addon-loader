@@ -90,6 +90,9 @@
     <ClInclude Include="gui\BitmapFontAtlas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IconsOcticons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

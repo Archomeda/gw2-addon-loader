@@ -1,14 +1,12 @@
 #pragma once
 #include "../windows.h"
 #include <d3d9.h>
-#include <IconsMaterialDesign.h>
 #include <imgui.h>
 
 namespace loader {
     namespace gui {
         namespace imgui {
 
-            static const ImWchar FontMaterialIconsRange[] = { ICON_MIN_MD, ICON_MAX_MD, 0 };
             extern ImFont* FontMain;
             extern ImFont* FontIconButtons;
 

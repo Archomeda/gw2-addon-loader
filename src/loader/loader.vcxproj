@@ -181,6 +181,7 @@
     <ClInclude Include="gui\MessageWindow.h" />
     <ClInclude Include="hooks\LoaderDirect3D9.h" />
     <ClInclude Include="hooks\LoaderDirect3DDevice9.h" />
+    <ClInclude Include="IconsOcticons.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TimeMeasure.h" />

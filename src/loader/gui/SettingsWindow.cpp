@@ -6,11 +6,13 @@
 #include <memory>
 #include <sstream>
 #include <vector>
+#include <IconsMaterialDesign.h>
 #include "imgui.h"
 #include <imgui_internal.h>
 #include "gui_manager.h"
 #include "AddonInfoWindow.h"
 #include "MessageWindow.h"
+#include "../IconsOcticons.h"
 #include "../addons/addons_manager.h"
 #include "../addons/Addon.h"
 #include "../hooks/LoaderDirect3DDevice9.h"
@@ -397,7 +399,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             ImGui::PopTextWrapPos();
 
             ImGui::Dummy(ImVec2(0, 16));
-            if (ImGui::Button("Visit GitHub")) {
+            if (ImGui::Button(ICON_OC_MARK_GITHUB "  " ICON_OC_LOGO_GITHUB, ImVec2(90, 32))) {
                 ShellExecute(0, 0, L"https://github.com/Archomeda/gw2-addon-loader", 0, 0, SW_SHOW);
             }
         }
