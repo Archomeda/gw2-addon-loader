@@ -18,6 +18,7 @@
 #include "../hooks/LoaderDirect3DDevice9.h"
 #include "../Config.h"
 #include "../input.h"
+#include "../version.h"
 #include "../utils/encoding.h"
 
 using namespace std;
@@ -405,40 +406,50 @@ The author of this library is not associated with ArenaNet nor with any of its p
         }
 
         void SettingsWindow::RenderTabSettings() {
-            set<uint_fast8_t> pressedKeys = GetPressedKeyboardKeys();
-            string keysStr = GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind);
-            char keysBuff[64];
-            keysStr._Copy_s(keysBuff, sizeof(keysBuff), keysStr.length());
-            keysBuff[keysStr.length()] = 0;
-            ImGui::TextUnformatted("Addon Loader Window keybind");
-            ImGui::SameLine();
-            ImGui::InputTextEx("##LoaderKeybind", keysBuff, sizeof(keysBuff), ImVec2(200, 0), ImGuiInputTextFlags_ReadOnly);
-            if (ImGui::IsItemActive()) {
-                this->windowKeybindEditActive = true;
-                if (DoKeysContainNonModifiers(pressedKeys)) {
-                    // Apply keybind
-                    ImGui::ClearActiveID();
-                    this->windowKeybind = pressedKeys;
-                    AppConfig.SetSettingsKeybind(pressedKeys);
+            ImGui::BeginChild("##Settings", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+            {
+                set<uint_fast8_t> pressedKeys = GetPressedKeyboardKeys();
+                string keysStr = GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind);
+                char keysBuff[64];
+                keysStr._Copy_s(keysBuff, sizeof(keysBuff), keysStr.length());
+                keysBuff[keysStr.length()] = 0;
+                ImGui::TextUnformatted("Addon Loader Window keybind");
+                ImGui::SameLine();
+                ImGui::InputTextEx("##LoaderKeybind", keysBuff, sizeof(keysBuff), ImVec2(200, 0), ImGuiInputTextFlags_ReadOnly);
+                if (ImGui::IsItemActive()) {
+                    this->windowKeybindEditActive = true;
+                    if (DoKeysContainNonModifiers(pressedKeys)) {
+                        // Apply keybind
+                        ImGui::ClearActiveID();
+                        this->windowKeybind = pressedKeys;
+                        AppConfig.SetSettingsKeybind(pressedKeys);
+                        this->windowKeybindEditActive = false;
+                    }
+                }
+                else if (this->windowKeybindEditActive) {
+                    // Reset keybind
+                    this->windowKeybind = AppConfig.GetSettingsKeybind();
                     this->windowKeybindEditActive = false;
                 }
-            }
-            else if (this->windowKeybindEditActive) {
-                // Reset keybind
-                this->windowKeybind = AppConfig.GetSettingsKeybind();
-                this->windowKeybindEditActive = false;
-            }
-            else if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("Click to activate the field and press a new keybind. Use Escape to cancel.");
-            }
+                else if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Click to activate the field and press a new keybind. Use Escape to cancel.");
+                }
 
-            if (ImGui::Checkbox("Show unsupported addons", &this->showUnsupportedAddons)) {
-                AppConfig.SetShowUnsupportedAddons(this->showUnsupportedAddons);
-            }
+                if (ImGui::Checkbox("Show unsupported addons", &this->showUnsupportedAddons)) {
+                    AppConfig.SetShowUnsupportedAddons(this->showUnsupportedAddons);
+                }
 
-            if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
-                AppConfig.SetShowDebugFeatures(this->showDebugFeatures);
+                if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
+                    AppConfig.SetShowDebugFeatures(this->showDebugFeatures);
+                }
             }
+            ImGui::EndChild();
+         
+            ImGui::BeginChild("##Metadata");
+            {
+                ImGui::Text("Addon Loader version: " VERSION);
+            }
+            ImGui::EndChild();
         }
 
         void SettingsWindow::RenderTabStats() {
