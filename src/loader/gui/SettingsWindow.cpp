@@ -621,7 +621,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_ButtonHovered].w));
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_ButtonActive].w));
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.69f, 0.69f, 0.46f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.89f, 0.88f, 0.68f, 1.00f));
             ImGui::PushFont(imgui::FontIconButtons);
         }
 
