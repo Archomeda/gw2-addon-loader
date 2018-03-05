@@ -11,7 +11,6 @@ There are plans to look into supporting these addons, but due to the complex nat
 Improving stability, applying bugfixes and implementing other missing features have a higher priority.
 
 ## Planned features
-- Adding more stuff to the statistics tab
 - Checking for updates or auto updating of *Guild Wars 2 Addon Loader*
 - Checking for updates or auto updating of addons
 - Investigating support for legacy addons (aka arcdps, GW2Mounts, ReShade, GW2Hook, and other d3d9 addons)
