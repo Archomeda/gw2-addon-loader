@@ -87,7 +87,7 @@
     <ClInclude Include="gui\imgui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\BitmapFont.h">
+    <ClInclude Include="gui\BitmapFontAtlas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -155,7 +155,7 @@
     <ClCompile Include="gui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\BitmapFont.cpp">
+    <ClCompile Include="gui\BitmapFontAtlas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -163,15 +163,10 @@
     <None Include="exports.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\resources\fonts\gw2-trebuchet_18.pbf" />
-    <None Include="..\..\resources\fonts\materialicons_16.pbf" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="loader.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="..\..\resources\fonts\originals\MaterialIcons-Regular.ttf" />
   </ItemGroup>
 </Project>

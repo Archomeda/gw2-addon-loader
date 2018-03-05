@@ -1,9 +1,8 @@
-// The code in this file is mostly from ImGui's example
-
 #include "imgui.h"
+#include <d3dx9tex.h>
 #include <map>
 #include <imgui.h>
-#include "BitmapFont.h"
+#include "BitmapFontAtlas.h"
 #include "../resource.h"
 
 using namespace std;
@@ -23,9 +22,9 @@ namespace loader {
             static int imGuiVertexBufferSize = 5000;
             static int imGuiIndexBufferSize = 10000;
 
-            static BitmapFont bitmapFontMaterial16;
-            static BitmapFont bitmapFontGw2Trebuchet18;
             static map<uint32_t, int> bitmapFontGlyphMapMain;
+
+            static BitmapFontAtlas bitmapFontAtlas;
 
             ImFont* FontMain;
             ImFont* FontIconButtons;
@@ -57,147 +56,27 @@ namespace loader {
                 return binaryData;
             }
 
-            ImFontConfig GetFontConfig(HMODULE hModule, LPCWSTR lpName, LPCWSTR lpType, float fontSize) {
-                UINT size;
-                ImFontConfig fontConfig = {};
-                fontConfig.FontData = LoadEmbeddedResource(hModule, lpName, lpType, &size);
-                fontConfig.FontDataSize = size;
-                fontConfig.FontDataOwnedByAtlas = false; // Don't let ImGui take over our resource memory, the OS handles this
-                fontConfig.SizePixels = fontSize;
-                return fontConfig;
-            }
-
-            BitmapFont LoadBitmapFont(HMODULE hModule, LPCWSTR lpName, ImFont* font, map<uint32_t, int>* glyphMap) {
-                ImGuiIO& io = ImGui::GetIO();
-                
-                BitmapFont bmf;
-                UINT size;
-                void* pbf = LoadEmbeddedResource(hModule, lpName, L"PBF", &size);
-                bmf.ReadFromMemory(static_cast<const uint8_t*>(pbf), size);
-
-                auto bmfGlyphs = bmf.GetGlyphs();
-                for (size_t i = 0; i < bmfGlyphs.size(); ++i) {
-                    auto glyph = bmfGlyphs[i];
-                    int rectId = io.Fonts->AddCustomRectFontGlyph(font, glyph.id, glyph.width, glyph.height, glyph.xAdvance, ImVec2(glyph.xOffset, glyph.yOffset));
-                    glyphMap->emplace(glyph.id, rectId);
-                }
-
-                return bmf;
-            }
-
-            bool CopyBitmapFontTexture(IDirect3DTexture9* destTexture, int bytesPerPixel, BitmapFont* font, map<uint32_t, int>* glyphMap) {
-                ImGuiIO& io = ImGui::GetIO();
-              
-                IDirect3DTexture9* currSrcTexture = nullptr;
-                IDirect3DSurface9* srcSurface = nullptr;
-                IDirect3DSurface9* destSurface;
-                destTexture->GetSurfaceLevel(0, &destSurface);
-
-                auto bitmapGlyphs = font->GetGlyphs();
-                for (size_t i = 0; i < font->GetGlyphs().size(); ++i) {
-                    BitmapFontGlyph glyph = bitmapGlyphs[i];
-                    IDirect3DTexture9* texture = font->GetTexture(glyph.page, imGuiDevice);
-                    if (currSrcTexture != texture) {
-                        currSrcTexture = texture;
-                        if (srcSurface != nullptr) {
-                            srcSurface->Release();
-                        }
-                        currSrcTexture->GetSurfaceLevel(0, &srcSurface);
-                    }
-
-                    auto glyphRect = io.Fonts->GetCustomRectByIndex(glyphMap->at(glyph.id));
-                    RECT srcRect;
-                    srcRect.left = glyph.x;
-                    srcRect.top = glyph.y;
-                    srcRect.right = glyph.x + glyph.width;
-                    srcRect.bottom = glyph.y + glyph.height;
-                    RECT destRect;
-                    destRect.left = glyphRect->X;
-                    destRect.top = glyphRect->Y;
-                    destRect.right = glyphRect->X + glyphRect->Width;
-                    destRect.bottom = glyphRect->Y + glyphRect->Height;
-
-                    D3DLOCKED_RECT srcLockedRect;
-                    D3DLOCKED_RECT destLockedRect;
-                    if (texture->LockRect(0, &srcLockedRect, &srcRect, 0) != D3D_OK) {
-                        return false;
-                    }
-                    if (destTexture->LockRect(0, &destLockedRect, &destRect, 0) != D3D_OK) {
-                        texture->UnlockRect(0);
-                        return false;
-                    }
-                    for (int y = 0; y < glyphRect->Height; ++y) {
-                        memcpy(static_cast<unsigned char*>(destLockedRect.pBits) + destLockedRect.Pitch * y, static_cast<unsigned char*>(srcLockedRect.pBits) + srcLockedRect.Pitch * y, glyphRect->Width * bytesPerPixel);
-                    }
-                    texture->UnlockRect(0);
-                    destTexture->UnlockRect(0);
-                }
-                font->ClearTextures();
-                if (srcSurface != nullptr) {
-                    srcSurface->Release();
-                }
-                destSurface->Release();
-
-                return true;
-            }
-
-
             void InitFonts() {
                 ImGuiIO& io = ImGui::GetIO();
-                ImFontConfig fontConfigMaterial;
 
-                // Create font for normal text, which is bitmap based for crisp looking text
-                ImFontConfig fontConfig = {};
-                fontConfig.GlyphRanges = {};
-                fontConfig.SizePixels = 16;
-                fontConfig.OversampleH = 1;
-                FontMain = io.Fonts->AddFontDefault(&fontConfig);
-                bitmapFontGw2Trebuchet18 = LoadBitmapFont(imGuiModule, MAKEINTRESOURCE(IDF_GW2TREBUCHET18), FontMain, &bitmapFontGlyphMapMain);
-                bitmapFontMaterial16 = LoadBitmapFont(imGuiModule, MAKEINTRESOURCE(IDF_MATERIAL16), FontMain, &bitmapFontGlyphMapMain);
+                // Use our custom atlas that takes a prerendered bitmap font
+                io.Fonts = &bitmapFontAtlas;
 
-                // Create font for big icons
-                fontConfigMaterial = GetFontConfig(imGuiModule, MAKEINTRESOURCE(IDR_FONTICONS), L"TTF", 32);
-                fontConfigMaterial.GlyphRanges = FontMaterialIconsRange;
-                fontConfigMaterial.PixelSnapH = true;
-                fontConfigMaterial.OversampleH = 1;
-                FontIconButtons = io.Fonts->AddFont(&fontConfigMaterial);
+                UINT atlasSize;
+                void* atlas = LoadEmbeddedResource(imGuiModule, MAKEINTRESOURCE(IDR_FONTATLAS), L"ATL", &atlasSize);
+                vector<ImFont*> fonts = bitmapFontAtlas.SetBitmapFontFromMemory(static_cast<unsigned char*>(atlas), static_cast<int>(atlasSize));
+                FontMain = fonts[0];
+                FontIconButtons = fonts[1];
             }
 
             bool CreateFonts() {
                 ImGuiIO& io = ImGui::GetIO();
 
-                // Build texture atlas
-                unsigned char* pixels;
-                int width;
-                int height;
-                int bytesPerPixel;
-                io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, &bytesPerPixel);
-
-                // Upload texture to graphics system
-                imGuiFontTexture = nullptr;
-                if (imGuiDevice->CreateTexture(width, height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &imGuiFontTexture, NULL) < 0) {
+                bitmapFontAtlas.Build();
+                if (D3DXCreateTextureFromFileInMemory(imGuiDevice, bitmapFontAtlas.TextureFile, bitmapFontAtlas.TextureFileSize, &imGuiFontTexture) != D3D_OK) {
                     return false;
                 }
-                D3DLOCKED_RECT rect;
-                if (imGuiFontTexture->LockRect(0, &rect, NULL, 0) != D3D_OK) {
-                    return false;
-                }
-                for (int y = 0; y < height; ++y) {
-                    memcpy(static_cast<unsigned char*>(rect.pBits) + rect.Pitch * y, pixels + (width * bytesPerPixel) * y, (width * bytesPerPixel));
-                }
-                imGuiFontTexture->UnlockRect(0);
-
-                // Copy bitmap font glyphs
-                if (!CopyBitmapFontTexture(imGuiFontTexture, bytesPerPixel, &bitmapFontGw2Trebuchet18, &bitmapFontGlyphMapMain)) {
-                    return false;
-                }
-                if (!CopyBitmapFontTexture(imGuiFontTexture, bytesPerPixel, &bitmapFontMaterial16, &bitmapFontGlyphMapMain)) {
-                    return false;
-                }
-
-                // Store our identifier
-                io.Fonts->TexID = static_cast<void *>(imGuiFontTexture);
-
+                bitmapFontAtlas.TexID = static_cast<void*>(imGuiFontTexture);
                 return true;
             }
 

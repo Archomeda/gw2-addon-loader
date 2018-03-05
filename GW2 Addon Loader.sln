@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addon-fix-mouse-movement", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bitmap-font-packer", "src\bitmap-font-packer\bitmap-font-packer.vcxproj", "{7031DFCC-1DF8-47B5-B486-A5ECD8FC9C98}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "font-atlas-packer", "src\font-atlas-packer\font-atlas-packer.vcxproj", "{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -113,6 +115,16 @@ Global
 		{7031DFCC-1DF8-47B5-B486-A5ECD8FC9C98}.Tools|x64.Build.0 = Debug|x64
 		{7031DFCC-1DF8-47B5-B486-A5ECD8FC9C98}.Tools|x86.ActiveCfg = Debug|Win32
 		{7031DFCC-1DF8-47B5-B486-A5ECD8FC9C98}.Tools|x86.Build.0 = Debug|Win32
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Debug|x64.ActiveCfg = Debug|x64
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Debug|x86.ActiveCfg = Debug|Win32
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.DebugExamples|x64.ActiveCfg = Debug|x64
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.DebugExamples|x86.ActiveCfg = Debug|Win32
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Release|x64.ActiveCfg = Release|x64
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Release|x86.ActiveCfg = Release|Win32
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Tools|x64.ActiveCfg = Debug|x64
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Tools|x64.Build.0 = Debug|x64
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Tools|x86.ActiveCfg = Debug|Win32
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Tools|x86.Build.0 = Debug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
