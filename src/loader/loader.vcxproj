@@ -242,7 +242,23 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
   </Target>
+
+  <!-- Automatic versioning -->
   <Target Name="Version" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports">
+    <PropertyGroup>
+      <IsRepo Condition="Exists('$(SolutionDir).git')">true</IsRepo>
+    </PropertyGroup>
+    <Exec Command="where git &gt;NUL 2&gt;NUL" IgnoreExitCode="true" EchoOff="true" Condition="'$(IsRepo)'=='true'">
+      <Output TaskParameter="ExitCode" PropertyName="GitUnavailable" />
+    </Exec>
+    <PropertyGroup>
+      <VersionBuild Condition="Exists('$(SolutionDir).git') And '$(GitUnavailable)'=='0'">Available</VersionBuild>
+      <VersionBuild Condition="Exists('$(SolutionDir).git') And '$(GitUnavailable)'!='0'">NotAvailable</VersionBuild>
+      <VersionBuild Condition="!Exists('$(SolutionDir).git')">NotARepo</VersionBuild>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="Version_Available" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports" DependsOnTargets="Version" Condition="'$(VersionBuild)'=='Available'">
     <GitDescribe LightWeight="true" Always="true" LocalPath="$(MSBuildProjectDirectory)">
       <Output TaskParameter="CommitCount" PropertyName="CommitCount" />
       <Output TaskParameter="Tag" PropertyName="Tag" />
@@ -274,4 +290,15 @@
     <Message Text="Automatic versioning: $(AutoVersion)" Importance="high" />
     <WriteLinesToFile File="version_generated.h" Lines="@(VersioningText)" Overwrite="true" />
   </Target>
+
+  <Target Name="Version_NotAvailable" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports" DependsOnTargets="Version" Condition="'$(VersionBuild)'=='NotAvailable'">
+    <Warning Text="Git is not installed. You can continue to build this project, but automatic versioning will not be available. Please install Git in order to use automatic versioning." />
+    <Delete Files="version_generated.h" />
+  </Target>
+
+  <Target Name="Version_NotARepo" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports" DependsOnTargets="Version" Condition="'$(VersionBuild)'=='NotARepo'">
+    <Warning Text="This copy of Guild Wars 2 Addon Loader has not been cloned with Git. You can continue to build this project, but automatic versioning will not be available. Please clone the original repository and install Git in order to use automatic versioning." />
+    <Delete Files="version_generated.h" />
+  </Target>
+  <!-- /Automatic versioning -->
 </Project>
