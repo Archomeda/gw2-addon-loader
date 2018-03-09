@@ -1,0 +1,14 @@
+---
+layout: default
+---
+
+<div class="content update-post">
+  <h2>{{ page.title | escape }}</h2>
+  <p class="meta">
+    <span class="date">{{ page.date | date: site.date_format }}</span>
+    {% if page.author %}
+      by <span class="author">{{ page.author }}</span>
+    {% endif %}
+  </p>
+  {{ content }}
+</div>

@@ -1,0 +1,30 @@
+---
+layout: default
+---
+
+<div class="home">
+  {{ content }}
+
+  {% if site.posts.size > 0 %}
+    <div class="update-archive">
+      <div class="content update-archive-post">
+        {% for post in site.posts limit: 3 %}
+          <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+          <p class="meta">
+            <span class="date">{{ post.date | date: site.date_format }}</span>
+            {% if post.author %}
+              by <span class="author">{{ post.author }}</span>
+            {% endif %}
+          </p>
+          {{ post.excerpt }}
+          {% if post.excerpt != post.content %}
+            <p class="read-more">
+              <a href="{{ post.url | relative_url }}">Continue reading &raquo;</a>
+            </p>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>

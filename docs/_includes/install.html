@@ -1,0 +1,18 @@
+<script>
+$(function () {
+  getLatestRelease(function (release) {
+    if (release && release.assets) {
+      $('#latest-release-link').attr('href', release.html_url);
+      $('#latest-release-version').text(release.tag_name);
+      $('#latest-release-assets').empty();
+      for (var asset of release.assets) {
+        $('<li>').append(
+          $('<a>').attr('href', asset.browser_download_url).text(asset.name)
+        ).appendTo($('#latest-release-assets'));
+      }
+      $('#releases').removeClass('hidden');
+      $('#releases-generic').addClass('hidden');
+    }
+  });
+});
+</script>

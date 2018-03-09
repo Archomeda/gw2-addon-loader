@@ -1,0 +1,69 @@
+---
+sitemap:
+  exclude: "yes"
+---
+
+@charset "utf-8";
+
+$assets-path: "{{ site.baseurl }}/assets/";
+
+$media-xl-max-width: 1500px;
+$media-l-max-width: 1200px;
+$media-m-max-width: 992px;
+$media-s-max-width: 768px;
+$media-xs-max-width: 480px;
+
+$nav-xl-width: 150px;
+$nav-l-width: $nav-xl-width;
+$nav-m-width: $nav-l-width;
+$nav-s-width: $nav-m-width;
+
+$padding-xl-left: 10px;
+$padding-xl-right: 10px;
+$padding-xl-nav-section: 20px;
+$padding-l-left: $padding-xl-left;
+$padding-l-right: $padding-xl-right;
+$padding-l-nav-section: $padding-xl-nav-section;
+$padding-m-left: $padding-l-left;
+$padding-m-right: $padding-l-right;
+$padding-m-nav-section: $padding-l-nav-section;
+$padding-s-left: $padding-m-left;
+$padding-s-right: $padding-m-right;
+$padding-s-nav-section: $padding-m-nav-section;
+$padding-xs-left: 5px;
+$padding-xs-right: 5px;
+$padding-xs-nav-section: 0;
+
+$section-xl-width: $media-l-max-width - $nav-l-width - $padding-l-left - $padding-l-right - $padding-l-nav-section;
+$section-l-width: $section-xl-width;
+$section-m-width: $media-m-max-width - $nav-m-width - $padding-m-left - $padding-m-right - $padding-m-nav-section;
+$section-s-width: $media-s-max-width - $nav-s-width - $padding-s-left - $padding-s-right - $padding-s-nav-section;
+
+$page-xl-max-width: $section-xl-width + 2 * ($nav-xl-width + $padding-xl-nav-section) + $padding-xl-left + $padding-xl-right;
+$page-l-max-width: $section-l-width + 2 * ($nav-l-width + $padding-l-nav-section) + $padding-l-left + $padding-l-right;
+$page-m-max-width: $section-m-width + 2 * ($nav-m-width + $padding-m-nav-section) + $padding-m-left + $padding-m-right;
+$page-s-max-width: $section-s-width + 2 * ($nav-s-width + $padding-s-nav-section) + $padding-s-left + $padding-s-right;
+
+$font-family: "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-size: 14px;
+$font-line-height: 1.5;
+$font-weight: 400;
+
+$background-color: #eee;
+$text-color: #222;
+$link-color: #39c;
+$link-color-hover: #036;
+
+$info-text-color: #088711;
+$warning-text-color: #975d01;
+$error-text-color: #970101;
+
+// Octicons settings
+$octicons-font-path: $assets-path + "fonts";
+
+@import
+    "base",
+    "layout",
+    "octicons",
+    "syntax-highlighting"
+;

@@ -1,0 +1,53 @@
+---
+layout: default
+breadcrumb_title: Updates
+---
+
+<!-- Pagination links -->
+{% capture pagination_links %}
+{% if paginator.total_pages > 1 %}
+<div class="pagination">
+  {% if paginator.previous_page %}
+    <span><a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&laquo; Prev</a></span>
+  {% else %}
+    <span>&laquo; Prev</span>
+  {% endif %}
+
+  {% for page in (1..paginator.total_pages) %}
+    {% if page == paginator.page %}
+      <span><em>{{ page }}</em></span>
+    {% elsif page == 1 %}
+      <span><a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">{{ page }}</a></span>
+    {% else %}
+      <span><a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}">{{ page }}</a></span>
+    {% endif %}
+  {% endfor %}
+
+  {% if paginator.next_page %}
+    <span><a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Next &raquo;</a></span>
+  {% else %}
+    <span>Next &raquo;</span>
+  {% endif %}
+</div>
+{% endif %}
+{% endcapture %}
+
+{{ pagination_links }}
+
+<!-- This loops through the paginated posts -->
+<div class="update-archive">
+  {% for post in paginator.posts %}
+    <div class="content update-archive-post">
+      <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      <p class="meta">
+        <span class="date">{{ post.date | date: site.date_format }}</span>
+        {% if post.author %}
+          by <span class="author">{{ post.author }}</span>
+        {% endif %}
+      </p>
+      {{ post.content }}
+    </div>
+  {% endfor %}
+</div>
+
+{{ pagination_links }}

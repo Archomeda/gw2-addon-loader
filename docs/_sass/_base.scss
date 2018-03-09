@@ -1,0 +1,77 @@
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,400italic,700italic,700);
+
+body {
+    background-color: $background-color;
+    font: #{$font-size}/#{$font-line-height} $font-family;
+    color: $text-color;
+    font-weight: $font-weight;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 20px;
+    color: #393939;
+}
+
+h3 {
+    font-size: 16px;
+    color: #494949;
+}
+
+h4 {
+    font-size: 14px;
+    color: #595959;
+}
+
+h5 {
+    font-size: 14px;
+    color: #696969;
+}
+
+h6 {
+    font-size: 14px;
+    color: #797979;
+}
+
+a {
+    color: $link-color;
+    text-decoration: none;
+    path {
+        fill: $link-color;
+    }
+
+    &:hover, &.active {
+        color: $link-color-hover;
+        path {
+            fill: $link-color-hover;
+        }
+    }
+    &.active {
+        font-weight: bold;
+    }
+}
+
+.breadcrumb li.current {
+    font-weight: bold;
+}
+
+.pagination {
+    text-align: center;
+
+    em {
+        font-weight: bold;
+        font-style: inherit;
+    }
+    
+    *:not(:last-child):after {
+        content: ' \2022';
+    }
+}
+
+.icons {
+    font-size: 24px;
+    padding-left: 5px;
+}

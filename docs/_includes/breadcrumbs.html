@@ -1,0 +1,43 @@
+{% assign paths = page.url | split: "/" %}
+{% assign current_path = "" %}
+
+<ul class="breadcrumb">
+  {% for path in paths %}
+    {% assign breadcrumb_last = forloop.last %}
+    {% assign current_path = current_path | append: path | append: "/" %}
+
+    {% for page in site.pages %}
+      {% if page.url == current_path %}
+        {% if paginator.previous_page and breadcrumb_last %}
+          {% assign breadcrumb_title = 'Page ' | append: paginator.page %}
+        {% elsif page.breadcrumb_title %}
+          {% assign breadcrumb_title = page.breadcrumb_title %}
+        {% elsif page.title %}
+          {% assign breadcrumb_title = page.title %}
+        {% else %}
+          {% assign breadcrumb_title = path %}
+        {% endif %}
+
+        {% if breadcrumb_last %}
+          <li class="current">{{ breadcrumb_title }}</li>
+        {% else %}
+          <li><a href="{{ site.baseurl }}{{ current_path }}">{{ breadcrumb_title }}</a></li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    {% for post in site.posts %}
+      {% if post.url == current_path %}
+        {% if post.breadcrumb_title %}
+          {% assign breadcrumb_title = post.breadcrumb_title %}
+        {% elsif page.title %}
+          {% assign breadcrumb_title = post.title %}
+        {% else %}
+          {% assign breadcrumb_title = path %}
+        {% endif %}
+        <li class="current">{{ breadcrumb_title }}</li>
+      {% endif %}
+    {% endfor %}
+
+  {% endfor %}
+</ul>

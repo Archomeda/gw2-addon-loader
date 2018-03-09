@@ -1,0 +1,78 @@
+{% assign all_pages = "" | split: "" %}
+{% for page in site.pages %}
+  {% assign all_pages = all_pages | push: page %}
+{% endfor %}
+{% for page in site.additional_navlinks %}
+  {% assign all_pages = all_pages | push: page %}
+{% endfor %}
+
+{% assign current_url = page.url %}
+{% assign pages = all_pages | sort: 'weight' %}
+
+<ul>
+  {% assign menu_depth = 1 %}
+  {% for page in pages %}
+    {% if page.navigation.visible %}
+      {% assign page_url_protocol_http = page.url | slice: 0, 7 %}
+      {% assign page_url_protocol_https = page.url | slice: 0, 8 %}
+      {% if page_url_protocol_http == 'http://' or page_url_protocol_https == 'https://' %}
+        {% assign page_url = page.url %}
+        {% if page.navigation.depth %}
+          {% assign new_depth = page.navigation.depth %}
+        {% endif %}
+      {% else %}
+        {% assign page_url = page.url | remove_first: '/' %}
+        {% assign page_url_parts = page_url | split: '/' %}
+        {% assign new_depth = page_url_parts | size %}
+        {% assign page_url = page.url | prepend: site.baseurl %}
+      {% endif %}
+
+      {% if new_depth < 1 %}
+        {% assign new_depth = 1 %}
+      {% endif %}
+
+      {% if menu_depth < new_depth %}
+        {% for i in (menu_depth..new_depth) %}
+          {% if i != new_depth %}
+            <ul>
+          {% endif %}
+        {% endfor %}
+      {% elsif menu_depth > new_depth %}
+        {% for i in (new_depth..menu_depth) %}
+          {% if i != menu_depth %}
+            </ul>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% assign menu_depth = new_depth %}
+      
+      {% assign active = '' %}
+      {% if page.url == '/' and current_url == page.url %}
+        {% assign active = 'class="active"' %}
+      {% elsif page.url != '/' and current_url contains page.url %}
+        {% assign active = 'class="active"' %}
+      {% endif %}
+      <li><a href="{{ page_url }}"{{ active }}>{{ page.navigation.title }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if menu_depth > 1 %}
+    {% for i in (1..menu_depth) %}
+      {% if i != menu_depth %}
+        </ul>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</ul>
+
+<p class="icons">
+  <a href="{{ site.github.repository_url }}" title="GitHub repository">
+    <i class="fab fa-github"></i>
+  </a>
+  <a href="https://twitter.com/{{ site.twitter.username }}" target="_blank" title="Twitter">
+    <i class="fab fa-twitter"></i>
+  </a>
+  <a href="{{ site.baseurl }}/{{ site.feed.path }}" target="_blank" title="Feed">
+    <i class="fas fa-rss"></i>
+  </a>
+</p>
