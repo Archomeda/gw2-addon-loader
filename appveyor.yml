@@ -18,7 +18,7 @@ install:
 before_build:
   - nuget restore
   - msbuild /t:loader:ExportVersion /p:Configuration=Release /p:ExportFile=../../.version /v:m
-  - ps: Update-AppveyorBuild -Version "$(Get-Content .version)"
+  - ps: Update-AppveyorBuild -Version '$(Get-Content .version)'
 
 build:
   project: GW2 Addon Loader.sln
@@ -26,7 +26,7 @@ build:
   verbosity: minimal
 
 on_success:
-  - ps: 7z a GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip -r $(appveyor_build_folder)\bin\$(platform)\$(configuration)\*.dll
+  - ps: 7z a 'GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip' -r '$(appveyor_build_folder)\bin\$(platform)\$(configuration)\*.dll'
 
 artifacts:
   - path: GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip
@@ -37,7 +37,7 @@ deploy:
   description: 'New release: $(appveyor_build_version)'
   auth_token:
     secure: /93cJH0TEPlM829Tak7dyn/tHJDBR3dxPtU5gQdU3kbTYlSq+FELMLsxHTcuhJ2D
-  artifact: bin\$(platform)\Release\GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip
+  artifact: GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip
   draft: true
   on:
     appveyor_repo_tag: true
