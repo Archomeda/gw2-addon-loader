@@ -15,7 +15,7 @@ cache:
 before_build:
   - nuget restore
   - msbuild /t:loader:ExportVersion /p:Configuration=Release /p:ExportFile=../../.version
-  - Update-AppveyorBuild -Version "$(Get-Content .version)"
+  - appveyor UpdateBuild -Version "$(Get-Content .version)"
 
 build:
   parallel: true
