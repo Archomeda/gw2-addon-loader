@@ -12,6 +12,9 @@ platform:
 cache:
   - packages -> **\packages.config
 
+install:
+  - git submodule update --init --recursive
+
 before_build:
   - nuget restore
   - msbuild /t:loader:ExportVersion /p:Configuration=Release /p:ExportFile=../../.version /v:m
