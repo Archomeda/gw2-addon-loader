@@ -1,0 +1,36 @@
+image: Visual Studio 2017
+version: '{build}'
+skip_branch_with_pr: true
+skip_commits:
+  message: /\[(ci skip|skip ci|docs)\]/
+
+configuration: Release
+platform:
+  - x86
+  - x64
+
+cache:
+  - packages -> **\packages.config
+
+before_build:
+  - .appveyor\UpdateAppVeyorBuild.ps1
+  - nuget restore
+
+build:
+  parallel: true
+  verbosity: minimal
+
+artifacts:
+  - path: bin\$(platform)\Release\**\*.dll
+    name: GuildWars2AddonLoader_$(appveyor_build_version)_$(platform)
+    type: zip
+
+deploy:
+  provider: GitHub
+  description: 'New release: $(appveyor_build_version)'
+  auth_token:
+    secure: /93cJH0TEPlM829Tak7dyn/tHJDBR3dxPtU5gQdU3kbTYlSq+FELMLsxHTcuhJ2D
+  artifact: bin\$(platform)\Release\GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip
+  draft: true
+  on:
+    appveyor_repo_tag: true
