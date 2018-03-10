@@ -244,21 +244,7 @@
   </Target>
 
   <!-- Automatic versioning -->
-  <Target Name="Version" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports">
-    <PropertyGroup>
-      <IsRepo Condition="Exists('$(SolutionDir).git')">true</IsRepo>
-    </PropertyGroup>
-    <Exec Command="where git &gt;NUL 2&gt;NUL" IgnoreExitCode="true" EchoOff="true" Condition="'$(IsRepo)'=='true'">
-      <Output TaskParameter="ExitCode" PropertyName="GitUnavailable" />
-    </Exec>
-    <PropertyGroup>
-      <VersionBuild Condition="Exists('$(SolutionDir).git') And '$(GitUnavailable)'=='0'">Available</VersionBuild>
-      <VersionBuild Condition="Exists('$(SolutionDir).git') And '$(GitUnavailable)'!='0'">NotAvailable</VersionBuild>
-      <VersionBuild Condition="!Exists('$(SolutionDir).git')">NotARepo</VersionBuild>
-    </PropertyGroup>
-  </Target>
-  
-  <Target Name="Version_Available" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports" DependsOnTargets="Version" Condition="'$(VersionBuild)'=='Available'">
+  <Target Name="GetVersion" DependsOnTargets="EnsureNuGetPackageBuildImports" Condition="'$(SkipVersion)'!='true'">
     <GitDescribe LightWeight="true" Always="true" LocalPath="$(MSBuildProjectDirectory)">
       <Output TaskParameter="CommitCount" PropertyName="CommitCount" />
       <Output TaskParameter="Tag" PropertyName="Tag" />
@@ -273,32 +259,61 @@
       <Output TaskParameter="HasPendingChanges" PropertyName="HasPendingChanges" />
     </GitPendingChanges>
     <PropertyGroup>
-      <VersionString>$(Tag)-$(CommitCount)-g$(CommitHash)</VersionString>
-      <VersionString Condition="'$(CommitCount)'=='0'">$(Tag)</VersionString>
-      <VersionString Condition="'$(Tag)'==''">$(CommitHash)</VersionString>
+      <CIBuildString Condition="'$(APPVEYOR_BUILD_NUMBER)'!=''">.$(APPVEYOR_BUILD_NUMBER)</CIBuildString>
+      <VersionString>$(Tag)$(CIBuildString)</VersionString>
+      <VersionString Condition="'$(CommitCount)'!='0'">$(Tag)$(CIBuildString)-$(CommitHash)</VersionString>
+      <CIBuildString Condition="'$(APPVEYOR_BUILD_NUMBER)'!=''">b$(APPVEYOR_BUILD_NUMBER)-</CIBuildString>
+      <VersionString Condition="'$(Tag)'==''">$(CIBuildString)$(CommitHash)</VersionString>
       <BranchString Condition="'$(Branch)'!='master'"> on $(Branch)</BranchString>
       <DevString Condition="'$(HasPendingChanges)'=='true'"> (modified)</DevString>
       <DevString Condition="'$(Configuration)'=='Debug'"> (dev)</DevString>
       <DevString Condition="'$(Configuration)|$(HasPendingChanges)'=='Debug|true'"> (dev, modified)</DevString>
-      <AutoVersion>$(VersionString)$(BranchString)$(DevString)</AutoVersion>
+      <DevString Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''"> (PR $(APPVEYOR_PULL_REQUEST_NUMBER))</DevString>
+      <AutomaticVersion>$(VersionString)$(BranchString)$(DevString)</AutomaticVersion>
     </PropertyGroup>
-    <ItemGroup>
+  </Target>
+
+  <Target Name="ExportVersion:SanityCheck">
+    <Error Code="1" Text="ExportFile property is empty" Condition="'$(ExportFile)'==''" />
+    <PropertyGroup>
+      <IsRepo Condition="Exists('$(SolutionDir).git')">true</IsRepo>
+    </PropertyGroup>
+    <Exec Command="where git &gt;NUL 2&gt;NUL" IgnoreExitCode="true" EchoOff="true" Condition="'$(IsRepo)'=='true'">
+      <Output TaskParameter="ExitCode" PropertyName="GitUnavailable" />
+    </Exec>
+    <Error Code="2" Text="Git isn't available" Condition="Exists('$(SolutionDir).git') And '$(GitUnavailable)'!='0'" />
+    <Error Code="3" Text="This folder is not a cloned Git repository" Condition="!Exists('$(SolutionDir).git')" />
+  </Target>
+  
+  <Target Name="ExportVersion" DependsOnTargets="ExportVersion:SanityCheck;GetVersion">
+    <Message Text="Automatic versioning: $(AutomaticVersion)" Importance="high" />
+    <WriteLinesToFile File="$(ExportFile)" Lines="$(AutomaticVersion)" Overwrite="true" />
+  </Target>
+  
+  <Target Name="AutomaticVersion:SanityCheck">
+    <PropertyGroup>
+      <IsRepo Condition="Exists('$(SolutionDir).git')">true</IsRepo>
+    </PropertyGroup>
+    <Exec Command="where git &gt;NUL 2&gt;NUL" IgnoreExitCode="true" EchoOff="true" Condition="'$(IsRepo)'=='true'">
+      <Output TaskParameter="ExitCode" PropertyName="GitUnavailable" />
+    </Exec>
+    <Warning Text="Git is not installed. You can continue to build this project, but automatic versioning will not be available. Please install Git in order to use automatic versioning." Condition="Exists('$(SolutionDir).git') And '$(GitUnavailable)'!='0'" />
+    <Warning Text="This copy of Guild Wars 2 Addon Loader has not been cloned with Git. You can continue to build this project, but automatic versioning will not be available. Please clone the original repository and install Git in order to use automatic versioning." Condition="!Exists('$(SolutionDir).git')" />
+    <PropertyGroup>
+      <SkipVersion>true</SkipVersion>
+      <SkipVersion Condition="Exists('$(SolutionDir).git') And '$(GitUnavailable)'=='0'">false</SkipVersion>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="AutomaticVersion" BeforeTargets="PrepareForBuild" DependsOnTargets="AutomaticVersion:SanityCheck;GetVersion">
+    <Delete Files="version_generated.h" Condition="'$(SkipVersion)'=='true'" />    
+    <ItemGroup Condition="'$(SkipVersion)'!='true'">
       <VersioningText Include="// AUTOGENERATED, ANY CHANGE HERE WILL BE OVERWRITTEN BEFORE COMPILATION" />
       <VersioningText Include="#pragma once" />
-      <VersioningText Include="#define VERSION &quot;$(AutoVersion)&quot;" />
+      <VersioningText Include="#define VERSION &quot;$(AutomaticVersion)&quot;" />
     </ItemGroup>
-    <Message Text="Automatic versioning: $(AutoVersion)" Importance="high" />
-    <WriteLinesToFile File="version_generated.h" Lines="@(VersioningText)" Overwrite="true" />
-  </Target>
-
-  <Target Name="Version_NotAvailable" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports" DependsOnTargets="Version" Condition="'$(VersionBuild)'=='NotAvailable'">
-    <Warning Text="Git is not installed. You can continue to build this project, but automatic versioning will not be available. Please install Git in order to use automatic versioning." />
-    <Delete Files="version_generated.h" />
-  </Target>
-
-  <Target Name="Version_NotARepo" BeforeTargets="PrepareForBuild" AfterTargets="EnsureNuGetPackageBuildImports" DependsOnTargets="Version" Condition="'$(VersionBuild)'=='NotARepo'">
-    <Warning Text="This copy of Guild Wars 2 Addon Loader has not been cloned with Git. You can continue to build this project, but automatic versioning will not be available. Please clone the original repository and install Git in order to use automatic versioning." />
-    <Delete Files="version_generated.h" />
+    <Message Text="Automatic versioning: $(AutomaticVersion)" Importance="high" Condition="'$(SkipVersion)'!='true'" />
+    <WriteLinesToFile File="version_generated.h" Lines="@(VersioningText)" Overwrite="true" Condition="'$(SkipVersion)'!='true'" />
   </Target>
   <!-- /Automatic versioning -->
 </Project>
