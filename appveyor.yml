@@ -25,10 +25,12 @@ build:
   parallel: true
   verbosity: minimal
 
+on_success:
+  - ps: 7z a GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip -r $(appveyor_build_folder)\bin\$(platform)\$(configuration)\*.dll
+
 artifacts:
-  - path: bin\$(platform)\Release\**\*.dll
+  - path: GuildWars2AddonLoader_$(appveyor_build_version)_$(platform).zip
     name: GuildWars2AddonLoader_$(appveyor_build_version)_$(platform)
-    type: zip
 
 deploy:
   provider: GitHub
