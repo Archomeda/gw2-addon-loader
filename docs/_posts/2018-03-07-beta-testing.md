@@ -3,6 +3,7 @@ layout: update
 author: Archomeda
 title: Beta testing
 date: 2018-03-07 19:00:00 +0100
+published: false
 ---
 Guild Wars 2 Addon Loader is a new addon for Guild Wars 2 to load your precious addons, but without much of a hassle.
 The development is not finished yet, but I'm starting the beta testing as of today.
