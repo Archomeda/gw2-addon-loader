@@ -259,17 +259,23 @@
       <Output TaskParameter="HasPendingChanges" PropertyName="HasPendingChanges" />
     </GitPendingChanges>
     <PropertyGroup>
-      <CIBuildString Condition="'$(APPVEYOR_BUILD_NUMBER)'!=''">.$(APPVEYOR_BUILD_NUMBER)</CIBuildString>
-      <VersionString>$(Tag)$(CIBuildString)</VersionString>
-      <VersionString Condition="'$(CommitCount)'!='0'">$(Tag)$(CIBuildString)-$(CommitHash)</VersionString>
-      <CIBuildString Condition="'$(APPVEYOR_BUILD_NUMBER)'!=''">b$(APPVEYOR_BUILD_NUMBER)-</CIBuildString>
-      <VersionString Condition="'$(Tag)'==''">$(CIBuildString)$(CommitHash)</VersionString>
-      <BranchString Condition="'$(Branch)'!='master'"> on $(Branch)</BranchString>
+      <!-- Local versioning -->
+      <VersionString>$(Tag)</VersionString>
+      <VersionString Condition="'$(CommitCount)'!='0'">$(Tag)-$(CommitHash)</VersionString>
+      <VersionString Condition="'$(Tag)'==''">$(CommitHash)</VersionString>
+      <VersionString Condition="'$(Branch)'!='master'">$(VersionString)-$(Branch)</VersionString>
+
       <DevString Condition="'$(HasPendingChanges)'=='true'"> (modified)</DevString>
       <DevString Condition="'$(Configuration)'=='Debug'"> (dev)</DevString>
       <DevString Condition="'$(Configuration)|$(HasPendingChanges)'=='Debug|true'"> (dev, modified)</DevString>
-      <DevString Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''"> (PR $(APPVEYOR_PULL_REQUEST_NUMBER))</DevString>
-      <AutomaticVersion>$(VersionString)$(BranchString)$(DevString)</AutomaticVersion>
+
+      <AutomaticVersion>$(VersionString)$(DevString)</AutomaticVersion>
+
+      <!-- AppVeyor versioning -->
+      <AutomaticVersion Condition="'$(APPVEYOR_BUILD_NUMBER)'!=''">$(APPVEYOR_BUILD_NUMBER)-$(CommitHash)</AutomaticVersion>
+      <AutomaticVersion Condition="'$(APPVEYOR_REPO_BRANCH)'!='' And '$(APPVEYOR_REPO_BRANCH)'!='master'">$(AutomaticVersion)-$(APPVEYOR_REPO_BRANCH)</AutomaticVersion>
+      <AutomaticVersion Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''">$(AutomaticVersion)-PR$(APPVEYOR_PULL_REQUEST_NUMBER)</AutomaticVersion>
+      <AutomaticVersion Condition="'$(APPVEYOR_REPO_TAG_NAME)'!=''">$(APPVEYOR_REPO_TAG_NAME)</AutomaticVersion>
     </PropertyGroup>
   </Target>
 

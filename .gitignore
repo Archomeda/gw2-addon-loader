@@ -1,3 +1,4 @@
+.version
 tools/
 src/loader/version_generated.h
 
