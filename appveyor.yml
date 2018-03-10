@@ -14,10 +14,11 @@ cache:
 
 before_build:
   - nuget restore
-  - msbuild /t:loader:ExportVersion /p:Configuration=Release /p:ExportFile=../../.version
-  - appveyor UpdateBuild -Version "$(Get-Content .version)"
+  - msbuild /t:loader:ExportVersion /p:Configuration=Release /p:ExportFile=../../.version /v:m
+  - ps: Update-AppveyorBuild -Version "$(Get-Content .version)"
 
 build:
+  project: GW2 Addon Loader.sln
   parallel: true
   verbosity: minimal
 
