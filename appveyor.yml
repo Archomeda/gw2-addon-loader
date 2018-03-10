@@ -13,7 +13,8 @@ cache:
   - packages -> **\packages.config
 
 before_build:
-  - .appveyor\UpdateAppVeyorBuild.ps1
+  - msbuild /t:loader:ExportVersion /p:Configuration=Release /p:ExportFile=../../.version
+  - Update-AppveyorBuild -Version "$(Get-Content .version)"
   - nuget restore
 
 build:
