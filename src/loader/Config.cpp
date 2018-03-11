@@ -47,6 +47,7 @@ namespace loader {
         this->ini.LoadFile(this->configPath.c_str());
 
         this->settingsKeybind = this->ParseKeybindString(u8(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122"))); // Alt + Shift + F11
+        this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", true);
         this->showUnsupportedAddons = this->ini.GetBoolValue(L"addons", L"show_unsupported_addons", false);
         this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
     }
@@ -124,6 +125,12 @@ namespace loader {
         this->settingsKeybind = keys;
         wstring keybind = u16(this->ToKeybindString(keys));
         this->ini.SetValue(L"addons", L"window_keybind", keybind.c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetOBSCompatibilityMode(bool compatibilityMode) {
+        this->obsCompatibilityMode = compatibilityMode;
+        this->ini.SetBoolValue(L"general", L"obs_compatibility_mode", compatibilityMode);
         this->ini.SaveFile(this->configPath.c_str());
     }
 

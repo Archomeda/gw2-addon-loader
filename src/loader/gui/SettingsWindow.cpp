@@ -36,8 +36,9 @@ namespace loader {
 
         void SettingsWindow::Render() {
             if (!this->initializedState) {
-                this->showUnsupportedAddons = AppConfig.GetShowUnsupportedAddons();
                 this->windowKeybind = AppConfig.GetSettingsKeybind();
+                this->obsCompatibilityMode = AppConfig.GetOBSCompatibilityMode();
+                this->showUnsupportedAddons = AppConfig.GetShowUnsupportedAddons();
                 this->showDebugFeatures = AppConfig.GetShowDebugFeatures();
                 this->initializedState = true;
             }
@@ -433,6 +434,13 @@ The author of this library is not associated with ArenaNet nor with any of its p
                 }
                 else if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Click to activate the field and press a new keybind. Use Escape to cancel.");
+                }
+
+                if (ImGui::Checkbox("Enable OBS compatibility mode", &this->obsCompatibilityMode)) {
+                    AppConfig.SetOBSCompatibilityMode(this->obsCompatibilityMode);
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("When OBS compatibility mode is active, the addon loader will attempt to hide\nitself from OBS if the OBS third-party overlays capture setting is disabled.");
                 }
 
                 if (ImGui::Checkbox("Show unsupported addons", &this->showUnsupportedAddons)) {

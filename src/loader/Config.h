@@ -29,10 +29,12 @@ namespace loader {
 
 
         const std::set<uint_fast8_t> GetSettingsKeybind() const { return this->settingsKeybind; }
+        bool GetOBSCompatibilityMode() const { return this->obsCompatibilityMode; }
         bool GetShowUnsupportedAddons() const { return this->showUnsupportedAddons; }
         bool GetShowDebugFeatures() const { return this->showDebugFeatures; }
         
         void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
+        void SetOBSCompatibilityMode(bool compatibilityMode);
         void SetShowUnsupportedAddons(bool showUnsupportedAddons);
         void SetShowDebugFeatures(bool showDebugFeatures);
 
@@ -45,6 +47,7 @@ namespace loader {
         std::string configImGuiPath;
 
         std::set<uint_fast8_t> settingsKeybind;
+        bool obsCompatibilityMode = false;
         bool showUnsupportedAddons = false;
         bool showDebugFeatures = false;
 

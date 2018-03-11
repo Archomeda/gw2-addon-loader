@@ -25,6 +25,7 @@ namespace loader {
             bool statsDrawFrameBeforePostProcessing = false;
 
             bool initializedState = false;
+            bool obsCompatibilityMode;
             bool showUnsupportedAddons;
             bool windowKeybindEditActive = false;
             std::set<uint_fast8_t> windowKeybind;

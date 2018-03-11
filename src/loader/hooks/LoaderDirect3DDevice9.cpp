@@ -1,13 +1,17 @@
 #include "LoaderDirect3DDevice9.h"
 #include <iomanip>
+#include <filesystem>
 #include <set>
 #include <sstream>
 #include <string>
+#include "ChainHook.h"
+#include "vftable.h"
 #include "../Config.h"
 #include "../log.h"
 #include "../addons/addons_manager.h"
 
 using namespace std;
+using namespace std::experimental::filesystem::v1;
 
 namespace loader {
     namespace hooks {
@@ -28,6 +32,9 @@ namespace loader {
         chrono::steady_clock::time_point d3d9ProcessingStart;
         vector<float> DurationHistoryD3D9Processing;
         vector<float> DurationHistoryLoaderDrawFrame;
+
+        ChainHook currentChainHook;
+
 
         int GetShaderFunctionLength(const DWORD* pFunction) {
             int i = 0;
@@ -132,8 +139,54 @@ namespace loader {
             return hr;
         }
 
+        bool isPresentingAddonLoader = false;
+        HRESULT PresentAddonLoader(IDirect3DDevice9* dev, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
+            if (isPresentingAddonLoader) {
+                return dev->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+            }
+            isPresentingAddonLoader = true;
+
+            bool trackStats = AppConfig.GetShowDebugFeatures();
+            
+            dev->BeginScene();
+            addons::DrawFrame(dev);
+
+            if (trackStats) {
+                auto presentStart = chrono::steady_clock::now();
+                PrePresentHook(dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                if (DurationHistoryLoaderDrawFrame.size() < 4 * 60) {
+                    DurationHistoryLoaderDrawFrame.resize(4 * 60);
+                    DurationHistoryLoaderDrawFrame.reserve(8 * 60);
+                }
+                if (DurationHistoryLoaderDrawFrame.size() == 4 * 60) {
+                    DurationHistoryLoaderDrawFrame.erase(DurationHistoryLoaderDrawFrame.begin());
+                }
+                DurationHistoryLoaderDrawFrame.push_back(((chrono::steady_clock::now() - presentStart).count() / 10000) / 100.0f);
+            }
+            else {
+                PrePresentHook(dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+            }
+
+            dev->EndScene();
+
+            addons::AdvPrePresent(dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+
+            HRESULT hr = dev->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+            if (hr != D3D_OK) {
+                // Fail
+                return hr;
+            }
+
+            addons::AdvPostPresent(dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+
+            isPresentingAddonLoader = false;
+            return hr;
+        }
+
         HRESULT LoaderDirect3DDevice9::Present(CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
             bool trackStats = AppConfig.GetShowDebugFeatures();
+            bool obsCompatibilityMode = AppConfig.GetOBSCompatibilityMode();
+
             if (trackStats) {
                 if (DurationHistoryD3D9Processing.size() < 4 * 60) {
                     DurationHistoryD3D9Processing.resize(4 * 60);
@@ -145,36 +198,31 @@ namespace loader {
                 DurationHistoryD3D9Processing.push_back(((chrono::steady_clock::now() - d3d9ProcessingStart).count() / 100000) / 10.0f);
             }
 
-            this->dev->BeginScene();
-            addons::DrawFrame(this->dev);
-           
-            if (trackStats) {
-                auto presentStart = chrono::steady_clock::now();
-                PrePresentHook(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-                if (DurationHistoryLoaderDrawFrame.size() < 4 * 60) {
-                    DurationHistoryLoaderDrawFrame.resize(4 * 60);
-                    DurationHistoryLoaderDrawFrame.reserve(8 * 60);
-                }
-                if (DurationHistoryLoaderDrawFrame.size() == 4 * 60) {
-                    DurationHistoryLoaderDrawFrame.erase(DurationHistoryLoaderDrawFrame.begin());
-                }
-                DurationHistoryLoaderDrawFrame.push_back(((chrono::steady_clock::now() - presentStart).count() / 10000) / 100.0f);
+            // Before we start, determine the hook chain and see if we need to adapt
+            auto vft = GetVftD3DDevice9(this->dev);
+            ChainHook newHook = ChainHook::FindCurrentChainHook(ChainHookFunctionType::PresentFunction, vft.Present);
+            if (newHook.GetType() != currentChainHook.GetType()) {
+                // New chain hook type, reset and redo hook
+                currentChainHook.UnhookCallback();
+                GetLog()->info("New chain hook type detected: {0}", ChainHookTypeToString(newHook.GetType()));
+                newHook.HookCallback(&PresentAddonLoader);
+                currentChainHook = newHook;
+            }
+
+            HRESULT hr;
+            if (obsCompatibilityMode && currentChainHook.GetType() == ChainHookType::OBSHook) {
+                // We have an OBS chain hook, call Present directly, as we have hooked PresentAddonLoader deeper into the chain
+                hr = this->dev->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
             }
             else {
-                PrePresentHook(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                // No chain hook, proceed as normal
+                hr = PresentAddonLoader(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
             }
-            
-            this->dev->EndScene();
 
-            addons::AdvPrePresent(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-
-            HRESULT hr = this->dev->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
             if (hr != D3D_OK) {
                 // Fail
                 return hr;
             }
-
-            addons::AdvPostPresent(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
 
             // Reset this for a new frame
             PrePresentGuiDone = 0;
