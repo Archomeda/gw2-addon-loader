@@ -1,0 +1,5 @@
+LIBRARY taco-launcher.dll
+
+EXPORTS
+	GW2AddonInitialize
+	GW2AddonRelease

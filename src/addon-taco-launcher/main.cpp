@@ -38,32 +38,24 @@ GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
     return 0;
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-    GW2ADDON_API GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
-        static GW2AddonAPIV1 addon;
-        addon.id = "taco-launcher";
-        addon.name = "Tactical Overlay Launcher";
-        addon.author = "TacO by BoyC - Addon by Archomeda";
-        addon.version = "1.0";
-        addon.description = "A small launcher addon for TacO that automatically launches TacO whenever Guild Wars 2 is starting up.";
-        addon.homepage = "https://github.com/Archomeda/gw2-addon-loader";
-        addon.Load = &Load;
-        return &addon;
-    }
-
-    GW2ADDON_API void GW2ADDON_CALL GW2AddonRelease() {
-        if (tacoProcess.hProcess) {
-            TerminateProcess(tacoProcess.hProcess, 0);
-            CloseHandle(tacoProcess.hProcess);
-            CloseHandle(tacoProcess.hThread);
-            tacoProcess.hProcess = NULL;
-            tacoProcess.hThread = NULL;
-        }
-    }
-
-#ifdef __cplusplus
+GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
+    static GW2AddonAPIV1 addon;
+    addon.id = "taco-launcher";
+    addon.name = "Tactical Overlay Launcher";
+    addon.author = "TacO by BoyC - Addon by Archomeda";
+    addon.version = "1.0";
+    addon.description = "A small launcher addon for TacO that automatically launches TacO whenever Guild Wars 2 is starting up.";
+    addon.homepage = "https://github.com/Archomeda/gw2-addon-loader";
+    addon.Load = &Load;
+    return &addon;
 }
-#endif
+
+void GW2ADDON_CALL GW2AddonRelease() {
+    if (tacoProcess.hProcess) {
+        TerminateProcess(tacoProcess.hProcess, 0);
+        CloseHandle(tacoProcess.hProcess);
+        CloseHandle(tacoProcess.hThread);
+        tacoProcess.hProcess = NULL;
+        tacoProcess.hThread = NULL;
+    }
+}

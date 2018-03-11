@@ -4,7 +4,6 @@
 #include <string>
 
 #define CALLN32_SIZE 6
-#define HOOK_MAXSIZE 6
 
 namespace loader {
     namespace hooks {
@@ -32,13 +31,11 @@ namespace loader {
 
             bool HookCallback(void* callback);
             bool UnhookCallback();
-            bool IsCallbackHooked() const { return this->callbackHookAddress != nullptr; }
+            bool IsCallbackHooked() const { return this->callbackHookAddress != 0; }
 
         protected:
             DWORD DisableProtection(void* address, size_t length);
             void ResetProtection(void* address, size_t length, DWORD reset);
-
-            uint8_t* FindMatch(uint8_t* startAddress, size_t searchLength, const uint8_t bytes[], size_t bytesSize) const;
 
         private:
             static std::map<HMODULE, ChainHookType> knownHooks;
@@ -48,8 +45,8 @@ namespace loader {
             void* origFunction;
             void* chainFunction;
 
-            void* callbackHookAddress = nullptr;
-            uint8_t preHookCallbackData[HOOK_MAXSIZE];
+            uintptr_t callbackHookAddress = 0;
+            uint8_t preHookCallbackData[16];
             uint8_t preHookCallbackDataSize = 0;
 
             bool HookPresentCallback(void* callback);

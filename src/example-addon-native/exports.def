@@ -1,0 +1,5 @@
+LIBRARY example-addon-native.dll
+
+EXPORTS
+	GW2AddonInitialize
+	GW2AddonRelease

@@ -1,0 +1,5 @@
+LIBRARY fix-mouse-movement.dll
+
+EXPORTS
+	GW2AddonInitialize
+	GW2AddonRelease

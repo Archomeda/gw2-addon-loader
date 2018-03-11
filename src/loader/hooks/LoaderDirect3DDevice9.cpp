@@ -140,7 +140,7 @@ namespace loader {
         }
 
         bool isPresentingAddonLoader = false;
-        HRESULT PresentAddonLoader(IDirect3DDevice9* dev, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
+        HRESULT WINAPI PresentAddonLoader(IDirect3DDevice9* dev, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
             if (isPresentingAddonLoader) {
                 return dev->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
             }
@@ -202,11 +202,14 @@ namespace loader {
             auto vft = GetVftD3DDevice9(this->dev);
             ChainHook newHook = ChainHook::FindCurrentChainHook(ChainHookFunctionType::PresentFunction, vft.Present);
             if (newHook.GetType() != currentChainHook.GetType()) {
-                // New chain hook type, reset and redo hook
-                currentChainHook.UnhookCallback();
+                // New chain hook type
                 GetLog()->info("New chain hook type detected: {0}", ChainHookTypeToString(newHook.GetType()));
-                newHook.HookCallback(&PresentAddonLoader);
                 currentChainHook = newHook;
+            }
+
+            // Hook the hook chain
+            if (newHook.GetType() != ChainHookType::NoHookType) {
+                newHook.HookCallback(&PresentAddonLoader);
             }
 
             HRESULT hr;
@@ -217,6 +220,11 @@ namespace loader {
             else {
                 // No chain hook, proceed as normal
                 hr = PresentAddonLoader(this->dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+            }
+
+            // Unhook the hook chain again, to prevent issues if we suddenly crash
+            if (currentChainHook.GetType() != ChainHookType::NoHookType) {
+                currentChainHook.UnhookCallback();
             }
 
             if (hr != D3D_OK) {

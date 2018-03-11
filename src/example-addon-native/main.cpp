@@ -92,44 +92,35 @@ void GW2ADDON_CALL Draw(IDirect3DDevice9* pDev) {
     font->Release();
 }
 
+GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
+    // Export our information        
+    static GW2AddonAPIV1 addon;
+    addon.id = "example-native";
+    addon.name = "Example Native Addon";
+    addon.author = "Archomeda";
+    addon.version = "1.0";
+    addon.description = "An example to show how native addons work.";
+    addon.homepage = "https://github.com/Archomeda/gw2-addon-loader";
+    addon.Load = &Load;
+    addon.DrawFrameBeforePostProcessing = &DrawBeforePostProcessing;
+    addon.DrawFrameBeforeGui = &DrawBeforeGui;
+    addon.DrawFrame = &Draw;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-    GW2ADDON_API GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
-        // Export our information        
-        static GW2AddonAPIV1 addon;
-        addon.id = "example-native";
-        addon.name = "Example Native Addon";
-        addon.author = "Archomeda";
-        addon.version = "1.0";
-        addon.description = "An example to show how native addons work.";
-        addon.homepage = "https://github.com/Archomeda/gw2-addon-loader";
-        addon.Load = &Load;
-        addon.DrawFrameBeforePostProcessing = &DrawBeforePostProcessing;
-        addon.DrawFrameBeforeGui = &DrawBeforeGui;
-        addon.DrawFrame = &Draw;
-
-        HRSRC hIconResInfo = FindResource(dllModule, MAKEINTRESOURCE(IDB_PNGICON), L"PNG");
-        HGLOBAL hIconRes = hIconResInfo ? LoadResource(dllModule, hIconResInfo) : NULL;
-        if (hIconRes) {
-            addon.icon = LockResource(hIconRes);
-            addon.iconSize = SizeofResource(dllModule, hIconResInfo);
-        }
-
-        return &addon;
+    HRSRC hIconResInfo = FindResource(dllModule, MAKEINTRESOURCE(IDB_PNGICON), L"PNG");
+    HGLOBAL hIconRes = hIconResInfo ? LoadResource(dllModule, hIconResInfo) : NULL;
+    if (hIconRes) {
+        addon.icon = LockResource(hIconRes);
+        addon.iconSize = SizeofResource(dllModule, hIconResInfo);
     }
 
-    GW2ADDON_API void GW2ADDON_CALL GW2AddonRelease() {
-        // Unload all used resources, do not neglect this.
-        focusWindow = NULL;
-        device = NULL;
-    }
-
-#ifdef __cplusplus
+    return &addon;
 }
-#endif
+
+void GW2ADDON_CALL GW2AddonRelease() {
+    // Unload all used resources, do not neglect this.
+    focusWindow = NULL;
+    device = NULL;
+}
 
 /**
 For legacy purposes, if you want your addon to be compabible with both the addon loader and d3d9 calls,

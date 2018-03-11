@@ -71,34 +71,42 @@ namespace loader {
         }
 
         bool ChainHook::HookPresentCallback(void* callback) {
-            uint8_t hookData[HOOK_MAXSIZE];
-            memset(hookData, 0x90, HOOK_MAXSIZE);
+            uint8_t hookData[16];
+            memset(hookData, 0, 16);
 
             switch (this->type) {
             case ChainHookType::OBSHook: {
-                const uint8_t match[] = { 0xFF, 0x15, 0xFE, 0xF6, 0x03, 0x00 };
-                this->callbackHookAddress = this->FindMatch(static_cast<uint8_t*>(this->chainFunction), 0x200, match, sizeof(match));
-                if (this->callbackHookAddress != nullptr) {
-                    this->preHookCallbackDataSize = CALLN32_SIZE;
-                    intptr_t offset = reinterpret_cast<intptr_t>(callback) - (reinterpret_cast<intptr_t>(this->callbackHookAddress) + 5);
-                    int32_t offset32 = static_cast<int32_t>(offset);
-                    if (offset != offset32) {
-                        // 64-bit offsets are not supported sadly, don't know how to solve this yet
-                        this->callbackHookAddress = nullptr;
+                uint8_t* currentAddress = static_cast<uint8_t*>(this->chainFunction);
+                while (currentAddress < static_cast<uint8_t*>(this->chainFunction) + 0x200) {
+                    if (*currentAddress == 0xFF && *(currentAddress + 1) == 0x15) {
+                        // CALL instruction with ptr to absolute address
+                        // This ptr is absolute on x86, and relative on x64
+#ifdef _WIN64
+                        uintptr_t ptr = reinterpret_cast<uintptr_t>(currentAddress) + CALLN32_SIZE + *(reinterpret_cast<int32_t*>(currentAddress + 2));
+#else
+                        uintptr_t ptr = *reinterpret_cast<uintptr_t*>(currentAddress + 2);
+#endif
+                        uintptr_t address = reinterpret_cast<uintptr_t>(*reinterpret_cast<void**>(ptr));
+                        if (address == reinterpret_cast<uintptr_t>(this->origFunction)) {
+                            // This is the location of the absolute address we want to change
+                            this->callbackHookAddress = ptr;
+                            this->preHookCallbackDataSize = sizeof(uintptr_t);
+                            *reinterpret_cast<uintptr_t*>(hookData) = reinterpret_cast<uintptr_t>(callback);
+                        }
                         break;
                     }
-                    hookData[0] = 0xE8;
-                    *reinterpret_cast<int32_t*>(hookData + 1) = offset32;
+                    ++currentAddress;
                 }
                 break;
             }
             }
 
-            if (this->callbackHookAddress != nullptr) {
-                DWORD oldProtection = this->DisableProtection(this->callbackHookAddress, this->preHookCallbackDataSize);
-                memcpy(this->preHookCallbackData, this->callbackHookAddress, this->preHookCallbackDataSize);
-                memcpy(this->callbackHookAddress, hookData, this->preHookCallbackDataSize);
-                this->ResetProtection(this->callbackHookAddress, this->preHookCallbackDataSize, oldProtection);
+            if (this->callbackHookAddress != 0) {
+                void* address = reinterpret_cast<void*>(this->callbackHookAddress);
+                DWORD oldProtection = this->DisableProtection(address, this->preHookCallbackDataSize);
+                memcpy(this->preHookCallbackData, address, this->preHookCallbackDataSize);
+                memcpy(address, hookData, this->preHookCallbackDataSize);
+                this->ResetProtection(address, this->preHookCallbackDataSize, oldProtection);
                 return true;
             }
             return false;
@@ -109,11 +117,12 @@ namespace loader {
                 return false;
             }
 
-            DWORD oldProtection = this->DisableProtection(this->callbackHookAddress, this->preHookCallbackDataSize);
-            memcpy(this->callbackHookAddress, this->preHookCallbackData, this->preHookCallbackDataSize);
-            this->ResetProtection(this->callbackHookAddress, this->preHookCallbackDataSize, oldProtection);
+            void* address = reinterpret_cast<void*>(this->callbackHookAddress);
+            DWORD oldProtection = this->DisableProtection(address, this->preHookCallbackDataSize);
+            memcpy(address, this->preHookCallbackData, this->preHookCallbackDataSize);
+            this->ResetProtection(address, this->preHookCallbackDataSize, oldProtection);
 
-            this->callbackHookAddress = nullptr;
+            this->callbackHookAddress = 0;
             return true;
         }
 
@@ -126,22 +135,6 @@ namespace loader {
         void ChainHook::ResetProtection(void* address, size_t length, DWORD reset) {
             DWORD oldProtection;
             VirtualProtect(address, length, reset, &oldProtection);
-        }
-
-        uint8_t* ChainHook::FindMatch(uint8_t* startAddress, size_t searchLength, const uint8_t bytes[], size_t bytesSize) const {
-            uint8_t* currentAddress = startAddress;
-            while (currentAddress < startAddress + searchLength) {
-                for (size_t i = 0; i < bytesSize; ++i) {
-                    if (*(currentAddress + i) != bytes[i]) {
-                        break;
-                    }
-                    if (i + 1 == bytesSize) {
-                        return currentAddress;
-                    }
-                }
-                ++currentAddress;
-            }
-            return nullptr;
         }
 
     }

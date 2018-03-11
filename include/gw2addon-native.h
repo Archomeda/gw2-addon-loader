@@ -6,16 +6,6 @@ Visit https://github.com/Archomeda/gw2-addon-loader for more information.
 #pragma once
 #include <d3d9.h>
 
-#ifndef GW2ADDON_API
-
-#ifdef _GW2ADDON_IMPORTS
-#define GW2ADDON_API __declspec(dllimport)
-#else
-#define GW2ADDON_API __declspec(dllexport)
-#endif
-
-#endif
-
 #define GW2ADDON_RESULT int
 #define GW2ADDON_CALL __stdcall
 #define GW2ADDON_VER 1
@@ -389,12 +379,6 @@ Ensure compiler errors when exported addon functions are wrong.
 #if GW2ADDON_VER == 1
 typedef GW2AddonAPIV1 GW2AddonAPI;
 #endif
-#ifdef __cplusplus
-extern "C" {
-#endif
-    GW2ADDON_API GW2AddonAPI* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion);
-    GW2ADDON_API void GW2ADDON_CALL GW2AddonRelease();
-#ifdef __cplusplus
-}
-#endif
+GW2AddonAPI* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion);
+void GW2ADDON_CALL GW2AddonRelease();
 #endif
