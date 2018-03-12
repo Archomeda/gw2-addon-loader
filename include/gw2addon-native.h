@@ -122,6 +122,8 @@ typedef void(GW2ADDON_CALL *GW2AddonAdvPostPresent_t)(IDirect3DDevice9* pDev, CO
 Advanced function that gets called before D3D9 processes the CreateTexture call.
 If the return value does not equal D3D_OK, the call fails.
 
+This function is disabled in competitive areas.
+
 You can call CreateTexture yourself. If the value of ppTexture is not NULL after the function returns,
 it is assumed that the addon has created (overridden) the texture instead.
 Calls to remaining addons will be skipped, and the addon loader will not call CreateTexture either.
@@ -130,12 +132,16 @@ typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreateTexture_t)(IDirect3DDevice9* 
 
 /**
 Advanced function that gets called after D3D9 has processed the CreateTexture call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreateTexture_t)(IDirect3DDevice9* pDev, IDirect3DTexture9* pTexture, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, HANDLE* pSharedHandle);
 
 /**
 Advanced function that gets called before D3D9 processes the CreateVertexShader call.
 If the return value does not equal D3D_OK, the call fails.
+
+This function is disabled in competitive areas.
 
 You can call CreateVertexShader yourself. If the value of ppShader is not NULL after the function returns,
 it is assumed that the addon has created (overridden) the shader instead.
@@ -145,12 +151,16 @@ typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreateVertexShader_t)(IDirect3DDevi
 
 /**
 Advanced function that gets called after D3D9 has processed the CreateVertexShader call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreateVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* ppShader, CONST DWORD* pFunction);
 
 /**
 Advanced function that gets called before D3D9 processes the CreatePixelShader call.
 If the return value does not equal D3D_OK, the call fails.
+
+This function is disabled in competitive areas.
 
 You can call CreatePixelShader yourself. If the value of ppShader is not NULL after the function returns,
 it is assumed that the addon has created (overridden) the shader instead.
@@ -160,12 +170,16 @@ typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreatePixelShader_t)(IDirect3DDevic
 
 /**
 Advanced function that gets called after D3D9 has processed the CreatePixelShader call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreatePixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* ppShader, CONST DWORD* pFunction);
 
 /**
 Advanced function that gets called before D3D9 processes the CreateRenderTarget call.
 If the return value does not equal D3D_OK, the call fails.
+
+This function is disabled in competitive areas.
 
 You can call CreateRenderTarget yourself. If the value of ppSurface is not NULL after the function returns,
 it is assumed that the addon has created (overridden) the surface instead.
@@ -175,72 +189,98 @@ typedef HRESULT(GW2ADDON_CALL *GW2AddonAdvPreCreateRenderTarget_t)(IDirect3DDevi
 
 /**
 Advanced function that gets called after D3D9 has processed the CreateRenderTarget call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostCreateRenderTarget_t)(IDirect3DDevice9* pDev, IDirect3DSurface9* ppSurface, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, HANDLE* pSharedHandle);
 
 /**
 Advanced function that gets called before D3D9 processes the SetTexture call.
 Do not call SetTexture yourself. The addon loader does that already after this call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetTexture_t)(IDirect3DDevice9* pDev, DWORD Stage, IDirect3DBaseTexture9* pTexture);
 
 /**
 Advanced function that gets called after D3D9 has processed the SetTexture call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetTexture_t)(IDirect3DDevice9* pDev, DWORD Stage, IDirect3DBaseTexture9* pTexture);
 
 /**
 Advanced function that gets called before D3D9 processes the SetVertexShader call.
 Do not call SetVertexShader yourself. The addon loader does that already after this call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* pShader);
 
 /**
 Advanced function that gets called after D3D9 has processed the SetVertexShader call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetVertexShader_t)(IDirect3DDevice9* pDev, IDirect3DVertexShader9* pShader);
 
 /**
 Advanced function that gets called before D3D9 processes the SetPixelShader call.
 Do not call SetPixelShader yourself. The addon loader does that already after this call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetPixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* pShader);
 
 /**
 Advanced function that gets called after D3D9 has processed the SetPixelShader call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetPixelShader_t)(IDirect3DDevice9* pDev, IDirect3DPixelShader9* pShader);
 
 /**
 Advanced function that gets called before D3D9 processes the SetRenderTarget call.
 Do not call SetRenderTarget yourself. The addon loader does that already after this call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetRenderTarget_t)(IDirect3DDevice9* pDev, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
 
 /**
 Advanced function that gets called after D3D9 has processed the SetRenderTarget call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetRenderTarget_t)(IDirect3DDevice9* pDev, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
 
 /**
 Advanced function that gets called before D3D9 processes the SetRenderState. call.
 Do not call SetRenderState yourself. The addon loader does that already after this call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPreSetRenderState_t)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
 
 /**
 Advanced function that gets called after D3D9 has processed the SetRenderState call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostSetRenderState_t)(IDirect3DDevice9* pDev, D3DRENDERSTATETYPE State, DWORD Value);
 
 /**
 Advanced function that gets called before D3D9 processes the DrawIndexedPrimitive call.
 Do not call DrawIndexedPrimitive yourself. The addon loader does that already after this call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPreDrawIndexedPrimitive_t)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
 
 /**
 Advanced function that gets called after D3D9 has processed the DrawIndexedPrimitive call.
+
+This function is disabled in competitive areas.
 */
 typedef void(GW2ADDON_CALL *GW2AddonAdvPostDrawIndexedPrimitive_t)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
 

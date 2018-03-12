@@ -16,6 +16,7 @@
 #include "../addons/addons_manager.h"
 #include "../addons/Addon.h"
 #include "../hooks/LoaderDirect3DDevice9.h"
+#include "../hooks/MumbleLink.h"
 #include "../Config.h"
 #include "../input.h"
 #include "../version.h"
@@ -491,6 +492,18 @@ The author of this library is not associated with ArenaNet nor with any of its p
                 draw->AddText(ImVec2(plotRect.Min.x + 2, yFps30 + 1), IM_COL32(192, 144, 96, 255), "30fps");
                 draw->AddLine(ImVec2(plotRect.Min.x, yFps60), ImVec2(plotRect.Max.x, yFps60), IM_COL32(96, 192, 96, 255));
                 draw->AddText(ImVec2(plotRect.Min.x + 2, yFps60 + 1), IM_COL32(96, 192, 96, 255), "60fps");
+                ImGui::Spacing();
+
+                ImGui::Columns(2);
+                ImGui::SetColumnWidth(0, 180);
+                ImGui::TextUnformatted("Map type");
+                ImGui::NextColumn();
+                ImGui::TextUnformatted(hooks::MapTypeToString(hooks::Gw2MumbleLink.GetMapType()).c_str());
+                ImGui::NextColumn();
+                ImGui::TextUnformatted("Map ID");
+                ImGui::NextColumn();
+                ImGui::TextUnformatted(to_string(hooks::Gw2MumbleLink.GetMapId()).c_str());
+                ImGui::Columns(1);
             }
             else if (this->selectedStatsType == 1) {
                 ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryLoaderDrawFrame[0], static_cast<int>(hooks::DurationHistoryLoaderDrawFrame.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));

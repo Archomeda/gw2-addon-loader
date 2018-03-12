@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include "ChainHook.h"
+#include "MumbleLink.h"
 #include "vftable.h"
 #include "../Config.h"
 #include "../log.h"
@@ -34,25 +35,6 @@ namespace loader {
         vector<float> DurationHistoryLoaderDrawFrame;
 
         ChainHook currentChainHook;
-
-
-        int GetShaderFunctionLength(const DWORD* pFunction) {
-            int i = 0;
-            while ((pFunction[i++] & D3DSI_OPCODE_MASK) != D3DSIO_END);
-            return i - 1;
-        }
-
-        bool CheckShaderPattern(const DWORD* pFunction, int functionLength, const DWORD* pattern, int patternLength) {
-            if (functionLength != patternLength) {
-                return false;
-            }
-            for (int i = 0; i < patternLength; ++i) {
-                if (pattern[i] != pFunction[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
 
 
         HRESULT LoaderDirect3DDevice9::QueryInterface(REFIID riid, void** ppvObj) {
@@ -269,10 +251,13 @@ namespace loader {
 
         HRESULT LoaderDirect3DDevice9::CreateTexture(UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle) {
             IDirect3DTexture9* pOldTexture = *ppTexture;
-            HRESULT hr = addons::AdvPreCreateTexture(this->dev, Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
-            if (hr != D3D_OK) {
-                // Fail
-                return hr;
+            HRESULT hr;
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                hr = addons::AdvPreCreateTexture(this->dev, Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
             }
 
             if (*ppTexture == pOldTexture) {
@@ -283,7 +268,9 @@ namespace loader {
                 }
             }
 
-            addons::AdvPostCreateTexture(this->dev, *ppTexture, Width, Height, Levels, Usage, Format, Pool, pSharedHandle);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostCreateTexture(this->dev, *ppTexture, Width, Height, Levels, Usage, Format, Pool, pSharedHandle);
+            }
 
             return hr;
         }
@@ -306,10 +293,13 @@ namespace loader {
 
         HRESULT LoaderDirect3DDevice9::CreateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle) {
             IDirect3DSurface9* pOldSurface = *ppSurface;
-            HRESULT hr = addons::AdvPreCreateRenderTarget(this->dev, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
-            if (hr != D3D_OK) {
-                // Fail
-                return hr;
+            HRESULT hr;
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                hr = addons::AdvPreCreateRenderTarget(this->dev, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
             }
 
             if (*ppSurface == pOldSurface) {
@@ -320,7 +310,9 @@ namespace loader {
                 }
             }
 
-            addons::AdvPostCreateRenderTarget(this->dev, *ppSurface, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, pSharedHandle);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostCreateRenderTarget(this->dev, *ppSurface, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, pSharedHandle);
+            }
 
             return hr;
         }
@@ -358,7 +350,9 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
-            addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
+            }
             
             D3DSURFACE_DESC desc;
             if (pRenderTarget->GetDesc(&desc) == D3D_OK) {
@@ -395,7 +389,9 @@ namespace loader {
                 return hr;
             }
 
-            addons::AdvPostSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
+            }
 
             return hr;
         }
@@ -507,7 +503,9 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value) {
-            addons::AdvPreSetRenderState(this->dev, State, Value);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPreSetRenderState(this->dev, State, Value);
+            }
 
             HRESULT hr = this->dev->SetRenderState(State, Value);
             if (hr != D3D_OK) {
@@ -527,7 +525,9 @@ namespace loader {
                 break;
             }
 
-            addons::AdvPostSetRenderState(this->dev, State, Value);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostSetRenderState(this->dev, State, Value);
+            }
 
             return hr;
         }
@@ -561,7 +561,9 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture) {
-            addons::AdvPreSetTexture(this->dev, Stage, pTexture);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPreSetTexture(this->dev, Stage, pTexture);
+            }
 
             HRESULT hr = this->dev->SetTexture(Stage, pTexture);
             if (hr != D3D_OK) {
@@ -569,7 +571,9 @@ namespace loader {
                 return hr;
             }
 
-            addons::AdvPostSetTexture(this->dev, Stage, pTexture);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostSetTexture(this->dev, Stage, pTexture);
+            }
 
             return hr;
         }
@@ -639,7 +643,9 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
-            addons::AdvPreDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPreDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+            }
 
             HRESULT hr = this->dev->DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
             if (hr != D3D_OK) {
@@ -664,7 +670,9 @@ namespace loader {
                 }
             }
             
-            addons::AdvPostDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+            }
 
             return hr;
         }
@@ -703,10 +711,13 @@ namespace loader {
 
         HRESULT LoaderDirect3DDevice9::CreateVertexShader(CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader) {
             IDirect3DVertexShader9* pOldShader = *ppShader;
-            HRESULT hr = addons::AdvPreCreateVertexShader(this->dev, pFunction, ppShader);
-            if (hr != D3D_OK) {
-                // Fail
-                return hr;
+            HRESULT hr;
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                hr = addons::AdvPreCreateVertexShader(this->dev, pFunction, ppShader);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
             }
 
             if (*ppShader == pOldShader) {
@@ -717,13 +728,17 @@ namespace loader {
                 }
             }
 
-            addons::AdvPostCreateVertexShader(this->dev, *ppShader, pFunction);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostCreateVertexShader(this->dev, *ppShader, pFunction);
+            }
 
             return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::SetVertexShader(IDirect3DVertexShader9* pShader) {
-            addons::AdvPreSetVertexShader(this->dev, pShader);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPreSetVertexShader(this->dev, pShader);
+            }
 
             HRESULT hr = this->dev->SetVertexShader(pShader);
             if (hr != D3D_OK) {
@@ -749,7 +764,9 @@ namespace loader {
                 pStateBlock->Release();
             }
 
-            addons::AdvPostSetVertexShader(this->dev, pShader);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostSetVertexShader(this->dev, pShader);
+            }
 
             return hr;
         }
@@ -808,10 +825,13 @@ namespace loader {
 
         HRESULT LoaderDirect3DDevice9::CreatePixelShader(CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader) {
             IDirect3DPixelShader9* pOldShader = *ppShader;
-            HRESULT hr = addons::AdvPreCreatePixelShader(this->dev, pFunction, ppShader);
-            if (hr != D3D_OK) {
-                // Fail
-                return hr;
+            HRESULT hr;
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                hr = addons::AdvPreCreatePixelShader(this->dev, pFunction, ppShader);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
             }
 
             if (*ppShader == pOldShader) {
@@ -822,13 +842,17 @@ namespace loader {
                 }
             }
 
-            addons::AdvPostCreatePixelShader(this->dev, *ppShader, pFunction);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostCreatePixelShader(this->dev, *ppShader, pFunction);
+            }
 
             return hr;
         }
 
         HRESULT LoaderDirect3DDevice9::SetPixelShader(IDirect3DPixelShader9* pShader) {
-            addons::AdvPreSetPixelShader(this->dev, pShader);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPreSetPixelShader(this->dev, pShader);
+            }
 
             HRESULT hr = this->dev->SetPixelShader(pShader);
             if (hr != D3D_OK) {
@@ -836,7 +860,9 @@ namespace loader {
                 return hr;
             }
 
-            addons::AdvPostSetPixelShader(this->dev, pShader);
+            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+                addons::AdvPostSetPixelShader(this->dev, pShader);
+            }
 
             return hr;
         }

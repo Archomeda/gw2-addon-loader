@@ -7,6 +7,7 @@
 #include "hooks/hooks_manager.h"
 #include "hooks/LoaderDirect3D9.h"
 #include "hooks/LoaderDirect3DDevice9.h"
+#include "hooks/MumbleLink.h"
 #include "gui/gui_manager.h"
 #include "gui/imgui.h"
 #include "gui/SettingsWindow.h"
@@ -119,6 +120,9 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
 }
 
 void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
+    // Hook MumbleLink
+    hooks::Gw2MumbleLink.Start();
+    
     // Initialize addons
     GetLog()->info("Initializing addons");
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
@@ -234,6 +238,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         }
         break;
         case DLL_PROCESS_DETACH: {
+            hooks::Gw2MumbleLink.Stop();
             gui::imgui::Shutdown();
             GetLog()->info("Unloading and uninitializing addons");
             addons::UnloadAddons();

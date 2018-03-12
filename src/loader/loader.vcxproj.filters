@@ -105,6 +105,9 @@
     <ClInclude Include="hooks\ChainHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hooks\MumbleLink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -180,6 +183,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hooks\ChainHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\MumbleLink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

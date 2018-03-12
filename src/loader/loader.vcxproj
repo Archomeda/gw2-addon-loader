@@ -179,6 +179,7 @@
     <ClInclude Include="hooks\FunctionHook.h" />
     <ClInclude Include="hooks\LoaderDirect3D9.h" />
     <ClInclude Include="hooks\LoaderDirect3DDevice9.h" />
+    <ClInclude Include="hooks\MumbleLink.h" />
     <ClInclude Include="hooks\vftable.h" />
     <ClInclude Include="IconsOcticons.h" />
     <ClInclude Include="input.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="hooks\hooks_manager.cpp" />
     <ClCompile Include="hooks\LoaderDirect3D9.cpp" />
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp" />
+    <ClCompile Include="hooks\MumbleLink.cpp" />
     <ClCompile Include="hooks\vftable.c" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="log.cpp" />
