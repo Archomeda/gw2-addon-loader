@@ -87,6 +87,18 @@ namespace loader {
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Info");
                 }
+
+                string latestVersion = AppConfig.GetLastestVersion();
+                if (!latestVersion.empty() && latestVersion != VERSION) {
+                    this->PushTabStyle(++i);
+                    if (ImGui::Button(ICON_MD_FILE_DOWNLOAD)) {
+                        this->selectedTab = i;
+                    }
+                    this->PopTabStyle(i);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Download update");
+                    }
+                }
             }
             ImGui::EndChild();
             ImGui::SameLine();
@@ -104,6 +116,9 @@ namespace loader {
                 break;
             case 3:
                 this->RenderTabInfo();
+                break;
+            case 4:
+                this->RenderTabUpdate();
                 break;
             }
             ImGui::EndChild();
@@ -587,6 +602,19 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
             
             ImGui::PopItemWidth();
+        }
+
+        void SettingsWindow::RenderTabUpdate() {
+            ImGui::BeginChild("##Update");
+            {
+                ImGui::Text("Current version: %s", VERSION);
+                ImGui::Text("Latest version: %s", AppConfig.GetLastestVersion().c_str());
+                ImGui::Dummy(ImVec2(0, 16));
+                if (ImGui::Button(ICON_OC_MARK_GITHUB "   Download from GitHub", ImVec2(175, 32))) {
+                    ShellExecute(0, 0, u16(AppConfig.GetLastestVersionInfoUrl()).c_str(), 0, 0, SW_SHOW);
+                }
+            }
+            ImGui::EndChild();
         }
 
 

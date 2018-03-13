@@ -1,11 +1,14 @@
 #pragma once
 #include <SimpleIni.h>
+#include <chrono>
 #include <set>
 #include <stdint.h>
 #include <string>
 #include "addons/Addon.h"
 
 namespace loader {
+    typedef std::chrono::time_point<std::chrono::seconds> timestamp;
+
     class Config {
     public:
         Config() { }
@@ -32,13 +35,26 @@ namespace loader {
         bool GetOBSCompatibilityMode() const { return this->obsCompatibilityMode; }
         bool GetShowUnsupportedAddons() const { return this->showUnsupportedAddons; }
         bool GetShowDebugFeatures() const { return this->showDebugFeatures; }
-        
+        timestamp GetLastUpdateCheck() const { return this->lastUpdateCheck; }
+        std::string GetLastestVersion() const { return this->lastestVersion; }
+        std::string GetLastestVersionInfoUrl() const { return this->lastestVersionInfoUrl; }
+
         void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
         void SetOBSCompatibilityMode(bool compatibilityMode);
         void SetShowUnsupportedAddons(bool showUnsupportedAddons);
         void SetShowDebugFeatures(bool showDebugFeatures);
+        template<class Clock>
+        void SetLastUpdateCheck(std::chrono::time_point<Clock, std::chrono::seconds> lastUpdate) {
+            using namespace std::chrono;
+            auto duration = duration_cast<seconds>(lastUpdate.time_since_epoch());
+            this->lastUpdateCheck = timestamp(seconds(duration.count()));
+            this->ini.SetLongValue(L"general", L"last_update_check", static_cast<long>(duration.count()));
+            this->ini.SaveFile(this->configPath.c_str());
+        }
+        void SetLastestVersion(const std::string& version);
+        void SetLastestVersionInfoUrl(const std::string& url);
 
-    protected:
+    private:
         const std::string configFolder = "addons/loader/";
         const std::string configName = "loader.ini";
         const std::string configImGuiName = "loader_imgui.ini";
@@ -50,6 +66,9 @@ namespace loader {
         bool obsCompatibilityMode = false;
         bool showUnsupportedAddons = false;
         bool showDebugFeatures = false;
+        timestamp lastUpdateCheck;
+        std::string lastestVersion;
+        std::string lastestVersionInfoUrl;
 
         CSimpleIni ini;
     };

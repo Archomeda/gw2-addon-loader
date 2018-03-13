@@ -4,13 +4,14 @@
 #include <imgui.h>
 #include "addons/addons_manager.h"
 #include "addons/Addon.h"
+#include "gui/gui_manager.h"
+#include "gui/imgui.h"
+#include "gui/SettingsWindow.h"
 #include "hooks/hooks_manager.h"
 #include "hooks/LoaderDirect3D9.h"
 #include "hooks/LoaderDirect3DDevice9.h"
 #include "hooks/MumbleLink.h"
-#include "gui/gui_manager.h"
-#include "gui/imgui.h"
-#include "gui/SettingsWindow.h"
+#include "updaters/GithubReleasesUpdater.h"
 #include "utils/debug.h"
 #include "Config.h"
 #include "input.h"
@@ -18,11 +19,14 @@
 
 using namespace std;
 using namespace loader;
+using namespace loader::updaters;
 using namespace loader::utils;
 
 
 HMODULE dllModule;
 WNDPROC BaseWndProc;
+
+GithubReleasesUpdater updater("archomeda/gw2-addon-loader");
 
 // We need this here because of out-of-scope issues
 string imGuiConfigFile;
@@ -32,6 +36,13 @@ bool imGuiDemoOpen = false;
 set<uint_fast8_t> imGuiDemoKeybind { VK_SHIFT, VK_MENU, VK_F1 };
 #endif
 
+
+void LoaderUpdateCheckCallback(const Updater* updater) {
+    using namespace chrono;
+    AppConfig.SetLastestVersion(updater->GetLatestVersion());
+    AppConfig.SetLastestVersionInfoUrl(updater->GetLatestVersionInfoUrl());
+    AppConfig.SetLastUpdateCheck(time_point_cast<seconds>(system_clock::now()));
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     ProcessInputMessage(msg, wParam, lParam);
@@ -122,6 +133,13 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
 void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
     // Hook MumbleLink
     hooks::Gw2MumbleLink.Start();
+
+    // Check for updates if needed
+    using namespace chrono;
+    if ((time_point_cast<seconds>(system_clock::now()).time_since_epoch() - AppConfig.GetLastUpdateCheck().time_since_epoch()).count() > 24 * 60 * 60) {
+        updater.SetCallback(&LoaderUpdateCheckCallback);
+        updater.CheckForUpdateAsync();
+    }
     
     // Initialize addons
     GetLog()->info("Initializing addons");

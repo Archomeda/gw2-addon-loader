@@ -73,28 +73,28 @@
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -108,7 +108,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;wininet.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,7 +122,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;wininet.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,7 +140,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;wininet.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -159,11 +159,12 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mincore.lib;Shlwapi.lib;wininet.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="updaters\GithubReleasesUpdater.h" />
     <ClInclude Include="gui\BitmapFontAtlas.h" />
     <ClInclude Include="gui\imgui.h" />
     <ClInclude Include="gui\SettingsWindow.h" />
@@ -185,8 +186,10 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TimeMeasure.h" />
+    <ClInclude Include="updaters\Updater.h" />
     <ClInclude Include="utils\debug.h" />
     <ClInclude Include="utils\encoding.h" />
+    <ClInclude Include="utils\web.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="windows.h" />
     <ClInclude Include="Config.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="gui\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="updaters\GithubReleasesUpdater.cpp" />
     <ClCompile Include="gui\BitmapFontAtlas.cpp" />
     <ClCompile Include="gui\imgui.cpp" />
     <ClCompile Include="gui\SettingsWindow.cpp" />
@@ -221,8 +225,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui\Window.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
+    <ClCompile Include="updaters\Updater.cpp" />
     <ClCompile Include="utils\debug.cpp" />
     <ClCompile Include="utils\encoding.cpp" />
+    <ClCompile Include="utils\web.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

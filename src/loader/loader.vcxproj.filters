@@ -108,6 +108,15 @@
     <ClInclude Include="hooks\MumbleLink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils\web.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updaters\GithubReleasesUpdater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updaters\Updater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -186,6 +195,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hooks\MumbleLink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\web.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updaters\GithubReleasesUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updaters\Updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

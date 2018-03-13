@@ -38,6 +38,7 @@ namespace loader {
             void RenderTabInfo();
             void RenderTabSettings();
             void RenderTabStats();
+            void RenderTabUpdate();
 
             void MoveAddonPositionUp(const addons::Addon* const addon);
             void MoveAddonPositionDown(const addons::Addon* const addon);

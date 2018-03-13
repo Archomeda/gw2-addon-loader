@@ -50,6 +50,9 @@ namespace loader {
         this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", true);
         this->showUnsupportedAddons = this->ini.GetBoolValue(L"addons", L"show_unsupported_addons", false);
         this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
+        this->lastUpdateCheck = timestamp(chrono::seconds(this->ini.GetLongValue(L"general", L"last_update_check", 0)));
+        this->lastestVersion = u8(this->ini.GetValue(L"general", L"lastest_version", L""));
+        this->lastestVersionInfoUrl = u8(this->ini.GetValue(L"general", L"lastest_version_info_url", L""));
     }
 
 
@@ -143,6 +146,20 @@ namespace loader {
     void Config::SetShowDebugFeatures(bool showDebugFeatures) {
         this->showDebugFeatures = showDebugFeatures;
         this->ini.SetBoolValue(L"general", L"show_debug_features", showDebugFeatures);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetLastestVersion(const std::string& version) {
+        this->lastestVersion = version;
+        wstring u16Version = u16(version);
+        this->ini.SetValue(L"general", L"lastest_version", u16Version.c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetLastestVersionInfoUrl(const std::string& url) {
+        this->lastestVersionInfoUrl = url;
+        wstring u16Url = u16(url);
+        this->ini.SetValue(L"general", L"lastest_version_info_url", u16Url.c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
