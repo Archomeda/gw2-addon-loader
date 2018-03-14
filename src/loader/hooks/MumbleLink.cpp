@@ -126,8 +126,14 @@ namespace loader {
                         wstring name = wstring(this->linkMemory->name);
                         if (name == L"Guild Wars 2") {
                             GuildWars2Context* context = reinterpret_cast<GuildWars2Context*>(this->linkMemory->context);
-                            this->mapId = context->mapId;
-                            this->mapType = static_cast<MapType>(context->mapType);
+                            if (this->mapId != context->mapId) {
+                                this->mapId = context->mapId;
+                                GetLog()->info("Map changed to {0}", this->mapId);
+                            }
+                            if (this->mapType != context->mapType) {
+                                this->mapType = static_cast<MapType>(context->mapType);
+                                GetLog()->info("Map type changed to {0}", MapTypeToString(this->mapType));
+                            }
                         }
                     }
 

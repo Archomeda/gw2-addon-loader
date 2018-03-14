@@ -67,10 +67,12 @@ namespace loader {
         void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9, IDirect3DDevice9* device) {
             GetLog()->debug("loader::addons::InitializeAddons()");
             for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
+                GetLog()->info("Initializing addon {0}", (*it)->GetFileName());
                 (*it)->SetSdkVersion(sdkVersion);
                 (*it)->SetD3D9(d3d9);
                 (*it)->SetD3DDevice9(device);
                 (*it)->Initialize();
+                GetLog()->info("Addon {0} is {1}", (*it)->GetTypeString());
             }
             sort(AddonsList.begin(), AddonsList.end(), sortAddonsFunc);
         }
@@ -78,6 +80,7 @@ namespace loader {
         void UninitializeAddons() {
             GetLog()->debug("loader::addons::UninitializeAddons()");
             for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
+                GetLog()->info("Uninitializing addon {0}", (*it)->GetFileName());
                 (*it)->Uninitialize();
             }
         }
@@ -87,7 +90,11 @@ namespace loader {
             for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                 (*it)->SetFocusWindow(hFocusWindow);
                 if ((*it)->IsEnabledByConfig()) {
+                    GetLog()->info("Loading enabled addon {0}", (*it)->GetFileName());
                     (*it)->Load();
+                }
+                else {
+                    GetLog()->info("Addon {0} is disabled", (*it)->GetFileName());
                 }
             }
         }
@@ -95,6 +102,7 @@ namespace loader {
         void UnloadAddons() {
             GetLog()->debug("loader::addons::UnloadAddons()");
             for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
+                GetLog()->info("Unloading addon {0}", (*it)->GetFileName());
                 (*it)->Unload();
             }
         }

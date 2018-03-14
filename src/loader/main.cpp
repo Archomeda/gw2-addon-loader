@@ -132,13 +132,19 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
 
 void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
     // Hook MumbleLink
+    GetLog()->info("Starting MumbleLink loop");
     hooks::Gw2MumbleLink.Start();
 
     // Check for updates if needed
     using namespace chrono;
-    if ((time_point_cast<seconds>(system_clock::now()).time_since_epoch() - AppConfig.GetLastUpdateCheck().time_since_epoch()).count() > 24 * 60 * 60) {
+    auto lastCheckAgo = (time_point_cast<seconds>(system_clock::now()).time_since_epoch() - AppConfig.GetLastUpdateCheck().time_since_epoch()).count();
+    if (lastCheckAgo > 24 * 60 * 60) {
+        GetLog()->info("Checking for Addon Loader updates");
         updater.SetCallback(&LoaderUpdateCheckCallback);
         updater.CheckForUpdateAsync();
+    }
+    else {
+        GetLog()->info("Skipping checking for Addon Loader updates, last check was {0} seconds ago", to_string(lastCheckAgo));
     }
     
     // Initialize addons
@@ -146,6 +152,7 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
 
     // Set up ImGui
+    GetLog()->info("Initializing ImGui");
     ImGuiIO imio = ImGui::GetIO();
     imGuiConfigFile = AppConfig.GetImGuiConfigPath();
     imio.IniFilename = imGuiConfigFile.c_str();
@@ -256,6 +263,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         }
         break;
         case DLL_PROCESS_DETACH: {
+            GetLog()->info("Stopping MumbleLink loop");
             hooks::Gw2MumbleLink.Stop();
             gui::imgui::Shutdown();
             GetLog()->info("Unloading and uninitializing addons");

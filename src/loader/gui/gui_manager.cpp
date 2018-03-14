@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "AddonInfoWindow.h"
 #include "SettingsWindow.h"
+#include "../log.h"
 
 using namespace std;
 
@@ -17,10 +18,12 @@ namespace loader {
 
 
         void ShowWindow(const shared_ptr<Window>& window) {
+            GetLog()->info("Opening window {0}", window->GetTitle());
             openWindows[window] = true;
         }
 
         void CloseWindow(const shared_ptr<Window>& window) {
+            GetLog()->info("Closing window {0}", window->GetTitle());
             openWindows[window] = false;
         }
 

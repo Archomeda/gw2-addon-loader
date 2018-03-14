@@ -39,33 +39,17 @@ namespace loader {
                     AddonException(message) { }
             };
 
-            class AddonDrawException : public AddonException {
+            class AddonFuncException : public AddonException {
             public:
-                AddonDrawException(const std::string& message) :
-                    AddonException(message) { }
-                AddonDrawException(const std::wstring& message) :
-                    AddonException(message) { }
-            };
-
-            class AddonWndProcException : public AddonException {
-            public:
-                AddonWndProcException(const std::string& message) :
-                    AddonException(message) { }
-                AddonWndProcException(const std::wstring& message) :
-                    AddonException(message) { }
-            };
-
-            class AddonAdvFuncException : public AddonException {
-            public:
-                AddonAdvFuncException(const std::string& funcName, const std::string& message) :
+                AddonFuncException(const std::string& funcName, const std::string& message) :
                     AddonException("(" + funcName + ") " + message),
                     funcName(funcName) { }
-                AddonAdvFuncException(const std::string& funcName, const std::wstring& message) :
-                    AddonAdvFuncException(funcName, utils::u8(message)) { }
-                AddonAdvFuncException(const std::wstring& funcName, const std::string& message) :
-                    AddonAdvFuncException(utils::u8(funcName), message) { }
-                AddonAdvFuncException(const std::wstring& funcName, const std::wstring& message) :
-                    AddonAdvFuncException(utils::u8(funcName), utils::u8(message)) { }
+                AddonFuncException(const std::string& funcName, const std::wstring& message) :
+                    AddonFuncException(funcName, utils::u8(message)) { }
+                AddonFuncException(const std::wstring& funcName, const std::string& message) :
+                    AddonFuncException(utils::u8(funcName), message) { }
+                AddonFuncException(const std::wstring& funcName, const std::wstring& message) :
+                    AddonFuncException(utils::u8(funcName), utils::u8(message)) { }
 
                 const std::string& GetFuncName() const { return this->funcName; }
 

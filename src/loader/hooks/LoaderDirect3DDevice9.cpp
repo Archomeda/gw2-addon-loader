@@ -186,12 +186,14 @@ namespace loader {
             if (newHook.GetType() != currentChainHook.GetType()) {
                 // New chain hook type
                 GetLog()->info("New chain hook type detected: {0}", ChainHookTypeToString(newHook.GetType()));
+                GetLog()->info("Originating function at 0x{0:X}", newHook.GetOriginatingFunction());
+                GetLog()->info("Chain function at 0x{0:X}", newHook.GetChainFunction());
                 currentChainHook = newHook;
             }
 
             // Hook the hook chain
-            if (newHook.GetType() != ChainHookType::NoHookType) {
-                newHook.HookCallback(&PresentAddonLoader);
+            if (currentChainHook.GetType() != ChainHookType::NoHookType) {
+                currentChainHook.HookCallback(&PresentAddonLoader);
             }
 
             HRESULT hr;

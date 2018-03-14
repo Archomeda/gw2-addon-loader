@@ -1112,19 +1112,19 @@ namespace loader {
                 }
                 catch (const std::exception& ex) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonAdvFuncException(funcName, ex.what());
+                    throw exceptions::AddonFuncException(funcName, ex.what());
                 }
                 catch (const char* err) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonAdvFuncException(funcName, err);
+                    throw exceptions::AddonFuncException(funcName, err);
                 }
                 catch (const wchar_t* err) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonAdvFuncException(funcName, err);
+                    throw exceptions::AddonFuncException(funcName, err);
                 }
                 catch (...) {
                     this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonAdvFuncException(funcName, "Unknown error");
+                    throw exceptions::AddonFuncException(funcName, "Unknown error");
                 }
             }
 
