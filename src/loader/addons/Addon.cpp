@@ -102,9 +102,6 @@ namespace loader {
         }
 
         bool Addon::IsEnabledByConfig() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->IsEnabledByConfig();
-            }
             return AppConfig.GetAddonEnabled(this);
         }
 

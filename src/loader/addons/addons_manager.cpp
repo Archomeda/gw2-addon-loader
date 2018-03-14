@@ -72,7 +72,7 @@ namespace loader {
                 (*it)->SetD3D9(d3d9);
                 (*it)->SetD3DDevice9(device);
                 (*it)->Initialize();
-                GetLog()->info("Addon {0} is {1}", (*it)->GetTypeString());
+                GetLog()->info("Addon {0} is {1}", (*it)->GetFileName(), (*it)->GetTypeString());
             }
             sort(AddonsList.begin(), AddonsList.end(), sortAddonsFunc);
         }
