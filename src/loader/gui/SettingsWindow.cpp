@@ -292,26 +292,26 @@ namespace loader {
                             ImGui::Text("Status:");
                             ImGui::SameLine();
                             ImColor color(120, 120, 120);
-                            switch (addon->GetTypeImpl()->GetAddonState()) {
-                            case types::AddonState::LoadingState:
+                            switch (addon->GetState()) {
+                            case AddonState::LoadingState:
                                 color = ImColor(255, 255, 0);
                                 break;
-                            case types::AddonState::ActivatedOnRestartState:
-                            case types::AddonState::DeactivatedOnRestartState:
+                            case AddonState::ActivatedOnRestartState:
+                            case AddonState::DeactivatedOnRestartState:
                                 color = ImColor(0, 255, 255);
                                 break;
-                            case types::AddonState::LoadedState:
+                            case AddonState::LoadedState:
                                 color = ImColor(0, 255, 0);
                                 break;
-                            case types::AddonState::ErroredState:
+                            case AddonState::ErroredState:
                                 color = ImColor(255, 0, 0);
                                 break;
                             }
-                            ImGui::TextColored(color, addon->GetTypeImpl()->GetAddonStateString().c_str());
+                            ImGui::TextColored(color, addon->GetStateString().c_str());
                         }
                         else {
                             ImGui::PushTextWrapPos();
-                            ImGui::Text("This addon type is not supported by the addon loader: %s.", addon->GetAddonTypeString().c_str());
+                            ImGui::Text("This addon type is not supported by the addon loader: %s.", addon->GetTypeString().c_str());
                             ImGui::PopTextWrapPos();
                         }
 
@@ -326,26 +326,26 @@ namespace loader {
                     {
                         if (addon->SupportsLoading()) {
                             // Activate / deactivate button
-                            if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::LoadedState) {
+                            if (addon->GetState() == AddonState::LoadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Deactivate", ImVec2(100, 0))) {
                                     AppConfig.SetAddonEnabled(addon, false);
                                     addon->Unload();
-                                    if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::DeactivatedOnRestartState) {
+                                    if (addon->GetState() == AddonState::DeactivatedOnRestartState) {
                                         gui::MessageWindow::ShowMessageWindow(
                                             "Deactivate add-on##ActivationPopup",
                                             "This add-on cannot be deactivated while Guild Wars 2 is running. A restart is required.");
                                     }
                                 }
                             }
-                            else if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::UnloadedState) {
+                            else if (addon->GetState() == AddonState::UnloadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Activate", ImVec2(100, 0))) {
                                     if (addon->Load()) {
                                         AppConfig.SetAddonEnabled(addon, false);
-                                        auto state = addon->GetTypeImpl()->GetAddonState();
-                                        if (state == types::AddonState::LoadedState) {
+                                        auto state = addon->GetState();
+                                        if (state == AddonState::LoadedState) {
                                             AppConfig.SetAddonEnabled(addon, true);
                                         }
-                                        else if (state == types::AddonState::ActivatedOnRestartState) {
+                                        else if (state == AddonState::ActivatedOnRestartState) {
                                             gui::MessageWindow::ShowMessageWindow(
                                                 "Activate add-on##ActivationPopup",
                                                 "This add-on cannot be activated while Guild Wars 2 is running. A restart is required.");
@@ -365,7 +365,7 @@ namespace loader {
                             if (ImGui::Button(ICON_MD_SETTINGS " Settings", ImVec2(80, 0))) {
                                 // Close ourselves and show the addon settings
                                 this->Close();
-                                addon->GetTypeImpl()->OpenSettings();
+                                addon->OpenSettings();
                             }
                         }
 
@@ -482,7 +482,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             sstream << "Guild Wars 2" << '\0' << "Addon Loader" << '\0';
             int i = 2;
             for (const auto& addon : AddonsList) {
-                if (addon->GetTypeImpl()->GetAddonState() == types::AddonState::LoadedState) {
+                if (addon->GetState() == AddonState::LoadedState) {
                     sstream << addon->GetName() << '\0';
                     if (this->selectedStatsType == i) {
                         selectedAddon = addon;
@@ -543,12 +543,12 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     ImGui::NextColumn();
                     ImGui::NextColumn();
                     ImGui::NextColumn();
-                    this->ImGuiAddonStatLine("WndProc", selectedAddon->GetTypeImpl()->GetTimeWndProc());
+                    this->ImGuiAddonStatLine("WndProc", selectedAddon->GetTimeWndProc());
 
                     ImGui::Columns(1);
                 }
                 if (ImGui::CollapsingHeader("Rendering")) {
-                    const auto history = selectedAddon->GetTypeImpl()->GetTimeOverall().GetMovingHistory();
+                    const auto history = selectedAddon->GetTimeOverall().GetMovingHistory();
                     ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Addon frame time (µs)", 0, 10000, ImVec2(0, 100));
                     ImGui::Columns(5);
                     ImGui::SetColumnWidth(0, 180);
@@ -562,40 +562,40 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     ImGui::TextUnformatted("Calls");
                     ImGui::NextColumn();
 
-                    this->ImGuiAddonStatLine("Total", selectedAddon->GetTypeImpl()->GetTimeOverall(), false);
-                    this->ImGuiAddonStatLine("DrawBeforePostProcessing", selectedAddon->GetTypeImpl()->GetTimeDrawFrameBeforePostProcessing());
-                    this->ImGuiAddonStatLine("DrawBeforeGui", selectedAddon->GetTypeImpl()->GetTimeDrawFrameBeforeGui());
-                    this->ImGuiAddonStatLine("Draw", selectedAddon->GetTypeImpl()->GetTimeDrawFrame());
-                    this->ImGuiAddonStatLine("AdvPreBeginScene", selectedAddon->GetTypeImpl()->GetTimeAdvPreBeginScene());
-                    this->ImGuiAddonStatLine("AdvPostBeginScene", selectedAddon->GetTypeImpl()->GetTimeAdvPostBeginScene());
-                    this->ImGuiAddonStatLine("AdvPreEndScene", selectedAddon->GetTypeImpl()->GetTimeAdvPreEndScene());
-                    this->ImGuiAddonStatLine("AdvPostEndScene", selectedAddon->GetTypeImpl()->GetTimeAdvPostEndScene());
-                    this->ImGuiAddonStatLine("AdvPreClear", selectedAddon->GetTypeImpl()->GetTimeAdvPreClear());
-                    this->ImGuiAddonStatLine("AdvPostClear", selectedAddon->GetTypeImpl()->GetTimeAdvPostClear());
-                    this->ImGuiAddonStatLine("AdvPreReset", selectedAddon->GetTypeImpl()->GetTimeAdvPreReset());
-                    this->ImGuiAddonStatLine("AdvPostReset", selectedAddon->GetTypeImpl()->GetTimeAdvPostReset());
-                    this->ImGuiAddonStatLine("AdvPrePresent", selectedAddon->GetTypeImpl()->GetTimeAdvPrePresent());
-                    this->ImGuiAddonStatLine("AdvPostPresent", selectedAddon->GetTypeImpl()->GetTimeAdvPostPresent());
-                    this->ImGuiAddonStatLine("AdvPreCreateTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreateTexture());
-                    this->ImGuiAddonStatLine("AdvPostCreateTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreateTexture());
-                    this->ImGuiAddonStatLine("AdvPreCreateVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreateVertexShader());
-                    this->ImGuiAddonStatLine("AdvPostCreateVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreateVertexShader());
-                    this->ImGuiAddonStatLine("AdvPreCreatePixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreatePixelShader());
-                    this->ImGuiAddonStatLine("AdvPostCreatePixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreatePixelShader());
-                    this->ImGuiAddonStatLine("AdvPreCreateRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPreCreateRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPostCreateRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPostCreateRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPreSetTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetTexture());
-                    this->ImGuiAddonStatLine("AdvPostSetTexture", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetTexture());
-                    this->ImGuiAddonStatLine("AdvPreSetVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetVertexShader());
-                    this->ImGuiAddonStatLine("AdvPostSetVertexShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetVertexShader());
-                    this->ImGuiAddonStatLine("AdvPreSetPixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetPixelShader());
-                    this->ImGuiAddonStatLine("AdvPostSetPixelShader", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetPixelShader());
-                    this->ImGuiAddonStatLine("AdvPreSetRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPostSetRenderTarget", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPreSetRenderState", selectedAddon->GetTypeImpl()->GetTimeAdvPreSetRenderState());
-                    this->ImGuiAddonStatLine("AdvPostSetRenderState", selectedAddon->GetTypeImpl()->GetTimeAdvPostSetRenderState());
-                    this->ImGuiAddonStatLine("AdvPreDrawIndexedPrimitive", selectedAddon->GetTypeImpl()->GetTimeAdvPreDrawIndexedPrimitive());
-                    this->ImGuiAddonStatLine("AdvPostDrawIndexedPrimitive", selectedAddon->GetTypeImpl()->GetTimeAdvPostDrawIndexedPrimitive());
+                    this->ImGuiAddonStatLine("Total", selectedAddon->GetTimeOverall(), false);
+                    this->ImGuiAddonStatLine("DrawBeforePostProcessing", selectedAddon->GetTimeDrawFrameBeforePostProcessing());
+                    this->ImGuiAddonStatLine("DrawBeforeGui", selectedAddon->GetTimeDrawFrameBeforeGui());
+                    this->ImGuiAddonStatLine("Draw", selectedAddon->GetTimeDrawFrame());
+                    this->ImGuiAddonStatLine("AdvPreBeginScene", selectedAddon->GetTimeAdvPreBeginScene());
+                    this->ImGuiAddonStatLine("AdvPostBeginScene", selectedAddon->GetTimeAdvPostBeginScene());
+                    this->ImGuiAddonStatLine("AdvPreEndScene", selectedAddon->GetTimeAdvPreEndScene());
+                    this->ImGuiAddonStatLine("AdvPostEndScene", selectedAddon->GetTimeAdvPostEndScene());
+                    this->ImGuiAddonStatLine("AdvPreClear", selectedAddon->GetTimeAdvPreClear());
+                    this->ImGuiAddonStatLine("AdvPostClear", selectedAddon->GetTimeAdvPostClear());
+                    this->ImGuiAddonStatLine("AdvPreReset", selectedAddon->GetTimeAdvPreReset());
+                    this->ImGuiAddonStatLine("AdvPostReset", selectedAddon->GetTimeAdvPostReset());
+                    this->ImGuiAddonStatLine("AdvPrePresent", selectedAddon->GetTimeAdvPrePresent());
+                    this->ImGuiAddonStatLine("AdvPostPresent", selectedAddon->GetTimeAdvPostPresent());
+                    this->ImGuiAddonStatLine("AdvPreCreateTexture", selectedAddon->GetTimeAdvPreCreateTexture());
+                    this->ImGuiAddonStatLine("AdvPostCreateTexture", selectedAddon->GetTimeAdvPostCreateTexture());
+                    this->ImGuiAddonStatLine("AdvPreCreateVertexShader", selectedAddon->GetTimeAdvPreCreateVertexShader());
+                    this->ImGuiAddonStatLine("AdvPostCreateVertexShader", selectedAddon->GetTimeAdvPostCreateVertexShader());
+                    this->ImGuiAddonStatLine("AdvPreCreatePixelShader", selectedAddon->GetTimeAdvPreCreatePixelShader());
+                    this->ImGuiAddonStatLine("AdvPostCreatePixelShader", selectedAddon->GetTimeAdvPostCreatePixelShader());
+                    this->ImGuiAddonStatLine("AdvPreCreateRenderTarget", selectedAddon->GetTimeAdvPreCreateRenderTarget());
+                    this->ImGuiAddonStatLine("AdvPostCreateRenderTarget", selectedAddon->GetTimeAdvPostCreateRenderTarget());
+                    this->ImGuiAddonStatLine("AdvPreSetTexture", selectedAddon->GetTimeAdvPreSetTexture());
+                    this->ImGuiAddonStatLine("AdvPostSetTexture", selectedAddon->GetTimeAdvPostSetTexture());
+                    this->ImGuiAddonStatLine("AdvPreSetVertexShader", selectedAddon->GetTimeAdvPreSetVertexShader());
+                    this->ImGuiAddonStatLine("AdvPostSetVertexShader", selectedAddon->GetTimeAdvPostSetVertexShader());
+                    this->ImGuiAddonStatLine("AdvPreSetPixelShader", selectedAddon->GetTimeAdvPreSetPixelShader());
+                    this->ImGuiAddonStatLine("AdvPostSetPixelShader", selectedAddon->GetTimeAdvPostSetPixelShader());
+                    this->ImGuiAddonStatLine("AdvPreSetRenderTarget", selectedAddon->GetTimeAdvPreSetRenderTarget());
+                    this->ImGuiAddonStatLine("AdvPostSetRenderTarget", selectedAddon->GetTimeAdvPostSetRenderTarget());
+                    this->ImGuiAddonStatLine("AdvPreSetRenderState", selectedAddon->GetTimeAdvPreSetRenderState());
+                    this->ImGuiAddonStatLine("AdvPostSetRenderState", selectedAddon->GetTimeAdvPostSetRenderState());
+                    this->ImGuiAddonStatLine("AdvPreDrawIndexedPrimitive", selectedAddon->GetTimeAdvPreDrawIndexedPrimitive());
+                    this->ImGuiAddonStatLine("AdvPostDrawIndexedPrimitive", selectedAddon->GetTimeAdvPostDrawIndexedPrimitive());
                    
                     ImGui::Columns(1);
                 }

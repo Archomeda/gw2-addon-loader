@@ -32,8 +32,8 @@ namespace loader {
             if (!this->addon->GetFileName().empty()) {
                 ImGui::Text("File name: %s", this->addon->GetFileName().c_str());
             }
-            if (!this->addon->GetAddonTypeString().empty()) {
-                ImGui::Text("Type: %s", this->addon->GetAddonTypeString().c_str());
+            if (!this->addon->GetTypeString().empty()) {
+                ImGui::Text("Type: %s", this->addon->GetTypeString().c_str());
             }
         }
     }

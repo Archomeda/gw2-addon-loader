@@ -45,16 +45,7 @@
     <ClInclude Include="gui\MessageWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="addons\types\ITypeImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="addons\exceptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="addons\types\DummyAddonImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="addons\types\NativeAddonImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hooks\LoaderDirect3D9.h">
@@ -117,6 +108,15 @@
     <ClInclude Include="updaters\Updater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="addons\NativeAddon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeDuration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\UnknownAddon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -144,15 +144,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\MessageWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\types\ITypeImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\types\DummyAddonImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\types\NativeAddonImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hooks\LoaderDirect3D9.cpp">
@@ -204,6 +195,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="updaters\Updater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeDuration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

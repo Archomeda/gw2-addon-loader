@@ -1,5 +1,6 @@
 #pragma once
 #include "../windows.h"
+#include <d3d9.h>
 #include <memory>
 #include <vector>
 #include "Addon.h"
