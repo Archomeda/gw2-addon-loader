@@ -6,8 +6,8 @@ skip_commits:
 
 configuration: Release
 platform:
-  - x86
   - x64
+  - x86
 
 cache:
   - packages -> **\packages.config
