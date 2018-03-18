@@ -1,3 +1,4 @@
+src/dependencies/* linguist-vendored
 src/font-atlas-packer/zlib/* linguist-vendored
 
 ###############################################################################
