@@ -73,28 +73,28 @@
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\rapidjson\include;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -166,7 +166,9 @@
   <ItemGroup>
     <ClInclude Include="addons\NativeAddon.h" />
     <ClInclude Include="addons\UnknownAddon.h" />
+    <ClInclude Include="globals.h" />
     <ClInclude Include="TimeDuration.h" />
+    <ClInclude Include="updaters\Downloader.h" />
     <ClInclude Include="updaters\GithubReleasesUpdater.h" />
     <ClInclude Include="gui\BitmapFontAtlas.h" />
     <ClInclude Include="gui\imgui.h" />
@@ -186,9 +188,12 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TimeMeasure.h" />
+    <ClInclude Include="updaters\Installer.h" />
     <ClInclude Include="updaters\Updater.h" />
+    <ClInclude Include="updaters\update_manager.h" />
     <ClInclude Include="utils\debug.h" />
     <ClInclude Include="utils\encoding.h" />
+    <ClInclude Include="utils\file.h" />
     <ClInclude Include="utils\web.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="windows.h" />
@@ -201,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TimeDuration.cpp" />
+    <ClCompile Include="updaters\Downloader.cpp" />
     <ClCompile Include="updaters\GithubReleasesUpdater.cpp" />
     <ClCompile Include="gui\BitmapFontAtlas.cpp" />
     <ClCompile Include="gui\imgui.cpp" />
@@ -223,9 +229,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui\Window.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
+    <ClCompile Include="updaters\Installer.cpp" />
     <ClCompile Include="updaters\Updater.cpp" />
+    <ClCompile Include="updaters\update_manager.cpp" />
     <ClCompile Include="utils\debug.cpp" />
     <ClCompile Include="utils\encoding.cpp" />
+    <ClCompile Include="utils\file.cpp" />
     <ClCompile Include="utils\web.cpp" />
   </ItemGroup>
   <ItemGroup>

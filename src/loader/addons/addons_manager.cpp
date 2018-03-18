@@ -4,16 +4,13 @@
 #include <Shlwapi.h>
 #include "exceptions.h"
 #include "../Config.h"
+#include "../globals.h"
 #include "../log.h"
-
-#ifdef _WIN64
-#define ADDONS_FOLDER "bin64/addons/"
-#else
-#define ADDONS_FOLDER "bin/addons/"
-#endif
+#include "../utils/file.h"
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
+using namespace loader::utils;
 
 namespace loader {
     namespace addons {
@@ -44,11 +41,7 @@ namespace loader {
             AddonsList.clear();
 
             // Create path
-            wchar_t fileName[MAX_PATH];
-            GetModuleFileName(NULL, fileName, sizeof(fileName));
-            PathRemoveFileSpec(fileName);
-            path addonsFolder(fileName);
-            addonsFolder /= ADDONS_FOLDER;
+            path addonsFolder = GetGuildWars2Folder(ADDONS_FOLDER);
             GetLog()->info("Refresh addons list in {0}", addonsFolder.u8string());
             if (!PathFileExists(addonsFolder.c_str())) {
                 SHCreateDirectoryEx(NULL, addonsFolder.c_str(), NULL);

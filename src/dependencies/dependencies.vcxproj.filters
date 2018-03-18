@@ -147,6 +147,9 @@
     <ClInclude Include="rapidjson\include\rapidjson\writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="miniz\miniz.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
@@ -156,6 +159,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="miniz\miniz.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

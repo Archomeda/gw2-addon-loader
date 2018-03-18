@@ -8,15 +8,21 @@ namespace loader {
         void Updater::CheckForUpdateAsync() {
             if (!this->updateTask.valid()) {
                 this->updateTask = async(launch::async, [](Updater* updater) {
-                    UpdatedVersion version = updater->CheckLatestVersion();
-                    updater->latestVersion = version.version;
-                    updater->latestVersionInfoUrl = version.infoUrl;
-                    if (updater->callback != nullptr) {
-                        updater->callback(updater);
+                    VersionInfo version = updater->CheckLatestVersion();
+                    updater->latestVersion = version;
+                    if (updater->checkCallback != nullptr) {
+                        updater->checkCallback(updater, version);
                     }
                     updater->updateTask = {};
                 }, this);
             }
+        }
+
+        unique_ptr<Downloader> Updater::GetUpdateDownloader() const {
+            if (this->latestVersion.downloadUrl.empty()) {
+                return {};
+            }
+            return unique_ptr<Downloader>(new Downloader(this->latestVersion.downloadUrl));
         }
 
     }

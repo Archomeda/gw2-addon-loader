@@ -53,6 +53,7 @@ namespace loader {
         this->lastUpdateCheck = timestamp(chrono::seconds(this->ini.GetLongValue(L"general", L"last_update_check", 0)));
         this->lastestVersion = u8(this->ini.GetValue(L"general", L"lastest_version", L""));
         this->lastestVersionInfoUrl = u8(this->ini.GetValue(L"general", L"lastest_version_info_url", L""));
+        this->lastestVersionDownloadUrl = u8(this->ini.GetValue(L"general", L"lastest_version_download_url", L""));
     }
 
 
@@ -149,17 +150,24 @@ namespace loader {
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestVersion(const std::string& version) {
+    void Config::SetLastestVersion(const string& version) {
         this->lastestVersion = version;
         wstring u16Version = u16(version);
         this->ini.SetValue(L"general", L"lastest_version", u16Version.c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestVersionInfoUrl(const std::string& url) {
+    void Config::SetLastestVersionInfoUrl(const string& url) {
         this->lastestVersionInfoUrl = url;
         wstring u16Url = u16(url);
         this->ini.SetValue(L"general", L"lastest_version_info_url", u16Url.c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetLastestVersionDownloadUrl(const string& url) {
+        this->lastestVersionDownloadUrl = url;
+        wstring u16Url = u16(url);
+        this->ini.SetValue(L"general", L"lastest_version_download_url", u16Url.c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 

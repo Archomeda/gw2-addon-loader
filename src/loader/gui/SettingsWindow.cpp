@@ -12,19 +12,21 @@
 #include "gui_manager.h"
 #include "AddonInfoWindow.h"
 #include "MessageWindow.h"
+#include "../Config.h"
 #include "../IconsOcticons.h"
+#include "../input.h"
+#include "../version.h"
 #include "../addons/addons_manager.h"
 #include "../addons/Addon.h"
 #include "../hooks/LoaderDirect3DDevice9.h"
 #include "../hooks/MumbleLink.h"
-#include "../Config.h"
-#include "../input.h"
-#include "../version.h"
+#include "../updaters/update_manager.h"
 #include "../utils/encoding.h"
 
 using namespace std;
 using namespace std::experimental::filesystem::v1;
 using namespace loader::addons;
+using namespace loader::updaters;
 using namespace loader::utils;
 
 namespace loader {
@@ -607,11 +609,24 @@ The author of this library is not associated with ArenaNet nor with any of its p
         void SettingsWindow::RenderTabUpdate() {
             ImGui::BeginChild("##Update");
             {
-                ImGui::Text("Current version: %s", VERSION);
-                ImGui::Text("Latest version: %s", AppConfig.GetLastestVersion().c_str());
+                ImGui::PushTextWrapPos();
+                ImGui::TextUnformatted("Be careful with updating addons automatically. The code for updating addons is provided by the addons themselves and not by the Addon Loader. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. Always check the release notes first.");
+                ImGui::PopTextWrapPos();
                 ImGui::Dummy(ImVec2(0, 16));
-                if (ImGui::Button(ICON_OC_MARK_GITHUB "   Download from GitHub", ImVec2(175, 32))) {
+                ImGui::Text("Current Addon Loader version: %s", VERSION);
+                ImGui::Text("Latest Addon Loader version: %s", AppConfig.GetLastestVersion().c_str());
+                ImGui::Dummy(ImVec2(0, 16));
+                if (ImGui::Button(ICON_OC_MARK_GITHUB " Open release notes", ImVec2(160, 32))) {
                     ShellExecute(0, 0, u16(AppConfig.GetLastestVersionInfoUrl()).c_str(), 0, 0, SW_SHOW);
+                }
+                ImGui::SameLine();
+                if (LoaderUpdaterInstaller != nullptr && (LoaderUpdaterInstaller->IsBusy() || LoaderUpdaterInstaller->HasCompleted())) {
+                    ImGui::Text(LoaderUpdaterInstaller->GetDetailedProgress().c_str());
+                }
+                else {
+                    if (ImGui::Button(ICON_MD_FILE_DOWNLOAD " Download", ImVec2(100, 32))) {
+                        InstallUpdate();
+                    }
                 }
             }
             ImGui::EndChild();

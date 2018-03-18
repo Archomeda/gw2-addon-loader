@@ -73,25 +73,25 @@
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x86</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x86</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x64</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x64</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -147,6 +147,7 @@
     <ClInclude Include="imgui\stb_rect_pack.h" />
     <ClInclude Include="imgui\stb_textedit.h" />
     <ClInclude Include="imgui\stb_truetype.h" />
+    <ClInclude Include="miniz\miniz.h" />
     <ClInclude Include="rapidjson\include\rapidjson\allocators.h" />
     <ClInclude Include="rapidjson\include\rapidjson\document.h" />
     <ClInclude Include="rapidjson\include\rapidjson\encodedstream.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="miniz\miniz.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

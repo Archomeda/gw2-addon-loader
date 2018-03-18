@@ -38,6 +38,7 @@ namespace loader {
         timestamp GetLastUpdateCheck() const { return this->lastUpdateCheck; }
         std::string GetLastestVersion() const { return this->lastestVersion; }
         std::string GetLastestVersionInfoUrl() const { return this->lastestVersionInfoUrl; }
+        std::string GetLastestVersionDownloadUrl() const { return this->lastestVersionDownloadUrl; }
 
         void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
         void SetOBSCompatibilityMode(bool compatibilityMode);
@@ -53,6 +54,7 @@ namespace loader {
         }
         void SetLastestVersion(const std::string& version);
         void SetLastestVersionInfoUrl(const std::string& url);
+        void SetLastestVersionDownloadUrl(const std::string& url);
 
     private:
         const std::string configFolder = "addons/loader/";
@@ -69,6 +71,7 @@ namespace loader {
         timestamp lastUpdateCheck;
         std::string lastestVersion;
         std::string lastestVersionInfoUrl;
+        std::string lastestVersionDownloadUrl;
 
         CSimpleIni ini;
     };

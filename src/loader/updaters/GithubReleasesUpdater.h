@@ -9,7 +9,7 @@ namespace loader {
             GithubReleasesUpdater(const std::string& repository) : repository(repository) { }
 
         protected:
-            virtual UpdatedVersion CheckLatestVersion() override;
+            virtual VersionInfo CheckLatestVersion() override;
 
         private:
             const char* githubApiBaseUrl = "https://api.github.com";

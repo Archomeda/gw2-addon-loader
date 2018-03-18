@@ -1,35 +1,38 @@
 #pragma once
 #include <future>
+#include <memory>
 #include <string>
+#include "Downloader.h"
 
 namespace loader {
     namespace updaters {
 
         class Updater;
 
-        struct UpdatedVersion {
+        struct VersionInfo {
             std::string version;
             std::string infoUrl;
+            std::string downloadUrl;
         };
 
-        typedef void(*UpdateCheckCallback_t)(const Updater* updater);
+        typedef void(*UpdateCheckCallback_t)(const Updater* const updater, const VersionInfo version);
 
         class Updater {
         public:
-            void SetCallback(UpdateCheckCallback_t callback) { this->callback = callback; }
+            void SetCheckCallback(UpdateCheckCallback_t callback) { this->checkCallback = callback; }
 
             void CheckForUpdateAsync();
-            const std::string GetLatestVersion() const { return this->latestVersion; }
-            const std::string GetLatestVersionInfoUrl() const { return this->latestVersionInfoUrl; }
+            std::unique_ptr<Downloader> GetUpdateDownloader() const;
+
+            const VersionInfo GetLatestVersion() const { return this->latestVersion; }
 
         protected:
-            virtual UpdatedVersion CheckLatestVersion() = 0;
+            virtual VersionInfo CheckLatestVersion() = 0;
 
         private:
             std::future<void> updateTask;
-            std::string latestVersion;
-            std::string latestVersionInfoUrl;
-            UpdateCheckCallback_t callback;
+            VersionInfo latestVersion;
+            UpdateCheckCallback_t checkCallback;
 
         };
 
