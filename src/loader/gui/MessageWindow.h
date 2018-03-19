@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "Window.h"
 
 namespace loader {
@@ -10,11 +11,10 @@ namespace loader {
 
             void Render() override;
 
-            static std::shared_ptr<MessageWindow> ShowMessageWindow(const std::string& title, const std::string& message);
+            static std::unique_ptr<MessageWindow> ShowMessageWindow(const std::string& title, const std::string& message);
 
         protected:
             const std::string Message;
-
         };
 
     }

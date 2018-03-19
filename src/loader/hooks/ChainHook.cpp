@@ -3,7 +3,7 @@
 #include <string>
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 
 namespace loader {
     namespace hooks {
@@ -11,7 +11,7 @@ namespace loader {
         map<HMODULE, ChainHookType> ChainHook::knownHooks;
 
 
-        string ChainHookTypeToString(ChainHookType type) {
+        const string ChainHookTypeToString(ChainHookType type) {
             switch (type) {
             case ChainHookType::OBSHook:
                 return "OBS";

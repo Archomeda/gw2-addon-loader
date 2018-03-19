@@ -5,6 +5,8 @@
 #include "BitmapFontAtlas.h"
 #include "../resource.h"
 
+#define D3DFVF_IMGUIVERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
+
 using namespace std;
 
 namespace loader {
@@ -34,7 +36,6 @@ namespace loader {
                 D3DCOLOR col;
                 float uv[2];
             };
-#define D3DFVF_IMGUIVERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
             void* LoadEmbeddedResource(HMODULE hModule, LPCWSTR lpName, LPCWSTR lpType, UINT* pSize) {
                 HRSRC resource = FindResource(hModule, lpName, lpType);

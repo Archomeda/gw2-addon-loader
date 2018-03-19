@@ -4,7 +4,7 @@
 #include "encoding.h"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 
 namespace loader {
     namespace utils {

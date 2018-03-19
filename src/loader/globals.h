@@ -9,3 +9,4 @@
 #endif
 
 #define ADDONS_FOLDER BIN_FOLDER "addons/"
+#define CONFIG_FOLDER "addons/loader/"

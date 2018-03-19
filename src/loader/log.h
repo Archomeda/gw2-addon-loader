@@ -6,7 +6,7 @@
 
 namespace loader {
     
-    std::shared_ptr<spdlog::logger> GetLog();
-    std::string LastErrorToString(DWORD error);
+    const std::shared_ptr<spdlog::logger> GetLog();
+    const std::string LastErrorToString(DWORD error);
 
 }

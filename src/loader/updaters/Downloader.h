@@ -49,7 +49,6 @@ namespace loader {
 
             std::function<ProgressUpdateCallback_t> progressCallback;
             std::function<DownloadCompleteCallback_t> completeCallback;
-
         };
 
     }

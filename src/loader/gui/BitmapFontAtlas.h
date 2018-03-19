@@ -77,7 +77,6 @@ namespace loader {
             const int AddCustomRectFontGlyph(ImFont* font, ImWchar id, int width, int height, float advance_x, const ImVec2& offset) { throw "not implemented"; }
             void CalcCustomRectUV(const CustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) { throw "not implemented"; }
             const CustomRect* GetCustomRectByIndex(int index) const { throw "not implemented"; }
-
         };
 
     }

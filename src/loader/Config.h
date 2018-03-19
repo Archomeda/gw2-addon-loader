@@ -57,7 +57,6 @@ namespace loader {
         void SetLastestVersionDownloadUrl(const std::string& url);
 
     private:
-        const std::string configFolder = "addons/loader/";
         const std::string configName = "loader.ini";
         const std::string configImGuiName = "loader_imgui.ini";
 

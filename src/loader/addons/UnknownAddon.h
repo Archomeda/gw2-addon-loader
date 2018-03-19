@@ -20,7 +20,7 @@ namespace loader {
             virtual bool SupportsSettings() const override { return false; }
             virtual bool SupportsHomepage() const override { return false; }
 
-            virtual const AddonType GetType() const override { return AddonType::AddonTypeUnknown; }
+            virtual AddonType GetType() const override { return AddonType::AddonTypeUnknown; }
 
         protected:
             virtual const Addon* GetConstBaseAddon() const override { return &addon; }
@@ -28,7 +28,6 @@ namespace loader {
 
         private:
             T addon;
-
         };
 
     }

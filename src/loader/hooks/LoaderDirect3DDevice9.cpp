@@ -12,7 +12,7 @@
 #include "../addons/addons_manager.h"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 
 namespace loader {
     namespace hooks {
@@ -185,7 +185,7 @@ namespace loader {
             ChainHook newHook = ChainHook::FindCurrentChainHook(ChainHookFunctionType::PresentFunction, vft.Present);
             if (newHook.GetType() != currentChainHook.GetType()) {
                 // New chain hook type
-                GetLog()->info("New chain hook type detected: {0}", ChainHookTypeToString(newHook.GetType()));
+                GetLog()->info("New chain hook type detected: {0}", newHook.GetTypeString());
                 GetLog()->info("Originating function at 0x{0:X}", newHook.GetOriginatingFunction());
                 GetLog()->info("Chain function at 0x{0:X}", newHook.GetChainFunction());
                 currentChainHook = newHook;

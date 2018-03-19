@@ -18,13 +18,14 @@ namespace loader {
             PresentFunction
         };
 
-        std::string ChainHookTypeToString(ChainHookType type);
+        const std::string ChainHookTypeToString(ChainHookType type);
 
         class ChainHook {
         public:
             static ChainHook FindCurrentChainHook(ChainHookFunctionType functionType, void* func);
 
             ChainHookType GetType() const { return this->type; }
+            const std::string GetTypeString() const { return ChainHookTypeToString(this->GetType()); }
             ChainHookFunctionType GetFunctionType() const { return this->functionType; }
             void* GetOriginatingFunction() const { return this->origFunction; }
             void* GetChainFunction() const { return this->chainFunction; }
@@ -38,6 +39,8 @@ namespace loader {
             void ResetProtection(void* address, size_t length, DWORD reset);
 
         private:
+            bool HookPresentCallback(void* callback);
+            
             static std::map<HMODULE, ChainHookType> knownHooks;
 
             ChainHookType type = ChainHookType::NoHookType;
@@ -48,9 +51,6 @@ namespace loader {
             uintptr_t callbackHookAddress = 0;
             uint8_t preHookCallbackData[16];
             uint8_t preHookCallbackDataSize = 0;
-
-            bool HookPresentCallback(void* callback);
-
         };
 
     }

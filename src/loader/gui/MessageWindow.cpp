@@ -28,8 +28,8 @@ namespace loader {
             ImGui::EndChild();
         }
 
-        shared_ptr<MessageWindow> MessageWindow::ShowMessageWindow(const string& title, const string& message) {
-            shared_ptr<MessageWindow> window = make_shared<MessageWindow>(title, message);
+        unique_ptr<MessageWindow> MessageWindow::ShowMessageWindow(const string& title, const string& message) {
+            unique_ptr<MessageWindow> window = make_unique<MessageWindow>(title, message);
             window->Show();
             return window;
         }

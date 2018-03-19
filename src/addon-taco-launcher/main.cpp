@@ -6,7 +6,7 @@
 #include "../../include/gw2addon-native.h"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 
 #ifdef _WIN64
 const std::wstring tacoFolder = L"bin64/addons/taco/";

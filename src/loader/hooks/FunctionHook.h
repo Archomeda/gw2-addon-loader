@@ -30,7 +30,6 @@ namespace loader {
 
             bool unprotected = false;
             DWORD oldProtection;
-
         };
 
     }

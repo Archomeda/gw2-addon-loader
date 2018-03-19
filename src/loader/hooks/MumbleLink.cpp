@@ -9,7 +9,7 @@ namespace loader {
 
         MumbleLink Gw2MumbleLink;
 
-        string MapTypeToString(MapType type) {
+        const string MapTypeToString(MapType type) {
             switch (type)
             {
             case MapType::Redirect:

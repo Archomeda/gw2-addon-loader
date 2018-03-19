@@ -48,7 +48,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         auto pressedKeys = GetPressedKeys();
         auto settingsKeybind = AppConfig.GetSettingsKeybind();
         if (pressedKeys == settingsKeybind) {
-            gui::IsWindowOpen(gui::SettingsWnd) ? gui::CloseWindow(gui::SettingsWnd) : gui::ShowWindow(gui::SettingsWnd);
+            gui::IsWindowOpen(gui::SettingsWnd.get()) ? gui::CloseWindow(gui::SettingsWnd.get()) : gui::ShowWindow(gui::SettingsWnd.get());
             return true;
         }
 

@@ -4,11 +4,13 @@
 #include <Shlwapi.h>
 #include <filesystem> 
 #include <sstream>
+#include "globals.h"
 #include "log.h"
 #include "utils/encoding.h"
+#include "utils/file.h"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 using namespace loader::addons;
 using namespace loader::utils;
 
@@ -25,9 +27,9 @@ namespace loader {
         GetModuleFileName(NULL, fileName, sizeof(fileName));
         PathRemoveFileSpec(fileName);
         path configFolder(fileName);
-        configFolder /= this->configFolder;
-        if (!PathFileExists(configFolder.c_str())) {
-            SHCreateDirectoryEx(NULL, configFolder.c_str(), NULL);
+        configFolder /= CONFIG_FOLDER;
+        if (!FolderExists(configFolder.u8string())) {
+            SHCreateDirectory(NULL, configFolder.c_str());
         }
 
         // Our config file

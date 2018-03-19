@@ -52,7 +52,7 @@ namespace loader {
             PublicMini = 16
         };
 
-        std::string MapTypeToString(MapType type);
+        const std::string MapTypeToString(MapType type);
 
         class MumbleLink {
         public:
@@ -64,6 +64,8 @@ namespace loader {
             bool IsTypeCompetitive() const;
 
         private:
+            void Loop();
+            
             bool active = false;
             HANDLE hMap = NULL;
             std::thread loopThread;
@@ -72,9 +74,6 @@ namespace loader {
 
             uint32_t mapId;
             MapType mapType;
-
-            void Loop();
-
         };
 
         extern MumbleLink Gw2MumbleLink;

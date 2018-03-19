@@ -12,7 +12,7 @@
 #include "../utils/file.h"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 using namespace loader::addons;
 using namespace loader::utils;
 
@@ -37,7 +37,7 @@ namespace loader {
 
             this->busy = true;
 
-            this->downloader = unique_ptr<Downloader>(new Downloader(this->version.downloadUrl));
+            this->downloader = make_unique<Downloader>(this->version.downloadUrl);
             this->downloader->SetProgressUpdateCallback([this](const Downloader* const downloader, size_t progress, size_t total) {
                 this->DownloaderProgressUpdate(downloader, progress, total);
             });

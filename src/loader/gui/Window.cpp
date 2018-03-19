@@ -5,15 +5,15 @@ namespace loader {
     namespace gui {
 
         void Window::Show() {
-            ShowWindow(shared_from_this());
+            ShowWindow(this);
         }
         
         void Window::Close() {
-            CloseWindow(shared_from_this());
+            CloseWindow(this);
         }
 
         bool Window::IsOpen() {
-            return IsWindowOpen(shared_from_this());
+            return IsWindowOpen(this);
         }
 
     }

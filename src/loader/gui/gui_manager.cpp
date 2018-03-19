@@ -11,23 +11,23 @@ using namespace std;
 namespace loader {
     namespace gui {
 
-        map<shared_ptr<Window>, bool> openWindows;
+        map<Window* const, bool> openWindows;
 
         shared_ptr<AddonInfoWindow> AddonInfoWnd = make_shared<AddonInfoWindow>();
         shared_ptr<SettingsWindow> SettingsWnd = make_shared<SettingsWindow>();
 
 
-        void ShowWindow(const shared_ptr<Window>& window) {
+        void ShowWindow(Window* const window) {
             GetLog()->info("Opening window {0}", window->GetTitle());
             openWindows[window] = true;
         }
 
-        void CloseWindow(const shared_ptr<Window>& window) {
+        void CloseWindow(Window* const window) {
             GetLog()->info("Closing window {0}", window->GetTitle());
             openWindows[window] = false;
         }
 
-        bool IsWindowOpen(const shared_ptr<Window>& window) {
+        bool IsWindowOpen(Window* const window) {
             return openWindows.count(window) > 0 && openWindows[window];
         }
 

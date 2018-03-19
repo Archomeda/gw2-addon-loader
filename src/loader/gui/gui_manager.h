@@ -13,9 +13,9 @@ namespace loader {
         extern std::shared_ptr<SettingsWindow> SettingsWnd;
 
 
-        void ShowWindow(const std::shared_ptr<Window>& window);
-        void CloseWindow(const std::shared_ptr<Window>& window);
-        bool IsWindowOpen(const std::shared_ptr<Window>& window);
+        void ShowWindow(Window* const window);
+        void CloseWindow(Window* const window);
+        bool IsWindowOpen(Window* const window);
 
         void Render();
 

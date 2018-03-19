@@ -18,12 +18,5 @@ namespace loader {
             }
         }
 
-        unique_ptr<Downloader> Updater::GetUpdateDownloader() const {
-            if (this->latestVersion.downloadUrl.empty()) {
-                return {};
-            }
-            return unique_ptr<Downloader>(new Downloader(this->latestVersion.downloadUrl));
-        }
-
     }
 }

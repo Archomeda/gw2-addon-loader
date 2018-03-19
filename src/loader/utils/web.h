@@ -5,7 +5,7 @@
 namespace loader {
     namespace utils {
 
-        std::vector<char> DownloadFromUrl(const std::string& url);
+        const std::vector<char> DownloadFromUrl(const std::string& url);
 
     }
 }

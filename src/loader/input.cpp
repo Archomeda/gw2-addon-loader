@@ -98,11 +98,11 @@ namespace loader {
         return repeatedPressedKeys;
     }
 
-    set<uint_fast8_t> GetPressedKeys() {
+    const set<uint_fast8_t> GetPressedKeys() {
         return set<uint_fast8_t>(pressedKeys);
     }
 
-    set<uint_fast8_t> GetPressedKeyboardKeys() {
+    const set<uint_fast8_t> GetPressedKeyboardKeys() {
         set<uint_fast8_t> keys;
         copy_if(pressedKeys.begin(), pressedKeys.end(), inserter(keys, keys.end()), [](const uint_fast8_t k) {
             switch (k) {
@@ -118,7 +118,7 @@ namespace loader {
         return keys;
     }
 
-    set<uint_fast8_t> GetPressedMouseKeys() {
+    const set<uint_fast8_t> GetPressedMouseKeys() {
         set<uint_fast8_t> keys;
         copy_if(pressedKeys.begin(), pressedKeys.end(), inserter(keys, keys.end()), [](const uint_fast8_t k) {
             switch (k) {
@@ -148,7 +148,7 @@ namespace loader {
         return false;
     }
 
-    string GetReadableKeyString(const set<uint_fast8_t>& keys) {
+    const string GetReadableKeyString(const set<uint_fast8_t>& keys) {
         set<uint_fast8_t> remaining(keys);
         stringstream ss;
         if (remaining.find(VK_CONTROL) != remaining.end()) {

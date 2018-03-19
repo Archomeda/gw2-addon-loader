@@ -8,7 +8,7 @@ using namespace std;
 namespace loader {
     namespace utils {
 
-        vector<char> DownloadFromUrl(const string& url) {
+        const vector<char> DownloadFromUrl(const string& url) {
             vector<char> data;
             HINTERNET hSession = InternetOpen(L"Guild Wars 2 Addon Loader", 0, NULL, NULL, 0);
             if (hSession == NULL) {

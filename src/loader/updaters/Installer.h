@@ -26,7 +26,7 @@ namespace loader {
             void DownloaderProgressUpdate(const Downloader* const downloader, std::size_t progress, std::size_t total);
             void DownloaderComplete(const Downloader* const downloader, const std::vector<char>& data, const std::string& errorMessage);
             void Extract(const std::vector<char>& data);
-            void WriteFile(const std::vector<char>& fileData, const std::experimental::filesystem::v1::path& fileName);
+            void WriteFile(const std::vector<char>& fileData, const std::experimental::filesystem::path& fileName);
 
             void SetDetailedProgress(const std::string& progress);
 
@@ -41,7 +41,6 @@ namespace loader {
             std::string detailedProgress;
 
             std::future<void> extractTask;
-
         };
 
     }

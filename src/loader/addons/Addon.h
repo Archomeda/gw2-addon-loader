@@ -2,6 +2,7 @@
 #include "../windows.h"
 #include <d3d9.h>
 #include <chrono>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include "../TimeDuration.h"
@@ -29,11 +30,18 @@ namespace loader {
         const std::string AddonTypeToString(AddonType type);
         const std::string AddonStateToString(AddonState state);
 
-        class Addon : public std::enable_shared_from_this<Addon> {
+        class Addon {
         public:
             Addon() = default;
-            Addon(const std::string& filePath);
+            Addon(const std::string& filePath) :
+                filePath(std::experimental::filesystem::u8path(filePath)),
+                fileName(std::experimental::filesystem::u8path(filePath).filename().u8string()) { }
+            Addon(const std::experimental::filesystem::path& filePath) :
+                filePath(filePath),
+                fileName(filePath.filename().u8string()) { }
+
             static std::unique_ptr<Addon> GetAddon(const std::string& filePath);
+            static std::unique_ptr<Addon> GetAddon(const std::experimental::filesystem::path& filePath);
 
             virtual bool Initialize();
             virtual bool Uninitialize();
@@ -50,7 +58,7 @@ namespace loader {
             virtual bool SupportsSettings() const;
             virtual bool SupportsHomepage() const;
 
-            virtual const AddonType GetType() const;
+            virtual AddonType GetType() const;
             const std::string GetTypeString() const { return AddonTypeToString(this->GetType()); }
 
 
@@ -63,8 +71,8 @@ namespace loader {
             HWND GetFocusWindow() const;
             void SetFocusWindow(HWND focusWindow);
 
-            virtual const std::string GetFilePath() const;
-            virtual const std::string GetFileName() const;
+            virtual const std::experimental::filesystem::path GetFilePath() const;
+            virtual const std::string GetFileName() const { return this->GetFilePath().filename().u8string(); }
             virtual const std::string GetID() const;
             virtual const std::string GetName() const;
             virtual const std::string GetAuthor() const;
@@ -161,16 +169,16 @@ namespace loader {
 
         private:
             AddonState state = AddonState::UnloadedState;
-            std::string filePath;
+            std::experimental::filesystem::path filePath;
             std::string fileName;
 
             TimeDuration durationLoad;
 
-            UINT sdkVersion;
-            IDirect3D9* d3d9;
-            IDirect3D9Ex* d3d9Ex;
-            IDirect3DDevice9* d3ddevice9;
-            HWND focusWindow;
+            UINT sdkVersion = 0;
+            IDirect3D9* d3d9 = nullptr;
+            IDirect3D9Ex* d3d9Ex = nullptr;
+            IDirect3DDevice9* d3ddevice9 = nullptr;
+            HWND focusWindow = NULL;
 
             TimeMeasure timeOverall;
             TimeMeasure timeWndProc;

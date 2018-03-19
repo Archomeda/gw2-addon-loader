@@ -5,13 +5,13 @@
 #define LOG_FILE "addons/loader/loader.log"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 
 namespace loader {
 
     shared_ptr<spdlog::logger> logger;
 
-    shared_ptr<spdlog::logger> GetLog() {
+    const shared_ptr<spdlog::logger> GetLog() {
         if (logger) {
             return logger;
         }
@@ -32,7 +32,7 @@ namespace loader {
         return logger;
     }
 
-    string LastErrorToString(DWORD error) {
+    const string LastErrorToString(DWORD error) {
         if (!error) {
             return "";
         }

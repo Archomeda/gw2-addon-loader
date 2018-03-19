@@ -24,7 +24,7 @@
 #include "../utils/encoding.h"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 using namespace loader::addons;
 using namespace loader::updaters;
 using namespace loader::utils;
@@ -213,7 +213,7 @@ namespace loader {
 
 
         void SettingsWindow::RenderTabAddons() {
-            ImGuiStyle style = ImGui::GetStyle();
+            ImGuiStyle& style = ImGui::GetStyle();
            
             vector<Addon*> addonsList;
             for (auto addon : AddonsList) {
@@ -375,7 +375,7 @@ namespace loader {
                         ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 176 - style.ItemSpacing.x - 8); // -8 for the resize grip
                         if (ImGui::Button(ICON_MD_INFO " Details", ImVec2(80, 0))) {
                             AddonInfoWnd->SetAddon(addon);
-                            ShowWindow(AddonInfoWnd);
+                            ShowWindow(AddonInfoWnd.get());
                         }
 
                         // Homepage button
@@ -427,8 +427,8 @@ The author of this library is not associated with ArenaNet nor with any of its p
         void SettingsWindow::RenderTabSettings() {
             ImGui::BeginChild("##Settings", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
             {
-                set<uint_fast8_t> pressedKeys = GetPressedKeyboardKeys();
-                string keysStr = GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind);
+                const set<uint_fast8_t> pressedKeys = GetPressedKeyboardKeys();
+                const string keysStr = GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind);
                 char keysBuff[64];
                 keysStr._Copy_s(keysBuff, sizeof(keysBuff), keysStr.length());
                 keysBuff[keysStr.length()] = 0;
@@ -494,14 +494,14 @@ The author of this library is not associated with ArenaNet nor with any of its p
             }
 
             ImGui::PushItemWidth(-1);
-            string types = sstream.str();
+            const string types = sstream.str();
             ImGui::Combo("##RenderType", &this->selectedStatsType, types.c_str());
 
             if (this->selectedStatsType == 0) {
                 ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryD3D9Processing[0], static_cast<int>(hooks::DurationHistoryD3D9Processing.size()), 0, "Frame render time (ms)", 0, 100, ImVec2(0, 200));
 
                 ImDrawList* draw = ImGui::GetWindowDrawList();
-                ImGuiStyle style = ImGui::GetStyle();
+                ImGuiStyle& style = ImGui::GetStyle();
                 ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
                 float yFps30 = plotRect.Max.y - (plotRect.GetSize().y / 3.0f);
                 float yFps60 = plotRect.Max.y - (plotRect.GetSize().y / 6.0f);
@@ -676,15 +676,15 @@ The author of this library is not associated with ArenaNet nor with any of its p
 
 
         void SettingsWindow::PushTabStyle(int tabIndex) {
-            ImGuiStyle* style = &ImGui::GetStyle();
+            ImGuiStyle& style = ImGui::GetStyle();
             if (this->selectedTab == tabIndex) {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_Button].w));
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, style.Colors[ImGuiCol_Button].w));
             }
             else {
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
             }
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_ButtonHovered].w));
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, style->Colors[ImGuiCol_ButtonActive].w));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, style.Colors[ImGuiCol_ButtonHovered].w));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, style.Colors[ImGuiCol_ButtonActive].w));
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.89f, 0.88f, 0.68f, 1.00f));
             ImGui::PushFont(imgui::FontIconButtons);
         }

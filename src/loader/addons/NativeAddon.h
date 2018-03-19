@@ -22,9 +22,8 @@ namespace loader {
             virtual bool Initialize() override {
                 using namespace std;
                 using namespace loader::utils;
-                wstring filePath = u16(this->GetFilePath());
 
-                HMODULE h = LoadLibrary(filePath.c_str());
+                HMODULE h = LoadLibrary(this->GetFilePath().c_str());
                 if (h == NULL) {
                     this->ChangeState(AddonState::ErroredState);
                     GetLog()->error("Could not initialize native addon {0}: Libray handle is empty", this->GetFileName());
@@ -239,7 +238,7 @@ namespace loader {
             }
 
 
-            virtual const AddonType GetType() const override {
+            virtual AddonType GetType() const override {
                 return AddonType::AddonTypeNative;
             }
 
@@ -989,58 +988,28 @@ namespace loader {
 
 
         private:
-            T addon;
-            HMODULE addonHandle;
-
-            std::string id = "";
-            std::string name = "";
-            std::string author = "";
-            std::string description = "";
-            std::string version = "";
-            std::string homepage = "";
-            IDirect3DTexture9* icon = nullptr;
-            bool iconManaged = false;
-
-            GW2AddonInitialize_t AddonInitialize = nullptr;
-            GW2AddonRelease_t AddonRelease = nullptr;
-
-            GW2AddonLoad_t AddonLoad = nullptr;
-            GW2AddonDrawFrameBeforeGui_t AddonDrawFrameBeforeGui = nullptr;
-            GW2AddonDrawFrameBeforePostProcessing_t AddonDrawFrameBeforePostProcessing = nullptr;
-            GW2AddonDrawFrame_t AddonDrawFrame = nullptr;
-            GW2AddonHandleWndProc_t AddonHandleWndProc = nullptr;
-            GW2AddonOpenSettings_t AddonOpenSettings = nullptr;
-
-            GW2AddonAdvPreBeginScene_t AddonAdvPreBeginScene = nullptr;
-            GW2AddonAdvPostBeginScene_t AddonAdvPostBeginScene = nullptr;
-            GW2AddonAdvPreEndScene_t AddonAdvPreEndScene = nullptr;
-            GW2AddonAdvPostEndScene_t AddonAdvPostEndScene = nullptr;
-            GW2AddonAdvPreClear_t AddonAdvPreClear = nullptr;
-            GW2AddonAdvPostClear_t AddonAdvPostClear = nullptr;
-            GW2AddonAdvPreReset_t AddonAdvPreReset = nullptr;
-            GW2AddonAdvPostReset_t AddonAdvPostReset = nullptr;
-            GW2AddonAdvPrePresent_t AddonAdvPrePresent = nullptr;
-            GW2AddonAdvPostPresent_t AddonAdvPostPresent = nullptr;
-            GW2AddonAdvPreCreateTexture_t AddonAdvPreCreateTexture = nullptr;
-            GW2AddonAdvPostCreateTexture_t AddonAdvPostCreateTexture = nullptr;
-            GW2AddonAdvPreCreateVertexShader_t AddonAdvPreCreateVertexShader = nullptr;
-            GW2AddonAdvPostCreateVertexShader_t AddonAdvPostCreateVertexShader = nullptr;
-            GW2AddonAdvPreCreatePixelShader_t AddonAdvPreCreatePixelShader = nullptr;
-            GW2AddonAdvPostCreatePixelShader_t AddonAdvPostCreatePixelShader = nullptr;
-            GW2AddonAdvPreCreateRenderTarget_t AddonAdvPreCreateRenderTarget = nullptr;
-            GW2AddonAdvPostCreateRenderTarget_t AddonAdvPostCreateRenderTarget = nullptr;
-            GW2AddonAdvPreSetTexture_t AddonAdvPreSetTexture = nullptr;
-            GW2AddonAdvPostSetTexture_t AddonAdvPostSetTexture = nullptr;
-            GW2AddonAdvPreSetVertexShader_t AddonAdvPreSetVertexShader = nullptr;
-            GW2AddonAdvPostSetVertexShader_t AddonAdvPostSetVertexShader = nullptr;
-            GW2AddonAdvPreSetPixelShader_t AddonAdvPreSetPixelShader = nullptr;
-            GW2AddonAdvPostSetPixelShader_t AddonAdvPostSetPixelShader = nullptr;
-            GW2AddonAdvPreSetRenderTarget_t AddonAdvPreSetRenderTarget = nullptr;
-            GW2AddonAdvPostSetRenderTarget_t AddonAdvPostSetRenderTarget = nullptr;
-            GW2AddonAdvPreSetRenderState_t AddonAdvPreSetRenderState = nullptr;
-            GW2AddonAdvPostSetRenderState_t AddonAdvPostSetRenderState = nullptr;
-            GW2AddonAdvPreDrawIndexedPrimitive_t AddonAdvPreDrawIndexedPrimitive = nullptr;
-            GW2AddonAdvPostDrawIndexedPrimitive_t AddonAdvPostDrawIndexedPrimitive = nullptr;
+            template<typename R>
+            R callFunc(const std::string& funcName, const std::function<R(void)>& func) {
+                try {
+                    return func();
+                }
+                catch (const std::exception& ex) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonFuncException(funcName, ex.what());
+                }
+                catch (const char* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonFuncException(funcName, err);
+                }
+                catch (const wchar_t* err) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonFuncException(funcName, err);
+                }
+                catch (...) {
+                    this->ChangeState(AddonState::ErroredState);
+                    throw exceptions::AddonFuncException(funcName, "Unknown error");
+                }
+            }
 
             bool InitializeV1(GW2AddonAPIBase* base) {
                 GW2AddonAPIV1* v1 = reinterpret_cast<GW2AddonAPIV1*>(base);
@@ -1104,30 +1073,58 @@ namespace loader {
                 return true;
             }
 
+            T addon;
+            HMODULE addonHandle;
 
-            template<typename R>
-            R callFunc(const std::string& funcName, const std::function<R(void)>& func) {
-                try {
-                    return func();
-                }
-                catch (const std::exception& ex) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonFuncException(funcName, ex.what());
-                }
-                catch (const char* err) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonFuncException(funcName, err);
-                }
-                catch (const wchar_t* err) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonFuncException(funcName, err);
-                }
-                catch (...) {
-                    this->ChangeState(AddonState::ErroredState);
-                    throw exceptions::AddonFuncException(funcName, "Unknown error");
-                }
-            }
+            std::string id = "";
+            std::string name = "";
+            std::string author = "";
+            std::string description = "";
+            std::string version = "";
+            std::string homepage = "";
+            IDirect3DTexture9* icon = nullptr;
+            bool iconManaged = false;
 
+            GW2AddonInitialize_t AddonInitialize = nullptr;
+            GW2AddonRelease_t AddonRelease = nullptr;
+
+            GW2AddonLoad_t AddonLoad = nullptr;
+            GW2AddonDrawFrameBeforeGui_t AddonDrawFrameBeforeGui = nullptr;
+            GW2AddonDrawFrameBeforePostProcessing_t AddonDrawFrameBeforePostProcessing = nullptr;
+            GW2AddonDrawFrame_t AddonDrawFrame = nullptr;
+            GW2AddonHandleWndProc_t AddonHandleWndProc = nullptr;
+            GW2AddonOpenSettings_t AddonOpenSettings = nullptr;
+
+            GW2AddonAdvPreBeginScene_t AddonAdvPreBeginScene = nullptr;
+            GW2AddonAdvPostBeginScene_t AddonAdvPostBeginScene = nullptr;
+            GW2AddonAdvPreEndScene_t AddonAdvPreEndScene = nullptr;
+            GW2AddonAdvPostEndScene_t AddonAdvPostEndScene = nullptr;
+            GW2AddonAdvPreClear_t AddonAdvPreClear = nullptr;
+            GW2AddonAdvPostClear_t AddonAdvPostClear = nullptr;
+            GW2AddonAdvPreReset_t AddonAdvPreReset = nullptr;
+            GW2AddonAdvPostReset_t AddonAdvPostReset = nullptr;
+            GW2AddonAdvPrePresent_t AddonAdvPrePresent = nullptr;
+            GW2AddonAdvPostPresent_t AddonAdvPostPresent = nullptr;
+            GW2AddonAdvPreCreateTexture_t AddonAdvPreCreateTexture = nullptr;
+            GW2AddonAdvPostCreateTexture_t AddonAdvPostCreateTexture = nullptr;
+            GW2AddonAdvPreCreateVertexShader_t AddonAdvPreCreateVertexShader = nullptr;
+            GW2AddonAdvPostCreateVertexShader_t AddonAdvPostCreateVertexShader = nullptr;
+            GW2AddonAdvPreCreatePixelShader_t AddonAdvPreCreatePixelShader = nullptr;
+            GW2AddonAdvPostCreatePixelShader_t AddonAdvPostCreatePixelShader = nullptr;
+            GW2AddonAdvPreCreateRenderTarget_t AddonAdvPreCreateRenderTarget = nullptr;
+            GW2AddonAdvPostCreateRenderTarget_t AddonAdvPostCreateRenderTarget = nullptr;
+            GW2AddonAdvPreSetTexture_t AddonAdvPreSetTexture = nullptr;
+            GW2AddonAdvPostSetTexture_t AddonAdvPostSetTexture = nullptr;
+            GW2AddonAdvPreSetVertexShader_t AddonAdvPreSetVertexShader = nullptr;
+            GW2AddonAdvPostSetVertexShader_t AddonAdvPostSetVertexShader = nullptr;
+            GW2AddonAdvPreSetPixelShader_t AddonAdvPreSetPixelShader = nullptr;
+            GW2AddonAdvPostSetPixelShader_t AddonAdvPostSetPixelShader = nullptr;
+            GW2AddonAdvPreSetRenderTarget_t AddonAdvPreSetRenderTarget = nullptr;
+            GW2AddonAdvPostSetRenderTarget_t AddonAdvPostSetRenderTarget = nullptr;
+            GW2AddonAdvPreSetRenderState_t AddonAdvPreSetRenderState = nullptr;
+            GW2AddonAdvPostSetRenderState_t AddonAdvPostSetRenderState = nullptr;
+            GW2AddonAdvPreDrawIndexedPrimitive_t AddonAdvPreDrawIndexedPrimitive = nullptr;
+            GW2AddonAdvPostDrawIndexedPrimitive_t AddonAdvPostDrawIndexedPrimitive = nullptr;
         };
 
     }

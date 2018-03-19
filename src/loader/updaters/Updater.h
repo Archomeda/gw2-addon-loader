@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <future>
 #include <memory>
 #include <string>
@@ -15,14 +16,13 @@ namespace loader {
             std::string downloadUrl;
         };
 
-        typedef void(*UpdateCheckCallback_t)(const Updater* const updater, const VersionInfo version);
+        typedef void(UpdateCheckCallback_t)(const Updater* const updater, const VersionInfo version);
 
         class Updater {
         public:
-            void SetCheckCallback(UpdateCheckCallback_t callback) { this->checkCallback = callback; }
+            void SetCheckCallback(std::function<UpdateCheckCallback_t> callback) { this->checkCallback = callback; }
 
             void CheckForUpdateAsync();
-            std::unique_ptr<Downloader> GetUpdateDownloader() const;
 
             const VersionInfo GetLatestVersion() const { return this->latestVersion; }
 
@@ -32,8 +32,7 @@ namespace loader {
         private:
             std::future<void> updateTask;
             VersionInfo latestVersion;
-            UpdateCheckCallback_t checkCallback;
-
+            std::function<UpdateCheckCallback_t> checkCallback;
         };
 
     }

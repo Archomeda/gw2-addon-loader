@@ -12,7 +12,7 @@
 #include "../utils/encoding.h"
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 using namespace loader::utils;
 
 namespace loader {
@@ -49,15 +49,13 @@ namespace loader {
         }
 
 
-        Addon::Addon(const std::string& fullFileName) {
-            this->filePath = fullFileName;
-            this->fileName = u8path(fullFileName).filename().u8string();
+        unique_ptr<Addon> Addon::GetAddon(const string& filePath) {
+            return Addon::GetAddon(u8path(filePath));
         }
-
-        unique_ptr<Addon> Addon::GetAddon(const std::string& filePath) {
+       
+        unique_ptr<Addon> Addon::GetAddon(const path& filePath) {
             unique_ptr<Addon> addon = make_unique<Addon>(filePath);
-            wstring wFilePath = u16(filePath);
-            HMODULE hAddon = LoadLibraryEx(wFilePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
+            HMODULE hAddon = LoadLibraryEx(filePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
 
             if (GetProcAddress(hAddon, GW2ADDON_DLL_Initialize) != nullptr) {
                 // Our addon is native
@@ -150,7 +148,7 @@ namespace loader {
         }
 
 
-        const AddonType Addon::GetType() const {
+        AddonType Addon::GetType() const {
             if (this->HasBaseAddon()) {
                 return this->GetConstBaseAddon()->GetType();
             }
@@ -222,18 +220,11 @@ namespace loader {
         }
 
 
-        const string Addon::GetFilePath() const {
+        const path Addon::GetFilePath() const {
             if (this->HasBaseAddon()) {
                 return this->GetConstBaseAddon()->GetFilePath();
             }
             return this->filePath;
-        }
-
-        const string Addon::GetFileName() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetFileName();
-            }
-            return this->fileName;
         }
 
         const string Addon::GetID() const {

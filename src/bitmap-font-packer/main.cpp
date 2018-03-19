@@ -18,7 +18,7 @@ USAGE:
 #include <vector>
 
 using namespace std;
-using namespace std::experimental::filesystem::v1;
+using namespace std::experimental::filesystem;
 
 #pragma pack(push, 1)
 struct BitmapFontInfo {
