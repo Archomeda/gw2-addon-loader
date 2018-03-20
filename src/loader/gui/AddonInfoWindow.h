@@ -16,6 +16,6 @@ namespace loader {
         protected:
             const addons::Addon* addon = nullptr;
         };
-    
+
     }
 }

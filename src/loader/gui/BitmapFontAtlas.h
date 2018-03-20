@@ -51,7 +51,7 @@ namespace loader {
             void Clear();
 
             std::vector<ImFont*> SetBitmapFontFromMemory(const unsigned char* fontData, int fontSize);
-            
+
             bool Build();
             using ImFontAtlas::SetTexID;
 

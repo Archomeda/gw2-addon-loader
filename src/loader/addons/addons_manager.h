@@ -2,6 +2,7 @@
 #include "../windows.h"
 #include <d3d9.h>
 #include <memory>
+#include <set>
 #include <vector>
 #include "Addon.h"
 
@@ -9,49 +10,53 @@ namespace loader {
     namespace addons {
 
         extern std::vector<std::shared_ptr<Addon>> AddonsList;
-
-        // These counters are mostly here for increasing debug performance.
-        // Every hook is called many, many times. If all the addons were iterated for every hook call,
-        // there's a lot of unnecessary jumps that decreases performance significantly. Especially in the debug build.
-        struct AddonHookCounts {
-            int DrawFrameBeforePostProcessing = 0;
-            int DrawFrameBeforeGui = 0;
-            int DrawFrame = 0;
-
-            int AdvPreBeginScene = 0;
-            int AdvPostBeginScene = 0;
-            int AdvPreEndScene = 0;
-            int AdvPostEndScene = 0;
-            int AdvPreClear = 0;
-            int AdvPostClear = 0;
-            int AdvPreReset = 0;
-            int AdvPostReset = 0;
-            int AdvPrePresent = 0;
-            int AdvPostPresent = 0;
-            int AdvPreCreateTexture = 0;
-            int AdvPostCreateTexture = 0;
-            int AdvPreCreateVertexShader = 0;
-            int AdvPostCreateVertexShader = 0;
-            int AdvPreCreatePixelShader = 0;
-            int AdvPostCreatePixelShader = 0;
-            int AdvPreCreateRenderTarget = 0;
-            int AdvPostCreateRenderTarget = 0;
-            int AdvPreSetTexture = 0;
-            int AdvPostSetTexture = 0;
-            int AdvPreSetVertexShader = 0;
-            int AdvPostSetVertexShader = 0;
-            int AdvPreSetPixelShader = 0;
-            int AdvPostSetPixelShader = 0;
-            int AdvPreSetRenderTarget = 0;
-            int AdvPostSetRenderTarget = 0;
-            int AdvPreSetRenderState = 0;
-            int AdvPostSetRenderState = 0;
-            int AdvPreDrawIndexedPrimitive = 0;
-            int AdvPostDrawIndexedPrimitive = 0;
+        
+        // These are pointers to the addons with enabled hooks.
+        // With this we can improve the performance because these addon functions are called repeatedly every frame.
+        // Especially in the debug build this can cause major performance issues if we would just iterate naively.
+        struct AddonHooks {
+            std::vector<Addon*> HandleWndProc;
+            std::vector<Addon*> DrawFrameBeforePostProcessing;
+            std::vector<Addon*> DrawFrameBeforeGui;
+            std::vector<Addon*> DrawFrame;
+            std::vector<Addon*> AdvPreBeginScene;
+            std::vector<Addon*> AdvPostBeginScene;
+            std::vector<Addon*> AdvPreEndScene;
+            std::vector<Addon*> AdvPostEndScene;
+            std::vector<Addon*> AdvPreClear;
+            std::vector<Addon*> AdvPostClear;
+            std::vector<Addon*> AdvPreReset;
+            std::vector<Addon*> AdvPostReset;
+            std::vector<Addon*> AdvPrePresent;
+            std::vector<Addon*> AdvPostPresent;
+            std::vector<Addon*> AdvPreCreateTexture;
+            std::vector<Addon*> AdvPostCreateTexture;
+            std::vector<Addon*> AdvPreCreateVertexShader;
+            std::vector<Addon*> AdvPostCreateVertexShader;
+            std::vector<Addon*> AdvPreCreatePixelShader;
+            std::vector<Addon*> AdvPostCreatePixelShader;
+            std::vector<Addon*> AdvPreCreateRenderTarget;
+            std::vector<Addon*> AdvPostCreateRenderTarget;
+            std::vector<Addon*> AdvPreSetTexture;
+            std::vector<Addon*> AdvPostSetTexture;
+            std::vector<Addon*> AdvPreSetVertexShader;
+            std::vector<Addon*> AdvPostSetVertexShader;
+            std::vector<Addon*> AdvPreSetPixelShader;
+            std::vector<Addon*> AdvPostSetPixelShader;
+            std::vector<Addon*> AdvPreSetRenderTarget;
+            std::vector<Addon*> AdvPostSetRenderTarget;
+            std::vector<Addon*> AdvPreSetRenderState;
+            std::vector<Addon*> AdvPostSetRenderState;
+            std::vector<Addon*> AdvPreDrawIndexedPrimitive;
+            std::vector<Addon*> AdvPostDrawIndexedPrimitive;
         };
-        extern AddonHookCounts ActiveAddonHookCounts;
+        extern AddonHooks ActiveAddonHooks;
 
         void RefreshAddonList();
+
+        void MoveAddonUp(const Addon* const addon);
+        void MoveAddonDown(const Addon* const addon);
+        void ReorderAddonHooks();
 
         void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9, IDirect3DDevice9* device);
         void UninitializeAddons();
@@ -61,10 +66,10 @@ namespace loader {
         void OnStartFrame(IDirect3DDevice9* device);
         void OnEndFrame(IDirect3DDevice9* device);
 
+        bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
         void DrawFrameBeforePostProcessing(IDirect3DDevice9* device);
         void DrawFrameBeforeGui(IDirect3DDevice9* device);
         void DrawFrame(IDirect3DDevice9* device);
-
         void AdvPreBeginScene(IDirect3DDevice9* device);
         void AdvPostBeginScene(IDirect3DDevice9* device);
         void AdvPreEndScene(IDirect3DDevice9* device);
@@ -95,6 +100,6 @@ namespace loader {
         void AdvPostSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value);
         void AdvPreDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
         void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
-        
+
     }
 }

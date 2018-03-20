@@ -40,7 +40,7 @@ namespace loader {
 
         private:
             bool HookPresentCallback(void* callback);
-            
+
             static std::map<HMODULE, ChainHookType> knownHooks;
 
             ChainHookType type = ChainHookType::NoHookType;

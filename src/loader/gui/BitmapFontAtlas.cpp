@@ -26,7 +26,7 @@ namespace loader {
 
 
         void BitmapFontAtlas::ClearTexData() {
-            
+
         }
 
         void BitmapFontAtlas::ClearInputData() {
@@ -143,7 +143,7 @@ namespace loader {
 
                 pos += atlasFont->kerningCount * sizeof(AtlasKerning);
             }
-            
+
             for (int i = 0; i < this->Fonts.Size; ++i) {
                 this->Fonts[i]->BuildLookupTable();
             }

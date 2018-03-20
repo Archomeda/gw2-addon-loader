@@ -5,7 +5,7 @@
 #include <string>
 
 namespace loader {
-    
+
     const std::shared_ptr<spdlog::logger> GetLog();
     const std::string LastErrorToString(DWORD error);
 

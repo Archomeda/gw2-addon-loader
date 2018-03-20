@@ -18,7 +18,7 @@ namespace loader {
 
         private:
             bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<addons::Addon*> addons, const ImVec2& listBoxSize, float listItemHeight);
-            void ImGuiAddonStatLine(const char* label, const TimeMeasure& measure, bool calls);
+            void ImGuiAddonStatLine(const char* label, const addons::AddonMetric& measure, bool calls);
 
             void RenderTabAddons();
             void RenderTabInfo();
@@ -26,13 +26,11 @@ namespace loader {
             void RenderTabStats();
             void RenderTabUpdate();
 
-            void MoveAddonPositionUp(const addons::Addon* const addon);
-            void MoveAddonPositionDown(const addons::Addon* const addon);
             void SelectAddon(const addons::Addon* const addon);
 
             void PushTabStyle(int tabIndex);
             void PopTabStyle(int tabIndex);
-            
+
             int selectedAddon = -1;
             int selectedTab = 0;
             int selectedStatsType = 0;
@@ -47,6 +45,6 @@ namespace loader {
             std::set<uint_fast8_t> windowKeybind;
             bool showDebugFeatures;
         };
-    
+
     }
 }

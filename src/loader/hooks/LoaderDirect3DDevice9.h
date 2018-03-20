@@ -13,7 +13,7 @@ namespace loader {
         typedef void(*PostReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
         typedef void(*PrePresent_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
         typedef HRESULT(*Present_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-        
+
         extern PrePresentPostProcessing_t PrePresentPostProcessingHook;
         extern PrePresentGui_t PrePresentGuiHook;
 

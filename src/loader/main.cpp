@@ -32,7 +32,7 @@ string imGuiConfigFile;
 
 #ifdef _DEBUG
 bool imGuiDemoOpen = false;
-set<uint_fast8_t> imGuiDemoKeybind { VK_SHIFT, VK_MENU, VK_F1 };
+set<uint_fast8_t> imGuiDemoKeybind{ VK_SHIFT, VK_MENU, VK_F1 };
 #endif
 
 
@@ -62,36 +62,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     // Prevent game from receiving input if ImGui requests capture
     switch (msg) {
-        case WM_LBUTTONDOWN:
-        case WM_LBUTTONUP:
-        case WM_RBUTTONDOWN:
-        case WM_RBUTTONUP:
-        case WM_MBUTTONDOWN:
-        case WM_MBUTTONUP:
-        case WM_XBUTTONDOWN:
-        case WM_XBUTTONUP:
-        case WM_MOUSEWHEEL:
-        case WM_LBUTTONDBLCLK:
-        case WM_RBUTTONDBLCLK:
-        case WM_MBUTTONDBLCLK:
-        case WM_XBUTTONDBLCLK:
-            if (io.WantCaptureMouse) {
-                return true;
-            }
-            break;
-        case WM_KEYDOWN:
-        case WM_KEYUP:
-        case WM_SYSKEYDOWN:
-        case WM_SYSKEYUP:
-            if (io.WantCaptureKeyboard) {
-                return true;
-            }
-            break;
-        case WM_CHAR:
-            if (io.WantTextInput) {
-                return true;
-            }
-            break;
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_XBUTTONDOWN:
+    case WM_XBUTTONUP:
+    case WM_MOUSEWHEEL:
+    case WM_LBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+    case WM_XBUTTONDBLCLK:
+        if (io.WantCaptureMouse) {
+            return true;
+        }
+        break;
+    case WM_KEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP:
+        if (io.WantCaptureKeyboard) {
+            return true;
+        }
+        break;
+    case WM_CHAR:
+        if (io.WantTextInput) {
+            return true;
+        }
+        break;
     }
 
     // Make sure to show a decent cursor when ImGui has mouse focus
@@ -102,10 +102,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     }
 
     // Process WndProc to addons
-    for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-        if ((*it)->HandleWndProc(hWnd, msg, wParam, lParam)) {
-            return true;
-        }
+    if (addons::HandleWndProc(hWnd, msg, wParam, lParam)) {
+        return true;
     }
 
     return CallWindowProc(BaseWndProc, hWnd, msg, wParam, lParam);
@@ -130,7 +128,7 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     // Check for updates if needed
     GetLog()->info("Checking for updates");
     updaters::CheckUpdates();
-    
+
     // Initialize addons
     GetLog()->info("Initializing addons");
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
@@ -224,40 +222,40 @@ void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CON
 
 bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
-        case DLL_PROCESS_ATTACH: {
-            GetLog()->info("GW2 Addon Loader attached");
-            LaunchDebugger();
+    case DLL_PROCESS_ATTACH: {
+        GetLog()->info("GW2 Addon Loader attached");
+        LaunchDebugger();
 
-            dllModule = hModule;
-            hooks::InitializeHooks();
-            
-            hooks::PreCreateDeviceHook = &PreCreateDevice;
-            hooks::PostCreateDeviceHook = &PostCreateDevice;
+        dllModule = hModule;
+        hooks::InitializeHooks();
 
-            hooks::PreResetHook = &PreReset;
-            hooks::PostResetHook = &PostReset;
-            hooks::PrePresentHook = &PrePresent;
+        hooks::PreCreateDeviceHook = &PreCreateDevice;
+        hooks::PostCreateDeviceHook = &PostCreateDevice;
 
-            // Make ourselves known by setting an environment variable
-            // This makes it easy for addon developers to detect early if we are loaded by GW2 or not
-            SetEnvironmentVariable(L"_IsGW2AddonLoaderActive", L"1");
+        hooks::PreResetHook = &PreReset;
+        hooks::PostResetHook = &PostReset;
+        hooks::PrePresentHook = &PrePresent;
 
-            AppConfig.Initialize();
-            addons::RefreshAddonList();
-        }
+        // Make ourselves known by setting an environment variable
+        // This makes it easy for addon developers to detect early if we are loaded by GW2 or not
+        SetEnvironmentVariable(L"_IsGW2AddonLoaderActive", L"1");
+
+        AppConfig.Initialize();
+        addons::RefreshAddonList();
         break;
-        case DLL_PROCESS_DETACH: {
-            GetLog()->info("Stopping MumbleLink loop");
-            hooks::Gw2MumbleLink.Stop();
-            gui::imgui::Shutdown();
-            GetLog()->info("Unloading and uninitializing addons");
-            addons::UnloadAddons();
-            addons::UninitializeAddons();
-            GetLog()->info("Uninitializing hooks");
-            hooks::UninitializeHooks();
-            GetLog()->info("GW2 Addon Loader detached");
-        }
+    }
+    case DLL_PROCESS_DETACH: {
+        GetLog()->info("Stopping MumbleLink loop");
+        hooks::Gw2MumbleLink.Stop();
+        gui::imgui::Shutdown();
+        GetLog()->info("Unloading and uninitializing addons");
+        addons::UnloadAddons();
+        addons::UninitializeAddons();
+        GetLog()->info("Uninitializing hooks");
+        hooks::UninitializeHooks();
+        GetLog()->info("GW2 Addon Loader detached");
         break;
+    }
     }
     return true;
 }

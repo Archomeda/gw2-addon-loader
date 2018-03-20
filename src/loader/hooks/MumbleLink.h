@@ -65,7 +65,7 @@ namespace loader {
 
         private:
             void Loop();
-            
+
             bool active = false;
             HANDLE hMap = NULL;
             std::thread loopThread;

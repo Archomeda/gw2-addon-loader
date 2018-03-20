@@ -186,7 +186,7 @@ namespace loader {
             return value_changed;
         }
 
-        void SettingsWindow::ImGuiAddonStatLine(const char* label, const TimeMeasure& measure, bool calls = true) {
+        void SettingsWindow::ImGuiAddonStatLine(const char* label, const AddonMetric& measure, bool calls = true) {
             ImGui::TextUnformatted(label);
             ImGui::NextColumn();
             if (measure.GetLast() >= 500) {
@@ -214,7 +214,7 @@ namespace loader {
 
         void SettingsWindow::RenderTabAddons() {
             ImGuiStyle& style = ImGui::GetStyle();
-           
+
             vector<Addon*> addonsList;
             for (auto addon : AddonsList) {
                 if (AppConfig.GetShowUnsupportedAddons() || addon->SupportsLoading()) {
@@ -244,7 +244,7 @@ namespace loader {
                     }
                 }
                 ImGui::EndChild();
-                
+
                 if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size())) {
                     // Set the selected addon after the listbox, in case the listbox selection has changed in this frame
                     addon = addonsList[this->selectedAddon];
@@ -254,7 +254,7 @@ namespace loader {
                 ImVec2 buttonSize((200 - style.ItemSpacing.x) / 2, 0);
                 if (this->selectedAddon > 0 && this->selectedAddon < static_cast<int>(addonsList.size()) && addon->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_UPWARD, buttonSize)) {
-                        this->MoveAddonPositionUp(addon);
+                        MoveAddonUp(addon);
                         this->SelectAddon(addon);
                     }
                     if (ImGui::IsItemHovered()) {
@@ -267,7 +267,7 @@ namespace loader {
                 ImGui::SameLine();
                 if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size()) - 1 && addonsList.at(this->selectedAddon + 1)->SupportsLoading()) {
                     if (ImGui::Button(ICON_MD_ARROW_DOWNWARD, buttonSize)) {
-                        this->MoveAddonPositionDown(addon);
+                        MoveAddonDown(addon);
                         this->SelectAddon(addon);
                     }
                     if (ImGui::IsItemHovered()) {
@@ -470,7 +470,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
                 }
             }
             ImGui::EndChild();
-         
+
             ImGui::BeginChild("##Metadata");
             {
                 ImGui::Text("Addon Loader version: " VERSION);
@@ -540,17 +540,17 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Load");
                     ImGui::NextColumn();
-                    ImGui::Text("%.0f µs", selectedAddon->GetLoadDuration());
+                    ImGui::Text("%.0f µs", selectedAddon->GetMetricLoad().GetLast());
                     ImGui::NextColumn();
                     ImGui::NextColumn();
                     ImGui::NextColumn();
                     ImGui::NextColumn();
-                    this->ImGuiAddonStatLine("WndProc", selectedAddon->GetTimeWndProc());
+                    if (selectedAddon->HandleWndProc) this->ImGuiAddonStatLine("WndProc", selectedAddon->HandleWndProc.GetMetric());
 
                     ImGui::Columns(1);
                 }
                 if (ImGui::CollapsingHeader("Rendering")) {
-                    const auto history = selectedAddon->GetTimeOverall().GetMovingHistory();
+                    const auto history = selectedAddon->GetMetricOverall().GetMovingHistory();
                     ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Addon frame time (µs)", 0, 10000, ImVec2(0, 100));
                     ImGui::Columns(5);
                     ImGui::SetColumnWidth(0, 180);
@@ -564,45 +564,45 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     ImGui::TextUnformatted("Calls");
                     ImGui::NextColumn();
 
-                    this->ImGuiAddonStatLine("Total", selectedAddon->GetTimeOverall(), false);
-                    this->ImGuiAddonStatLine("DrawBeforePostProcessing", selectedAddon->GetTimeDrawFrameBeforePostProcessing());
-                    this->ImGuiAddonStatLine("DrawBeforeGui", selectedAddon->GetTimeDrawFrameBeforeGui());
-                    this->ImGuiAddonStatLine("Draw", selectedAddon->GetTimeDrawFrame());
-                    this->ImGuiAddonStatLine("AdvPreBeginScene", selectedAddon->GetTimeAdvPreBeginScene());
-                    this->ImGuiAddonStatLine("AdvPostBeginScene", selectedAddon->GetTimeAdvPostBeginScene());
-                    this->ImGuiAddonStatLine("AdvPreEndScene", selectedAddon->GetTimeAdvPreEndScene());
-                    this->ImGuiAddonStatLine("AdvPostEndScene", selectedAddon->GetTimeAdvPostEndScene());
-                    this->ImGuiAddonStatLine("AdvPreClear", selectedAddon->GetTimeAdvPreClear());
-                    this->ImGuiAddonStatLine("AdvPostClear", selectedAddon->GetTimeAdvPostClear());
-                    this->ImGuiAddonStatLine("AdvPreReset", selectedAddon->GetTimeAdvPreReset());
-                    this->ImGuiAddonStatLine("AdvPostReset", selectedAddon->GetTimeAdvPostReset());
-                    this->ImGuiAddonStatLine("AdvPrePresent", selectedAddon->GetTimeAdvPrePresent());
-                    this->ImGuiAddonStatLine("AdvPostPresent", selectedAddon->GetTimeAdvPostPresent());
-                    this->ImGuiAddonStatLine("AdvPreCreateTexture", selectedAddon->GetTimeAdvPreCreateTexture());
-                    this->ImGuiAddonStatLine("AdvPostCreateTexture", selectedAddon->GetTimeAdvPostCreateTexture());
-                    this->ImGuiAddonStatLine("AdvPreCreateVertexShader", selectedAddon->GetTimeAdvPreCreateVertexShader());
-                    this->ImGuiAddonStatLine("AdvPostCreateVertexShader", selectedAddon->GetTimeAdvPostCreateVertexShader());
-                    this->ImGuiAddonStatLine("AdvPreCreatePixelShader", selectedAddon->GetTimeAdvPreCreatePixelShader());
-                    this->ImGuiAddonStatLine("AdvPostCreatePixelShader", selectedAddon->GetTimeAdvPostCreatePixelShader());
-                    this->ImGuiAddonStatLine("AdvPreCreateRenderTarget", selectedAddon->GetTimeAdvPreCreateRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPostCreateRenderTarget", selectedAddon->GetTimeAdvPostCreateRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPreSetTexture", selectedAddon->GetTimeAdvPreSetTexture());
-                    this->ImGuiAddonStatLine("AdvPostSetTexture", selectedAddon->GetTimeAdvPostSetTexture());
-                    this->ImGuiAddonStatLine("AdvPreSetVertexShader", selectedAddon->GetTimeAdvPreSetVertexShader());
-                    this->ImGuiAddonStatLine("AdvPostSetVertexShader", selectedAddon->GetTimeAdvPostSetVertexShader());
-                    this->ImGuiAddonStatLine("AdvPreSetPixelShader", selectedAddon->GetTimeAdvPreSetPixelShader());
-                    this->ImGuiAddonStatLine("AdvPostSetPixelShader", selectedAddon->GetTimeAdvPostSetPixelShader());
-                    this->ImGuiAddonStatLine("AdvPreSetRenderTarget", selectedAddon->GetTimeAdvPreSetRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPostSetRenderTarget", selectedAddon->GetTimeAdvPostSetRenderTarget());
-                    this->ImGuiAddonStatLine("AdvPreSetRenderState", selectedAddon->GetTimeAdvPreSetRenderState());
-                    this->ImGuiAddonStatLine("AdvPostSetRenderState", selectedAddon->GetTimeAdvPostSetRenderState());
-                    this->ImGuiAddonStatLine("AdvPreDrawIndexedPrimitive", selectedAddon->GetTimeAdvPreDrawIndexedPrimitive());
-                    this->ImGuiAddonStatLine("AdvPostDrawIndexedPrimitive", selectedAddon->GetTimeAdvPostDrawIndexedPrimitive());
-                   
+                    this->ImGuiAddonStatLine("Total", selectedAddon->GetMetricOverall(), false);
+                    if (selectedAddon->DrawFrameBeforePostProcessing) this->ImGuiAddonStatLine("DrawBeforePostProcessing", selectedAddon->DrawFrameBeforePostProcessing.GetMetric());
+                    if (selectedAddon->DrawFrameBeforeGui) this->ImGuiAddonStatLine("DrawBeforeGui", selectedAddon->DrawFrameBeforeGui.GetMetric());
+                    if (selectedAddon->DrawFrame) this->ImGuiAddonStatLine("Draw", selectedAddon->DrawFrame.GetMetric());
+                    if (selectedAddon->AdvPreBeginScene) this->ImGuiAddonStatLine("AdvPreBeginScene", selectedAddon->AdvPreBeginScene.GetMetric());
+                    if (selectedAddon->AdvPostBeginScene) this->ImGuiAddonStatLine("AdvPostBeginScene", selectedAddon->AdvPostBeginScene.GetMetric());
+                    if (selectedAddon->AdvPreEndScene) this->ImGuiAddonStatLine("AdvPreEndScene", selectedAddon->AdvPreEndScene.GetMetric());
+                    if (selectedAddon->AdvPostEndScene) this->ImGuiAddonStatLine("AdvPostEndScene", selectedAddon->AdvPostEndScene.GetMetric());
+                    if (selectedAddon->AdvPreClear) this->ImGuiAddonStatLine("AdvPreClear", selectedAddon->AdvPreClear.GetMetric());
+                    if (selectedAddon->AdvPostClear) this->ImGuiAddonStatLine("AdvPostClear", selectedAddon->AdvPostClear.GetMetric());
+                    if (selectedAddon->AdvPreReset) this->ImGuiAddonStatLine("AdvPreReset", selectedAddon->AdvPreReset.GetMetric());
+                    if (selectedAddon->AdvPostReset) this->ImGuiAddonStatLine("AdvPostReset", selectedAddon->AdvPostReset.GetMetric());
+                    if (selectedAddon->AdvPrePresent) this->ImGuiAddonStatLine("AdvPrePresent", selectedAddon->AdvPrePresent.GetMetric());
+                    if (selectedAddon->AdvPostPresent) this->ImGuiAddonStatLine("AdvPostPresent", selectedAddon->AdvPostPresent.GetMetric());
+                    if (selectedAddon->AdvPreCreateTexture) this->ImGuiAddonStatLine("AdvPreCreateTexture", selectedAddon->AdvPreCreateTexture.GetMetric());
+                    if (selectedAddon->AdvPostCreateTexture) this->ImGuiAddonStatLine("AdvPostCreateTexture", selectedAddon->AdvPostCreateTexture.GetMetric());
+                    if (selectedAddon->AdvPreCreateVertexShader) this->ImGuiAddonStatLine("AdvPreCreateVertexShader", selectedAddon->AdvPreCreateVertexShader.GetMetric());
+                    if (selectedAddon->AdvPostCreateVertexShader) this->ImGuiAddonStatLine("AdvPostCreateVertexShader", selectedAddon->AdvPostCreateVertexShader.GetMetric());
+                    if (selectedAddon->AdvPreCreatePixelShader) this->ImGuiAddonStatLine("AdvPreCreatePixelShader", selectedAddon->AdvPreCreatePixelShader.GetMetric());
+                    if (selectedAddon->AdvPostCreatePixelShader) this->ImGuiAddonStatLine("AdvPostCreatePixelShader", selectedAddon->AdvPostCreatePixelShader.GetMetric());
+                    if (selectedAddon->AdvPreCreateRenderTarget) this->ImGuiAddonStatLine("AdvPreCreateRenderTarget", selectedAddon->AdvPreCreateRenderTarget.GetMetric());
+                    if (selectedAddon->AdvPostCreateRenderTarget) this->ImGuiAddonStatLine("AdvPostCreateRenderTarget", selectedAddon->AdvPostCreateRenderTarget.GetMetric());
+                    if (selectedAddon->AdvPreSetTexture) this->ImGuiAddonStatLine("AdvPreSetTexture", selectedAddon->AdvPreSetTexture.GetMetric());
+                    if (selectedAddon->AdvPostSetTexture) this->ImGuiAddonStatLine("AdvPostSetTexture", selectedAddon->AdvPostSetTexture.GetMetric());
+                    if (selectedAddon->AdvPreSetVertexShader) this->ImGuiAddonStatLine("AdvPreSetVertexShader", selectedAddon->AdvPreSetVertexShader.GetMetric());
+                    if (selectedAddon->AdvPostSetVertexShader) this->ImGuiAddonStatLine("AdvPostSetVertexShader", selectedAddon->AdvPostSetVertexShader.GetMetric());
+                    if (selectedAddon->AdvPreSetPixelShader) this->ImGuiAddonStatLine("AdvPreSetPixelShader", selectedAddon->AdvPreSetPixelShader.GetMetric());
+                    if (selectedAddon->AdvPostSetPixelShader) this->ImGuiAddonStatLine("AdvPostSetPixelShader", selectedAddon->AdvPostSetPixelShader.GetMetric());
+                    if (selectedAddon->AdvPreSetRenderTarget) this->ImGuiAddonStatLine("AdvPreSetRenderTarget", selectedAddon->AdvPreSetRenderTarget.GetMetric());
+                    if (selectedAddon->AdvPostSetRenderTarget) this->ImGuiAddonStatLine("AdvPostSetRenderTarget", selectedAddon->AdvPostSetRenderTarget.GetMetric());
+                    if (selectedAddon->AdvPreSetRenderState) this->ImGuiAddonStatLine("AdvPreSetRenderState", selectedAddon->AdvPreSetRenderState.GetMetric());
+                    if (selectedAddon->AdvPostSetRenderState) this->ImGuiAddonStatLine("AdvPostSetRenderState", selectedAddon->AdvPostSetRenderState.GetMetric());
+                    if (selectedAddon->AdvPreDrawIndexedPrimitive) this->ImGuiAddonStatLine("AdvPreDrawIndexedPrimitive", selectedAddon->AdvPreDrawIndexedPrimitive.GetMetric());
+                    if (selectedAddon->AdvPostDrawIndexedPrimitive) this->ImGuiAddonStatLine("AdvPostDrawIndexedPrimitive", selectedAddon->AdvPostDrawIndexedPrimitive.GetMetric());
+
                     ImGui::Columns(1);
                 }
             }
-            
+
             ImGui::PopItemWidth();
         }
 
@@ -633,39 +633,9 @@ The author of this library is not associated with ArenaNet nor with any of its p
         }
 
 
-        void SettingsWindow::MoveAddonPositionUp(const Addon* const addon) {
-            int index = -1;
-            for (auto it = addons::AddonsList.rbegin(); it != addons::AddonsList.rend(); ++it) {
-                if ((*it)->GetID() == addon->GetID()) {
-                    index = static_cast<int>(it - addons::AddonsList.rbegin());
-                }
-                else if (index > -1) {
-                    AppConfig.SetAddonOrder(it->get(), static_cast<int>(addons::AddonsList.size() - (index + 1)));
-                    iter_swap(addons::AddonsList.rbegin() + index, it);
-                    AppConfig.SetAddonOrder(it->get(), static_cast<int>(addons::AddonsList.size() - (index + 2)));
-                    break;
-                }
-            }
-        }
-
-        void SettingsWindow::MoveAddonPositionDown(const Addon* const addon) {
-            int index = -1;
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
-                if ((*it)->GetID() == addon->GetID()) {
-                    index = static_cast<int>(it - addons::AddonsList.begin());
-                }
-                else if (index > -1) {
-                    AppConfig.SetAddonOrder(it->get(), index);
-                    iter_swap(addons::AddonsList.begin() + index, it);
-                    AppConfig.SetAddonOrder(it->get(), index + 1);
-                    break;
-                }
-            }
-        }
-
         void SettingsWindow::SelectAddon(const Addon* const addon) {
             int index = -1;
-            for (auto it = addons::AddonsList.begin(); it != addons::AddonsList.end(); ++it) {
+            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
                 index++;
                 if ((*it)->GetID() == addon->GetID()) {
                     this->selectedAddon = index;

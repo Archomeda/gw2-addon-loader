@@ -4,9 +4,12 @@
 #include <set>
 #include <stdint.h>
 #include <string>
-#include "addons/Addon.h"
 
 namespace loader {
+    namespace addons {
+        class Addon;
+    }
+
     typedef std::chrono::time_point<std::chrono::seconds> timestamp;
 
     class Config {

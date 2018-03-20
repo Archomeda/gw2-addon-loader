@@ -273,7 +273,7 @@ namespace loader {
                     if (msg == WM_MOUSEMOVE) {
                         io.MousePos.x = static_cast<short>(lParam);
                         io.MousePos.y = static_cast<short>(lParam >> 16);
-                    }                    
+                    }
                     return false;
                 case WM_KEYDOWN:
                 case WM_SYSKEYDOWN:

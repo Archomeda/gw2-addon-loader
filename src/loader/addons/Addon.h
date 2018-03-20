@@ -5,8 +5,8 @@
 #include <filesystem>
 #include <memory>
 #include <string>
-#include "../TimeDuration.h"
-#include "../TimeMeasure.h"
+#include "AddonFunc.h"
+#include "AddonMetric.h"
 
 namespace loader {
     namespace addons {
@@ -15,7 +15,7 @@ namespace loader {
             AddonTypeUnknown,
             AddonTypeNative
         };
-        
+
         enum AddonState {
             UnknownState,
             DeactivatedOnRestartState,
@@ -26,19 +26,25 @@ namespace loader {
             LoadingState,
             LoadedState
         };
-        
+
         const std::string AddonTypeToString(AddonType type);
         const std::string AddonStateToString(AddonState state);
 
         class Addon {
         public:
-            Addon() = default;
+            Addon() {
+                this->InitializeAddonFuncs();
+            }
             Addon(const std::string& filePath) :
                 filePath(std::experimental::filesystem::u8path(filePath)),
-                fileName(std::experimental::filesystem::u8path(filePath).filename().u8string()) { }
+                fileName(std::experimental::filesystem::u8path(filePath).filename().u8string()) {
+                this->InitializeAddonFuncs();
+            }
             Addon(const std::experimental::filesystem::path& filePath) :
                 filePath(filePath),
-                fileName(filePath.filename().u8string()) { }
+                fileName(filePath.filename().u8string()) { 
+                this->InitializeAddonFuncs();
+            }
 
             static std::unique_ptr<Addon> GetAddon(const std::string& filePath);
             static std::unique_ptr<Addon> GetAddon(const std::experimental::filesystem::path& filePath);
@@ -61,7 +67,6 @@ namespace loader {
             virtual AddonType GetType() const;
             const std::string GetTypeString() const { return AddonTypeToString(this->GetType()); }
 
-
             UINT GetSdkVersion() const;
             void SetSdkVersion(UINT sdkVersion);
             IDirect3D9* GetD3D9() const;
@@ -81,84 +86,48 @@ namespace loader {
             virtual const std::string GetHomepage() const;
             virtual IDirect3DTexture9* GetIcon() const;
 
-            virtual TimeDuration& GetLoadDuration();
-
             virtual void OpenSettings();
-
-            virtual bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-            virtual void DrawFrameBeforeGui(IDirect3DDevice9* device);
-            virtual void DrawFrameBeforePostProcessing(IDirect3DDevice9* device);
-            virtual void DrawFrame(IDirect3DDevice9* device);
-
-            virtual void AdvPreBeginScene(IDirect3DDevice9* device);
-            virtual void AdvPostBeginScene(IDirect3DDevice9* device);
-            virtual void AdvPreEndScene(IDirect3DDevice9* device);
-            virtual void AdvPostEndScene(IDirect3DDevice9* device);
-            virtual void AdvPreClear(IDirect3DDevice9* device, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
-            virtual void AdvPostClear(IDirect3DDevice9* device, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
-            virtual void AdvPreReset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters);
-            virtual void AdvPostReset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters);
-            virtual void AdvPrePresent(IDirect3DDevice9* device, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-            virtual void AdvPostPresent(IDirect3DDevice9* device, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-            virtual HRESULT AdvPreCreateTexture(IDirect3DDevice9* device, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle);
-            virtual void AdvPostCreateTexture(IDirect3DDevice9* device, IDirect3DTexture9* pTexture, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, HANDLE* pSharedHandle);
-            virtual HRESULT AdvPreCreateVertexShader(IDirect3DDevice9* device, CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader);
-            virtual void AdvPostCreateVertexShader(IDirect3DDevice9* device, IDirect3DVertexShader9* ppShader, CONST DWORD* pFunction);
-            virtual HRESULT AdvPreCreatePixelShader(IDirect3DDevice9* device, CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader);
-            virtual void AdvPostCreatePixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* ppShader, CONST DWORD* pFunction);
-            virtual HRESULT AdvPreCreateRenderTarget(IDirect3DDevice9* device, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle);
-            virtual void AdvPostCreateRenderTarget(IDirect3DDevice9* device, IDirect3DSurface9* ppSurface, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, HANDLE* pSharedHandle);
-            virtual void AdvPreSetTexture(IDirect3DDevice9* device, DWORD Stage, IDirect3DBaseTexture9* pTexture);
-            virtual void AdvPostSetTexture(IDirect3DDevice9* device, DWORD Stage, IDirect3DBaseTexture9* pTexture);
-            virtual void AdvPreSetVertexShader(IDirect3DDevice9* device, IDirect3DVertexShader9* pShader);
-            virtual void AdvPostSetVertexShader(IDirect3DDevice9* device, IDirect3DVertexShader9* pShader);
-            virtual void AdvPreSetPixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* pShader);
-            virtual void AdvPostSetPixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* pShader);
-            virtual void AdvPreSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
-            virtual void AdvPostSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
-            virtual void AdvPreSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value);
-            virtual void AdvPostSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value);
-            virtual void AdvPreDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
-            virtual void AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
 
             virtual void OnStartFrame(IDirect3DDevice9* device);
             virtual void OnEndFrame(IDirect3DDevice9* device);
 
-            TimeMeasure& GetTimeOverall();
-            TimeMeasure& GetTimeWndProc();
-            TimeMeasure& GetTimeDrawFrameBeforeGui();
-            TimeMeasure& GetTimeDrawFrameBeforePostProcessing();
-            TimeMeasure& GetTimeDrawFrame();
-            TimeMeasure& GetTimeAdvPreBeginScene();
-            TimeMeasure& GetTimeAdvPostBeginScene();
-            TimeMeasure& GetTimeAdvPreEndScene();
-            TimeMeasure& GetTimeAdvPostEndScene();
-            TimeMeasure& GetTimeAdvPreClear();
-            TimeMeasure& GetTimeAdvPostClear();
-            TimeMeasure& GetTimeAdvPreReset();
-            TimeMeasure& GetTimeAdvPostReset();
-            TimeMeasure& GetTimeAdvPrePresent();
-            TimeMeasure& GetTimeAdvPostPresent();
-            TimeMeasure& GetTimeAdvPreCreateTexture();
-            TimeMeasure& GetTimeAdvPostCreateTexture();
-            TimeMeasure& GetTimeAdvPreCreateVertexShader();
-            TimeMeasure& GetTimeAdvPostCreateVertexShader();
-            TimeMeasure& GetTimeAdvPreCreatePixelShader();
-            TimeMeasure& GetTimeAdvPostCreatePixelShader();
-            TimeMeasure& GetTimeAdvPreCreateRenderTarget();
-            TimeMeasure& GetTimeAdvPostCreateRenderTarget();
-            TimeMeasure& GetTimeAdvPreSetTexture();
-            TimeMeasure& GetTimeAdvPostSetTexture();
-            TimeMeasure& GetTimeAdvPreSetVertexShader();
-            TimeMeasure& GetTimeAdvPostSetVertexShader();
-            TimeMeasure& GetTimeAdvPreSetPixelShader();
-            TimeMeasure& GetTimeAdvPostSetPixelShader();
-            TimeMeasure& GetTimeAdvPreSetRenderTarget();
-            TimeMeasure& GetTimeAdvPostSetRenderTarget();
-            TimeMeasure& GetTimeAdvPreSetRenderState();
-            TimeMeasure& GetTimeAdvPostSetRenderState();
-            TimeMeasure& GetTimeAdvPreDrawIndexedPrimitive();
-            TimeMeasure& GetTimeAdvPostDrawIndexedPrimitive();
+            AddonMetric& GetMetricLoad();
+            AddonMetric& GetMetricOverall();
+
+            AddonFunc<bool, HWND, UINT, WPARAM, LPARAM> HandleWndProc;
+            AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforeGui;
+            AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforePostProcessing;
+            AddonFunc<void, IDirect3DDevice9*> DrawFrame;
+            AddonFunc<void, IDirect3DDevice9*> AdvPreBeginScene;
+            AddonFunc<void, IDirect3DDevice9*> AdvPostBeginScene;
+            AddonFunc<void, IDirect3DDevice9*> AdvPreEndScene;
+            AddonFunc<void, IDirect3DDevice9*> AdvPostEndScene;
+            AddonFunc<void, IDirect3DDevice9*, DWORD, CONST D3DRECT*, DWORD, D3DCOLOR, float, DWORD> AdvPreClear;
+            AddonFunc<void, IDirect3DDevice9*, DWORD, CONST D3DRECT*, DWORD, D3DCOLOR, float, DWORD> AdvPostClear;
+            AddonFunc<void, IDirect3DDevice9*, D3DPRESENT_PARAMETERS*> AdvPreReset;
+            AddonFunc<void, IDirect3DDevice9*, D3DPRESENT_PARAMETERS*> AdvPostReset;
+            AddonFunc<void, IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*> AdvPrePresent;
+            AddonFunc<void, IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*> AdvPostPresent;
+            AddonFunc<HRESULT, IDirect3DDevice9*, UINT, UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DTexture9**, HANDLE*> AdvPreCreateTexture;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DTexture9*, UINT, UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, HANDLE*> AdvPostCreateTexture;
+            AddonFunc<HRESULT, IDirect3DDevice9*, CONST DWORD*, IDirect3DVertexShader9**> AdvPreCreateVertexShader;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*, CONST DWORD*> AdvPostCreateVertexShader;
+            AddonFunc<HRESULT, IDirect3DDevice9*, CONST DWORD*, IDirect3DPixelShader9**> AdvPreCreatePixelShader;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*, CONST DWORD*> AdvPostCreatePixelShader;
+            AddonFunc<HRESULT, IDirect3DDevice9*, UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, DWORD, BOOL, IDirect3DSurface9**, HANDLE*> AdvPreCreateRenderTarget;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DSurface9*, UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, DWORD, BOOL, HANDLE*> AdvPostCreateRenderTarget;
+            AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DBaseTexture9*> AdvPreSetTexture;
+            AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DBaseTexture9*> AdvPostSetTexture;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*> AdvPreSetVertexShader;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*> AdvPostSetVertexShader;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*> AdvPreSetPixelShader;
+            AddonFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*> AdvPostSetPixelShader;
+            AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DSurface9*> AdvPreSetRenderTarget;
+            AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DSurface9*> AdvPostSetRenderTarget;
+            AddonFunc<void, IDirect3DDevice9*, D3DRENDERSTATETYPE, DWORD> AdvPreSetRenderState;
+            AddonFunc<void, IDirect3DDevice9*, D3DRENDERSTATETYPE, DWORD> AdvPostSetRenderState;
+            AddonFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPreDrawIndexedPrimitive;
+            AddonFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPostDrawIndexedPrimitive;
 
         protected:
             virtual const Addon* GetConstBaseAddon() const { return this; }
@@ -168,11 +137,11 @@ namespace loader {
             void ChangeState(AddonState state);
 
         private:
+            void InitializeAddonFuncs();
+
             AddonState state = AddonState::UnloadedState;
             std::experimental::filesystem::path filePath;
             std::string fileName;
-
-            TimeDuration durationLoad;
 
             UINT sdkVersion = 0;
             IDirect3D9* d3d9 = nullptr;
@@ -180,41 +149,8 @@ namespace loader {
             IDirect3DDevice9* d3ddevice9 = nullptr;
             HWND focusWindow = NULL;
 
-            TimeMeasure timeOverall;
-            TimeMeasure timeWndProc;
-            TimeMeasure timeDrawFrameBeforeGui;
-            TimeMeasure timeDrawFrameBeforePostProcessing;
-            TimeMeasure timeDrawFrame;
-            TimeMeasure timeAdvPreBeginScene;
-            TimeMeasure timeAdvPostBeginScene;
-            TimeMeasure timeAdvPreEndScene;
-            TimeMeasure timeAdvPostEndScene;
-            TimeMeasure timeAdvPreClear;
-            TimeMeasure timeAdvPostClear;
-            TimeMeasure timeAdvPreReset;
-            TimeMeasure timeAdvPostReset;
-            TimeMeasure timeAdvPrePresent;
-            TimeMeasure timeAdvPostPresent;
-            TimeMeasure timeAdvPreCreateTexture;
-            TimeMeasure timeAdvPostCreateTexture;
-            TimeMeasure timeAdvPreCreateVertexShader;
-            TimeMeasure timeAdvPostCreateVertexShader;
-            TimeMeasure timeAdvPreCreatePixelShader;
-            TimeMeasure timeAdvPostCreatePixelShader;
-            TimeMeasure timeAdvPreCreateRenderTarget;
-            TimeMeasure timeAdvPostCreateRenderTarget;
-            TimeMeasure timeAdvPreSetTexture;
-            TimeMeasure timeAdvPostSetTexture;
-            TimeMeasure timeAdvPreSetVertexShader;
-            TimeMeasure timeAdvPostSetVertexShader;
-            TimeMeasure timeAdvPreSetPixelShader;
-            TimeMeasure timeAdvPostSetPixelShader;
-            TimeMeasure timeAdvPreSetRenderTarget;
-            TimeMeasure timeAdvPostSetRenderTarget;
-            TimeMeasure timeAdvPreSetRenderState;
-            TimeMeasure timeAdvPostSetRenderState;
-            TimeMeasure timeAdvPreDrawIndexedPrimitive;
-            TimeMeasure timeAdvPostDrawIndexedPrimitive;
+            AddonMetric metricLoad = AddonMetric(AddonMetricType::SingleMetric);
+            AddonMetric metricOverall;
         };
 
     }

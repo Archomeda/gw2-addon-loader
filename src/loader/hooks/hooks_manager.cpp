@@ -47,7 +47,7 @@ namespace loader {
             Direct3DCreate9Ex_t Direct3DCreate9Ex;
         } SystemD3D9Funcs;
 
-        
+
         void InitializeHooks() {
             GetLog()->debug("loader::hooks::InitializeHooks()");
             // It's unadvised to call LoadLibrary in DllMain, because it can cause a deadlock.

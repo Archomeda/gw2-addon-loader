@@ -6,6 +6,7 @@
 #include <sstream>
 #include "globals.h"
 #include "log.h"
+#include "addons/Addon.h"
 #include "utils/encoding.h"
 #include "utils/file.h"
 
@@ -17,7 +18,7 @@ using namespace loader::utils;
 namespace loader {
 
     Config AppConfig;
-    
+
 
     void Config::Initialize() {
         GetLog()->debug("loader::Config::Initialize()");

@@ -129,7 +129,7 @@ namespace loader {
             isPresentingAddonLoader = true;
 
             bool trackStats = AppConfig.GetShowDebugFeatures();
-            
+
             dev->BeginScene();
             addons::DrawFrame(dev);
 
@@ -355,7 +355,7 @@ namespace loader {
             if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
                 addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
             }
-            
+
             D3DSURFACE_DESC desc;
             if (pRenderTarget->GetDesc(&desc) == D3D_OK) {
                 stateFormat = desc.Format;
@@ -671,7 +671,7 @@ namespace loader {
                     ++PrePresentGuiDone;
                 }
             }
-            
+
             if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
                 addons::AdvPostDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
             }
@@ -913,7 +913,7 @@ namespace loader {
             return this->dev->CreateQuery(Type, ppQuery);
         }
 
-    
+
         HRESULT LoaderDirect3DDevice9Ex::QueryInterface(REFIID riid, void** ppvObj) {
             return this->dev->QueryInterface(riid, ppvObj);
         }

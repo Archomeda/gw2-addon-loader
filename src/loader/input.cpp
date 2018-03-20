@@ -133,7 +133,7 @@ namespace loader {
         });
         return keys;
     }
-    
+
     bool DoKeysContainNonModifiers(const set<uint_fast8_t>& keys) {
         for (auto k : keys) {
             switch (k) {
@@ -178,7 +178,8 @@ namespace loader {
                     GetKeyNameText(code << 16, chr, 8);
                     ss << chr;
                 }
-            } else {
+            }
+            else {
                 if (doneFirst) {
                     ss << L" + ";
                 }

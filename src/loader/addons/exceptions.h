@@ -9,7 +9,7 @@ namespace loader {
 
             class AddonException : public std::runtime_error {
             public:
-                AddonException(const std::string& message) : 
+                AddonException(const std::string& message) :
                     runtime_error(message) { }
                 AddonException(const std::wstring& message) :
                     runtime_error(utils::u8(message)) { }

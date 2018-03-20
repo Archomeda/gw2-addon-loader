@@ -52,7 +52,7 @@ namespace loader {
         unique_ptr<Addon> Addon::GetAddon(const string& filePath) {
             return Addon::GetAddon(u8path(filePath));
         }
-       
+
         unique_ptr<Addon> Addon::GetAddon(const path& filePath) {
             unique_ptr<Addon> addon = make_unique<Addon>(filePath);
             HMODULE hAddon = LoadLibraryEx(filePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
@@ -155,29 +155,22 @@ namespace loader {
             return AddonType::AddonTypeUnknown;
         }
 
-        TimeDuration& Addon::GetLoadDuration() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetLoadDuration();
-            }
-            return this->durationLoad;
-        }
 
-
-        UINT Addon::GetSdkVersion() const { 
+        UINT Addon::GetSdkVersion() const {
             if (this->HasBaseAddon()) {
                 return this->GetConstBaseAddon()->GetSdkVersion();
             }
             return this->sdkVersion;
         }
 
-        void Addon::SetSdkVersion(UINT sdkVersion) { 
+        void Addon::SetSdkVersion(UINT sdkVersion) {
             if (this->HasBaseAddon()) {
                 return this->GetBaseAddon()->SetSdkVersion(sdkVersion);
             }
             this->sdkVersion = sdkVersion;
         }
 
-        IDirect3D9* Addon::GetD3D9() const { 
+        IDirect3D9* Addon::GetD3D9() const {
             if (this->HasBaseAddon()) {
                 return this->GetConstBaseAddon()->GetD3D9();
             }
@@ -191,7 +184,7 @@ namespace loader {
             this->d3d9 = d3d9;
         }
 
-        IDirect3DDevice9* Addon::GetD3DDevice9() const { 
+        IDirect3DDevice9* Addon::GetD3DDevice9() const {
             if (this->HasBaseAddon()) {
                 return this->GetConstBaseAddon()->GetD3DDevice9();
             }
@@ -284,547 +277,129 @@ namespace loader {
         }
 
 
-        bool Addon::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->HandleWndProc(hWnd, msg, wParam, lParam);
-            }
-            return false;
-        }
-
-        void Addon::DrawFrameBeforeGui(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->DrawFrameBeforeGui(device);
-            }
-        }
-
-        void Addon::DrawFrameBeforePostProcessing(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->DrawFrameBeforePostProcessing(device);
-            }
-        }
-
-        void Addon::DrawFrame(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->DrawFrame(device);
-            }
-        }
-
-
-        void Addon::AdvPreBeginScene(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreBeginScene(device);
-            }
-        }
-
-        void Addon::AdvPostBeginScene(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostBeginScene(device);
-            }
-        }
-
-        void Addon::AdvPreEndScene(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreEndScene(device);
-            }
-        }
-
-        void Addon::AdvPostEndScene(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostEndScene(device);
-            }
-        }
-
-        void Addon::AdvPreClear(IDirect3DDevice9* device, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreClear(device, Count, pRects, Flags, Color, Z, Stencil);
-            }
-        }
-
-        void Addon::AdvPostClear(IDirect3DDevice9* device, DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostClear(device, Count, pRects, Flags, Color, Z, Stencil);
-            }
-        }
-
-        void Addon::AdvPreReset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreReset(device, pPresentationParameters);
-            }
-        }
-
-        void Addon::AdvPostReset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostReset(device, pPresentationParameters);
-            }
-        }
-
-        void Addon::AdvPrePresent(IDirect3DDevice9* device, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPrePresent(device, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-            }
-        }
-
-        void Addon::AdvPostPresent(IDirect3DDevice9* device, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostPresent(device, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-            }
-        }
-
-        HRESULT Addon::AdvPreCreateTexture(IDirect3DDevice9* device, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreCreateTexture(device, Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
-            }
-            return D3D_OK;
-        }
-
-        void Addon::AdvPostCreateTexture(IDirect3DDevice9* device, IDirect3DTexture9* pTexture, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, HANDLE* pSharedHandle) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostCreateTexture(device, pTexture, Width, Height, Levels, Usage, Format, Pool, pSharedHandle);
-            }
-        }
-
-        HRESULT Addon::AdvPreCreateVertexShader(IDirect3DDevice9* device, CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreCreateVertexShader(device, pFunction, ppShader);
-            }
-            return D3D_OK;
-        }
-
-        void Addon::AdvPostCreateVertexShader(IDirect3DDevice9* device, IDirect3DVertexShader9* ppShader, CONST DWORD* pFunction) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostCreateVertexShader(device, ppShader, pFunction);
-            }
-        }
-
-        HRESULT Addon::AdvPreCreatePixelShader(IDirect3DDevice9* device, CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreCreatePixelShader(device, pFunction, ppShader);
-            }
-            return D3D_OK;
-        }
-
-        void Addon::AdvPostCreatePixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* ppShader, CONST DWORD* pFunction) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostCreatePixelShader(device, ppShader, pFunction);
-            }
-        }
-
-        HRESULT Addon::AdvPreCreateRenderTarget(IDirect3DDevice9* device, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle) { 
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreCreateRenderTarget(device, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
-            }
-            return D3D_OK;
-        }
-        
-        void Addon::AdvPostCreateRenderTarget(IDirect3DDevice9* device, IDirect3DSurface9* ppSurface, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, HANDLE* pSharedHandle) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostCreateRenderTarget(device, ppSurface, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, pSharedHandle);
-            }
-        }
-
-        void Addon::AdvPreSetTexture(IDirect3DDevice9* device, DWORD Stage, IDirect3DBaseTexture9* pTexture) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreSetTexture(device, Stage, pTexture);
-            }
-        }
-
-        void Addon::AdvPostSetTexture(IDirect3DDevice9* device, DWORD Stage, IDirect3DBaseTexture9* pTexture) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostSetTexture(device, Stage, pTexture);
-            }
-        }
-
-        void Addon::AdvPreSetVertexShader(IDirect3DDevice9* device, IDirect3DVertexShader9* pShader) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreSetVertexShader(device, pShader);
-            }
-        }
-
-        void Addon::AdvPostSetVertexShader(IDirect3DDevice9* device, IDirect3DVertexShader9* pShader) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostSetVertexShader(device, pShader);
-            }
-        }
-
-        void Addon::AdvPreSetPixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* pShader) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreSetPixelShader(device, pShader);
-            }
-        }
-
-        void Addon::AdvPostSetPixelShader(IDirect3DDevice9* device, IDirect3DPixelShader9* pShader) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostSetPixelShader(device, pShader);
-            }
-        }
-
-        void Addon::AdvPreSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreSetRenderTarget(device, RenderTargetIndex, pRenderTarget);
-            }
-        }
-
-        void Addon::AdvPostSetRenderTarget(IDirect3DDevice9* device, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostSetRenderTarget(device, RenderTargetIndex, pRenderTarget);
-            }
-        }
-
-        void Addon::AdvPreSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreSetRenderState(device, State, Value);
-            }
-        }
-
-        void Addon::AdvPostSetRenderState(IDirect3DDevice9* device, D3DRENDERSTATETYPE State, DWORD Value) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostSetRenderState(device, State, Value);
-            }
-        }
-
-        void Addon::AdvPreDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPreDrawIndexedPrimitive(device, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-            }
-        }
-
-        void Addon::AdvPostDrawIndexedPrimitive(IDirect3DDevice9* device, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->AdvPostDrawIndexedPrimitive(device, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-            }
-        }
-
-
         void Addon::OnStartFrame(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->OnStartFrame(device);
-            }
-
             if (AppConfig.GetShowDebugFeatures()) {
-                this->timeOverall.StartFrame();
-                this->timeDrawFrameBeforeGui.StartFrame();
-                this->timeDrawFrameBeforePostProcessing.StartFrame();
-                this->timeDrawFrame.StartFrame();
-                this->timeAdvPreBeginScene.StartFrame();
-                this->timeAdvPostBeginScene.StartFrame();
-                this->timeAdvPreEndScene.StartFrame();
-                this->timeAdvPostEndScene.StartFrame();
-                this->timeAdvPreClear.StartFrame();
-                this->timeAdvPostClear.StartFrame();
-                this->timeAdvPreReset.StartFrame();
-                this->timeAdvPostReset.StartFrame();
-                this->timeAdvPrePresent.StartFrame();
-                this->timeAdvPostPresent.StartFrame();
-                this->timeAdvPreCreateTexture.StartFrame();
-                this->timeAdvPostCreateTexture.StartFrame();
-                this->timeAdvPreCreateVertexShader.StartFrame();
-                this->timeAdvPostCreateVertexShader.StartFrame();
-                this->timeAdvPreCreatePixelShader.StartFrame();
-                this->timeAdvPostCreatePixelShader.StartFrame();
-                this->timeAdvPreCreateRenderTarget.StartFrame();
-                this->timeAdvPostCreateRenderTarget.StartFrame();
-                this->timeAdvPreSetTexture.StartFrame();
-                this->timeAdvPostSetTexture.StartFrame();
-                this->timeAdvPreSetVertexShader.StartFrame();
-                this->timeAdvPostSetVertexShader.StartFrame();
-                this->timeAdvPreSetPixelShader.StartFrame();
-                this->timeAdvPostSetPixelShader.StartFrame();
-                this->timeAdvPreSetRenderTarget.StartFrame();
-                this->timeAdvPostSetRenderTarget.StartFrame();
-                this->timeAdvPreSetRenderState.StartFrame();
-                this->timeAdvPostSetRenderState.StartFrame();
-                this->timeAdvPreDrawIndexedPrimitive.StartFrame();
-                this->timeAdvPostDrawIndexedPrimitive.StartFrame();
+                this->metricOverall.StartFrame();
+                this->DrawFrameBeforeGui.GetMetric().StartFrame();
+                this->DrawFrameBeforePostProcessing.GetMetric().StartFrame();
+                this->DrawFrame.GetMetric().StartFrame();
+                this->AdvPreBeginScene.GetMetric().StartFrame();
+                this->AdvPostBeginScene.GetMetric().StartFrame();
+                this->AdvPreEndScene.GetMetric().StartFrame();
+                this->AdvPostEndScene.GetMetric().StartFrame();
+                this->AdvPreClear.GetMetric().StartFrame();
+                this->AdvPostClear.GetMetric().StartFrame();
+                this->AdvPreReset.GetMetric().StartFrame();
+                this->AdvPostReset.GetMetric().StartFrame();
+                this->AdvPrePresent.GetMetric().StartFrame();
+                this->AdvPostPresent.GetMetric().StartFrame();
+                this->AdvPreCreateTexture.GetMetric().StartFrame();
+                this->AdvPostCreateTexture.GetMetric().StartFrame();
+                this->AdvPreCreateVertexShader.GetMetric().StartFrame();
+                this->AdvPostCreateVertexShader.GetMetric().StartFrame();
+                this->AdvPreCreatePixelShader.GetMetric().StartFrame();
+                this->AdvPostCreatePixelShader.GetMetric().StartFrame();
+                this->AdvPreCreateRenderTarget.GetMetric().StartFrame();
+                this->AdvPostCreateRenderTarget.GetMetric().StartFrame();
+                this->AdvPreSetTexture.GetMetric().StartFrame();
+                this->AdvPostSetTexture.GetMetric().StartFrame();
+                this->AdvPreSetVertexShader.GetMetric().StartFrame();
+                this->AdvPostSetVertexShader.GetMetric().StartFrame();
+                this->AdvPreSetPixelShader.GetMetric().StartFrame();
+                this->AdvPostSetPixelShader.GetMetric().StartFrame();
+                this->AdvPreSetRenderTarget.GetMetric().StartFrame();
+                this->AdvPostSetRenderTarget.GetMetric().StartFrame();
+                this->AdvPreSetRenderState.GetMetric().StartFrame();
+                this->AdvPostSetRenderState.GetMetric().StartFrame();
+                this->AdvPreDrawIndexedPrimitive.GetMetric().StartFrame();
+                this->AdvPostDrawIndexedPrimitive.GetMetric().StartFrame();
             }
         }
 
         void Addon::OnEndFrame(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->OnEndFrame(device);
-            }
-      
             if (AppConfig.GetShowDebugFeatures()) {
-                this->timeOverall.EndFrame();
-                this->timeDrawFrameBeforeGui.EndFrame();
-                this->timeDrawFrameBeforePostProcessing.EndFrame();
-                this->timeDrawFrame.EndFrame();
-                this->timeAdvPreBeginScene.EndFrame();
-                this->timeAdvPostBeginScene.EndFrame();
-                this->timeAdvPreEndScene.EndFrame();
-                this->timeAdvPostEndScene.EndFrame();
-                this->timeAdvPreClear.EndFrame();
-                this->timeAdvPostClear.EndFrame();
-                this->timeAdvPreReset.EndFrame();
-                this->timeAdvPostReset.EndFrame();
-                this->timeAdvPrePresent.EndFrame();
-                this->timeAdvPostPresent.EndFrame();
-                this->timeAdvPreCreateTexture.EndFrame();
-                this->timeAdvPostCreateTexture.EndFrame();
-                this->timeAdvPreCreateVertexShader.EndFrame();
-                this->timeAdvPostCreateVertexShader.EndFrame();
-                this->timeAdvPreCreatePixelShader.EndFrame();
-                this->timeAdvPostCreatePixelShader.EndFrame();
-                this->timeAdvPreCreateRenderTarget.EndFrame();
-                this->timeAdvPostCreateRenderTarget.EndFrame();
-                this->timeAdvPreSetTexture.EndFrame();
-                this->timeAdvPostSetTexture.EndFrame();
-                this->timeAdvPreSetVertexShader.EndFrame();
-                this->timeAdvPostSetVertexShader.EndFrame();
-                this->timeAdvPreSetPixelShader.EndFrame();
-                this->timeAdvPostSetPixelShader.EndFrame();
-                this->timeAdvPreSetRenderTarget.EndFrame();
-                this->timeAdvPostSetRenderTarget.EndFrame();
-                this->timeAdvPreSetRenderState.EndFrame();
-                this->timeAdvPostSetRenderState.EndFrame();
-                this->timeAdvPreDrawIndexedPrimitive.EndFrame();
-                this->timeAdvPostDrawIndexedPrimitive.EndFrame();
+                this->metricOverall.EndFrame();
+                this->DrawFrameBeforeGui.GetMetric().EndFrame();
+                this->DrawFrameBeforePostProcessing.GetMetric().EndFrame();
+                this->DrawFrame.GetMetric().EndFrame();
+                this->AdvPreBeginScene.GetMetric().EndFrame();
+                this->AdvPostBeginScene.GetMetric().EndFrame();
+                this->AdvPreEndScene.GetMetric().EndFrame();
+                this->AdvPostEndScene.GetMetric().EndFrame();
+                this->AdvPreClear.GetMetric().EndFrame();
+                this->AdvPostClear.GetMetric().EndFrame();
+                this->AdvPreReset.GetMetric().EndFrame();
+                this->AdvPostReset.GetMetric().EndFrame();
+                this->AdvPrePresent.GetMetric().EndFrame();
+                this->AdvPostPresent.GetMetric().EndFrame();
+                this->AdvPreCreateTexture.GetMetric().EndFrame();
+                this->AdvPostCreateTexture.GetMetric().EndFrame();
+                this->AdvPreCreateVertexShader.GetMetric().EndFrame();
+                this->AdvPostCreateVertexShader.GetMetric().EndFrame();
+                this->AdvPreCreatePixelShader.GetMetric().EndFrame();
+                this->AdvPostCreatePixelShader.GetMetric().EndFrame();
+                this->AdvPreCreateRenderTarget.GetMetric().EndFrame();
+                this->AdvPostCreateRenderTarget.GetMetric().EndFrame();
+                this->AdvPreSetTexture.GetMetric().EndFrame();
+                this->AdvPostSetTexture.GetMetric().EndFrame();
+                this->AdvPreSetVertexShader.GetMetric().EndFrame();
+                this->AdvPostSetVertexShader.GetMetric().EndFrame();
+                this->AdvPreSetPixelShader.GetMetric().EndFrame();
+                this->AdvPostSetPixelShader.GetMetric().EndFrame();
+                this->AdvPreSetRenderTarget.GetMetric().EndFrame();
+                this->AdvPostSetRenderTarget.GetMetric().EndFrame();
+                this->AdvPreSetRenderState.GetMetric().EndFrame();
+                this->AdvPostSetRenderState.GetMetric().EndFrame();
+                this->AdvPreDrawIndexedPrimitive.GetMetric().EndFrame();
+                this->AdvPostDrawIndexedPrimitive.GetMetric().EndFrame();
             }
         }
 
 
-        TimeMeasure& Addon::GetTimeOverall() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeOverall();
-            }
-            return this->timeOverall;
+        AddonMetric& Addon::GetMetricLoad() {
+            return this->metricLoad;
         }
 
-        TimeMeasure& Addon::GetTimeWndProc() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeWndProc();
-            }
-            return this->timeWndProc;
+        AddonMetric& Addon::GetMetricOverall() {
+            return this->metricOverall;
         }
 
-        TimeMeasure& Addon::GetTimeDrawFrameBeforeGui() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeDrawFrameBeforeGui();
-            }
-            return this->timeDrawFrameBeforeGui;
-        }
 
-        TimeMeasure& Addon::GetTimeDrawFrameBeforePostProcessing() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeDrawFrameBeforePostProcessing();
-            }
-            return this->timeDrawFrameBeforePostProcessing;
-        }
-
-        TimeMeasure& Addon::GetTimeDrawFrame() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeDrawFrame();
-            }
-            return this->timeDrawFrame;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreBeginScene() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreBeginScene();
-            }
-            return this->timeAdvPreBeginScene;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostBeginScene() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostBeginScene();
-            }
-            return this->timeAdvPostBeginScene;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreEndScene() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreEndScene();
-            }
-            return this->timeAdvPreEndScene;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostEndScene() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostEndScene();
-            }
-            return this->timeAdvPostEndScene;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreClear() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreClear();
-            }
-            return this->timeAdvPreClear;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostClear() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostClear();
-            }
-            return this->timeAdvPostClear;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreReset() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreReset();
-            }
-            return this->timeAdvPreReset;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostReset() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostReset();
-            }
-            return this->timeAdvPostReset;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPrePresent() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPrePresent();
-            }
-            return this->timeAdvPrePresent;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostPresent() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostPresent();
-            }
-            return this->timeAdvPostPresent;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreCreateTexture() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreCreateTexture();
-            }
-            return this->timeAdvPreCreateTexture;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostCreateTexture() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostCreateTexture();
-            }
-            return this->timeAdvPostCreateTexture;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreCreateVertexShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreCreateVertexShader();
-            }
-            return this->timeAdvPreCreateVertexShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostCreateVertexShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostCreateVertexShader();
-            }
-            return this->timeAdvPostCreateVertexShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreCreatePixelShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreCreatePixelShader();
-            }
-            return this->timeAdvPreCreatePixelShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostCreatePixelShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostCreatePixelShader();
-            }
-            return this->timeAdvPostCreatePixelShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreCreateRenderTarget() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreCreateRenderTarget();
-            }
-            return this->timeAdvPreCreateRenderTarget;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostCreateRenderTarget() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostCreateRenderTarget();
-            }
-            return this->timeAdvPostCreateRenderTarget;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreSetTexture() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreSetTexture();
-            }
-            return this->timeAdvPreSetTexture;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostSetTexture() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostSetTexture();
-            }
-            return this->timeAdvPostSetTexture;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreSetVertexShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreSetVertexShader();
-            }
-            return this->timeAdvPreSetVertexShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostSetVertexShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostSetVertexShader();
-            }
-            return this->timeAdvPostSetVertexShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreSetPixelShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreSetPixelShader();
-            }
-            return this->timeAdvPreSetPixelShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostSetPixelShader() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostSetPixelShader();
-            }
-            return this->timeAdvPostSetPixelShader;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreSetRenderTarget() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreSetRenderTarget();
-            }
-            return this->timeAdvPreSetRenderTarget;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostSetRenderTarget() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostSetRenderTarget();
-            }
-            return this->timeAdvPostSetRenderTarget;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreSetRenderState() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreSetRenderState();
-            }
-            return this->timeAdvPreSetRenderState;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostSetRenderState() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostSetRenderState();
-            }
-            return this->timeAdvPostSetRenderState;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPreDrawIndexedPrimitive() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPreDrawIndexedPrimitive();
-            }
-            return this->timeAdvPreDrawIndexedPrimitive;
-        }
-
-        TimeMeasure& Addon::GetTimeAdvPostDrawIndexedPrimitive() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->GetTimeAdvPostDrawIndexedPrimitive();
-            }
-            return this->timeAdvPostDrawIndexedPrimitive;
+        void Addon::InitializeAddonFuncs() {
+            this->HandleWndProc.GetMetric().SetMetricType(AddonMetricType::SingleMetric);
+            this->DrawFrameBeforeGui.SetGlobalMetric(&this->metricOverall);
+            this->DrawFrameBeforePostProcessing.SetGlobalMetric(&this->metricOverall);
+            this->DrawFrame.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreBeginScene.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostBeginScene.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreEndScene.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostEndScene.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreClear.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostClear.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreReset.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostReset.SetGlobalMetric(&this->metricOverall);
+            this->AdvPrePresent.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostPresent.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreCreateTexture.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostCreateTexture.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreCreateVertexShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostCreateVertexShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreCreatePixelShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostCreatePixelShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreCreateRenderTarget.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostCreateRenderTarget.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreSetTexture.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostSetTexture.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreSetVertexShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostSetVertexShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreSetPixelShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostSetPixelShader.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreSetRenderTarget.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostSetRenderTarget.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreSetRenderState.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostSetRenderState.SetGlobalMetric(&this->metricOverall);
+            this->AdvPreDrawIndexedPrimitive.SetGlobalMetric(&this->metricOverall);
+            this->AdvPostDrawIndexedPrimitive.SetGlobalMetric(&this->metricOverall);
         }
 
     }

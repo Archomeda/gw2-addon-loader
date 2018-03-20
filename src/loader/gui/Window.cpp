@@ -7,7 +7,7 @@ namespace loader {
         void Window::Show() {
             ShowWindow(this);
         }
-        
+
         void Window::Close() {
             CloseWindow(this);
         }

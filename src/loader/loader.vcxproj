@@ -164,10 +164,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="addons\AddonFunc.h" />
     <ClInclude Include="addons\NativeAddon.h" />
     <ClInclude Include="addons\UnknownAddon.h" />
     <ClInclude Include="globals.h" />
-    <ClInclude Include="TimeDuration.h" />
     <ClInclude Include="updaters\Downloader.h" />
     <ClInclude Include="updaters\GithubReleasesUpdater.h" />
     <ClInclude Include="gui\BitmapFontAtlas.h" />
@@ -187,7 +187,7 @@
     <ClInclude Include="IconsOcticons.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="TimeMeasure.h" />
+    <ClInclude Include="addons\AddonMetric.h" />
     <ClInclude Include="updaters\Installer.h" />
     <ClInclude Include="updaters\Updater.h" />
     <ClInclude Include="updaters\update_manager.h" />
@@ -205,7 +205,6 @@
     <ClInclude Include="gui\Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TimeDuration.cpp" />
     <ClCompile Include="updaters\Downloader.cpp" />
     <ClCompile Include="updaters\GithubReleasesUpdater.cpp" />
     <ClCompile Include="gui\BitmapFontAtlas.cpp" />
@@ -228,7 +227,7 @@
     <ClCompile Include="gui\AddonInfoWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui\Window.cpp" />
-    <ClCompile Include="TimeMeasure.cpp" />
+    <ClCompile Include="addons\AddonMetric.cpp" />
     <ClCompile Include="updaters\Installer.cpp" />
     <ClCompile Include="updaters\Updater.cpp" />
     <ClCompile Include="updaters\update_manager.cpp" />
