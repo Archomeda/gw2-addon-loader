@@ -49,50 +49,46 @@ namespace loader {
             static std::unique_ptr<Addon> GetAddon(const std::string& filePath);
             static std::unique_ptr<Addon> GetAddon(const std::experimental::filesystem::path& filePath);
 
-            virtual bool Initialize();
-            virtual bool Uninitialize();
+            virtual bool Initialize() { return false; }
+            virtual bool Uninitialize() { return false; }
             virtual bool Load();
             virtual bool Unload();
-            bool IsEnabledByConfig() const;
+            bool IsEnabledByConfig() const { return AppConfig.GetAddonEnabled(this); }
 
-            const AddonState GetState() const;
+            const AddonState GetState() const { return this->state; }
             const std::string GetStateString() const { return AddonStateToString(this->GetState()); }
             bool IsLoaded() const { return this->GetState() == AddonState::LoadedState; }
 
-            virtual bool SupportsLoading() const;
-            virtual bool SupportsHotLoading() const;
-            virtual bool SupportsSettings() const;
-            virtual bool SupportsHomepage() const;
+            virtual bool SupportsLoading() const { return false; }
+            virtual bool SupportsHotLoading() const { return false; }
+            virtual bool SupportsSettings() const { return false; }
+            virtual bool SupportsHomepage() const { return !this->GetHomepage().empty(); }
 
-            virtual AddonType GetType() const;
+            virtual AddonType GetType() const { return AddonType::AddonTypeUnknown; }
             const std::string GetTypeString() const { return AddonTypeToString(this->GetType()); }
 
-            UINT GetSdkVersion() const;
-            void SetSdkVersion(UINT sdkVersion);
-            IDirect3D9* GetD3D9() const;
-            void SetD3D9(IDirect3D9* d3d9);
-            IDirect3DDevice9* GetD3DDevice9() const;
-            void SetD3DDevice9(IDirect3DDevice9* device);
-            HWND GetFocusWindow() const;
-            void SetFocusWindow(HWND focusWindow);
-
-            virtual const std::experimental::filesystem::path GetFilePath() const;
+            virtual const std::experimental::filesystem::path GetFilePath() const { return this->filePath; }
             virtual const std::string GetFileName() const { return this->GetFilePath().filename().u8string(); }
-            virtual const std::string GetID() const;
-            virtual const std::string GetName() const;
-            virtual const std::string GetAuthor() const;
-            virtual const std::string GetDescription() const;
-            virtual const std::string GetVersion() const;
-            virtual const std::string GetHomepage() const;
-            virtual IDirect3DTexture9* GetIcon() const;
+            virtual const std::string GetID() const { return this->GetFileName(); }
+            virtual const std::string GetName() const { return this->GetID(); }
+            virtual const std::string GetAuthor() const { return ""; }
+            virtual const std::string GetDescription() const { return ""; }
+            virtual const std::string GetVersion() const { return ""; }
+            virtual const std::string GetHomepage() const { return ""; }
+            virtual IDirect3DTexture9* GetIcon() const { return nullptr; }
 
-            virtual void OpenSettings();
+            virtual void OpenSettings() { }
 
             virtual void OnStartFrame(IDirect3DDevice9* device);
             virtual void OnEndFrame(IDirect3DDevice9* device);
 
-            AddonMetric& GetMetricLoad();
-            AddonMetric& GetMetricOverall();
+            AddonMetric& GetMetricLoad() { return this->metricLoad; }
+            AddonMetric& GetMetricOverall() { return this->metricOverall; }
+
+            UINT D3D9SdkVersion = 0;
+            IDirect3D9* D3D9 = nullptr;
+            IDirect3DDevice9* D3DDevice9 = nullptr;
+            HWND FocusWindow = NULL;
 
             AddonFunc<bool, HWND, UINT, WPARAM, LPARAM> HandleWndProc;
             AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforeGui;
@@ -130,24 +126,17 @@ namespace loader {
             AddonFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPostDrawIndexedPrimitive;
 
         protected:
-            virtual const Addon* GetConstBaseAddon() const { return this; }
-            virtual Addon* GetBaseAddon() { return this; }
-            bool HasBaseAddon() const { return this != this->GetConstBaseAddon(); }
-
-            void ChangeState(AddonState state);
+            void ChangeState(AddonState state) { this->state = state; }
 
         private:
             void InitializeAddonFuncs();
 
+            void AddHook(std::vector<Addon*>& addons);
+            void RemoveHook(std::vector<Addon*>& addons);
+
             AddonState state = AddonState::UnloadedState;
             std::experimental::filesystem::path filePath;
             std::string fileName;
-
-            UINT sdkVersion = 0;
-            IDirect3D9* d3d9 = nullptr;
-            IDirect3D9Ex* d3d9Ex = nullptr;
-            IDirect3DDevice9* d3ddevice9 = nullptr;
-            HWND focusWindow = NULL;
 
             AddonMetric metricLoad = AddonMetric(AddonMetricType::SingleMetric);
             AddonMetric metricOverall;

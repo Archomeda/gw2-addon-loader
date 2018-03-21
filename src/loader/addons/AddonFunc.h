@@ -11,8 +11,7 @@ namespace loader {
         template<typename R, typename... Args>
         class AddonFunc {
             friend class Addon;
-            template<class T> friend class NativeAddon;
-            template<class T> friend class UnknownAddon;
+            friend class NativeAddon;
 
         public:
             AddonFunc() = default;

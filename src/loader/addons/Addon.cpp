@@ -6,7 +6,6 @@
 #include "addons_manager.h"
 #include "exceptions.h"
 #include "NativeAddon.h"
-#include "UnknownAddon.h"
 #include "../Config.h"
 #include "../log.h"
 #include "../utils/encoding.h"
@@ -59,11 +58,7 @@ namespace loader {
 
             if (GetProcAddress(hAddon, GW2ADDON_DLL_Initialize) != nullptr) {
                 // Our addon is native
-                addon = make_unique<NativeAddon<Addon>>(*addon);
-            }
-            else {
-                // Unknown addon
-                addon = make_unique<UnknownAddon<Addon>>(*addon);
+                addon = make_unique<NativeAddon>(filePath);
             }
             FreeLibrary(hAddon);
 
@@ -71,209 +66,82 @@ namespace loader {
         }
 
 
-        bool Addon::Initialize() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->Initialize();
-            }
-            return true;
-        }
-
-        bool Addon::Uninitialize() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->Uninitialize();
-            }
-            return true;
-        }
-
         bool Addon::Load() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->Load();
-            }
+            if (this->HandleWndProc) this->AddHook(ActiveAddonHooks.HandleWndProc);
+            if (this->DrawFrameBeforeGui) this->AddHook(ActiveAddonHooks.DrawFrameBeforeGui);
+            if (this->DrawFrameBeforePostProcessing) this->AddHook(ActiveAddonHooks.DrawFrameBeforePostProcessing);
+            if (this->DrawFrame) this->AddHook(ActiveAddonHooks.DrawFrame);
+            if (this->AdvPreBeginScene) this->AddHook(ActiveAddonHooks.AdvPreBeginScene);
+            if (this->AdvPostBeginScene) this->AddHook(ActiveAddonHooks.AdvPostBeginScene);
+            if (this->AdvPreEndScene) this->AddHook(ActiveAddonHooks.AdvPreEndScene);
+            if (this->AdvPostEndScene) this->AddHook(ActiveAddonHooks.AdvPostEndScene);
+            if (this->AdvPreClear) this->AddHook(ActiveAddonHooks.AdvPreClear);
+            if (this->AdvPostClear) this->AddHook(ActiveAddonHooks.AdvPostClear);
+            if (this->AdvPreReset) this->AddHook(ActiveAddonHooks.AdvPreReset);
+            if (this->AdvPostReset) this->AddHook(ActiveAddonHooks.AdvPostReset);
+            if (this->AdvPrePresent) this->AddHook(ActiveAddonHooks.AdvPrePresent);
+            if (this->AdvPostPresent) this->AddHook(ActiveAddonHooks.AdvPostPresent);
+            if (this->AdvPreCreateTexture) this->AddHook(ActiveAddonHooks.AdvPreCreateTexture);
+            if (this->AdvPostCreateTexture) this->AddHook(ActiveAddonHooks.AdvPostCreateTexture);
+            if (this->AdvPreCreateVertexShader) this->AddHook(ActiveAddonHooks.AdvPreCreateVertexShader);
+            if (this->AdvPostCreateVertexShader) this->AddHook(ActiveAddonHooks.AdvPostCreateVertexShader);
+            if (this->AdvPreCreatePixelShader) this->AddHook(ActiveAddonHooks.AdvPreCreatePixelShader);
+            if (this->AdvPostCreatePixelShader) this->AddHook(ActiveAddonHooks.AdvPostCreatePixelShader);
+            if (this->AdvPreCreateRenderTarget) this->AddHook(ActiveAddonHooks.AdvPreCreateRenderTarget);
+            if (this->AdvPostCreateRenderTarget) this->AddHook(ActiveAddonHooks.AdvPostCreateRenderTarget);
+            if (this->AdvPreSetTexture) this->AddHook(ActiveAddonHooks.AdvPreSetTexture);
+            if (this->AdvPostSetTexture) this->AddHook(ActiveAddonHooks.AdvPostSetTexture);
+            if (this->AdvPreSetVertexShader) this->AddHook(ActiveAddonHooks.AdvPreSetVertexShader);
+            if (this->AdvPostSetVertexShader) this->AddHook(ActiveAddonHooks.AdvPostSetVertexShader);
+            if (this->AdvPreSetPixelShader) this->AddHook(ActiveAddonHooks.AdvPreSetPixelShader);
+            if (this->AdvPostSetPixelShader) this->AddHook(ActiveAddonHooks.AdvPostSetPixelShader);
+            if (this->AdvPreSetRenderTarget) this->AddHook(ActiveAddonHooks.AdvPreSetRenderTarget);
+            if (this->AdvPostSetRenderTarget) this->AddHook(ActiveAddonHooks.AdvPostSetRenderTarget);
+            if (this->AdvPreSetRenderState) this->AddHook(ActiveAddonHooks.AdvPreSetRenderState);
+            if (this->AdvPostSetRenderState) this->AddHook(ActiveAddonHooks.AdvPostSetRenderState);
+            if (this->AdvPreDrawIndexedPrimitive) this->AddHook(ActiveAddonHooks.AdvPreDrawIndexedPrimitive);
+            if (this->AdvPostDrawIndexedPrimitive) this->AddHook(ActiveAddonHooks.AdvPostDrawIndexedPrimitive);
+            
             return true;
         }
 
         bool Addon::Unload() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->Unload();
-            }
+            if (this->HandleWndProc) this->RemoveHook(ActiveAddonHooks.HandleWndProc);
+            if (this->DrawFrameBeforeGui) this->RemoveHook(ActiveAddonHooks.DrawFrameBeforeGui);
+            if (this->DrawFrameBeforePostProcessing) this->RemoveHook(ActiveAddonHooks.DrawFrameBeforePostProcessing);
+            if (this->DrawFrame) this->RemoveHook(ActiveAddonHooks.DrawFrame);
+            if (this->AdvPreBeginScene) this->RemoveHook(ActiveAddonHooks.AdvPreBeginScene);
+            if (this->AdvPostBeginScene) this->RemoveHook(ActiveAddonHooks.AdvPostBeginScene);
+            if (this->AdvPreEndScene) this->RemoveHook(ActiveAddonHooks.AdvPreEndScene);
+            if (this->AdvPostEndScene) this->RemoveHook(ActiveAddonHooks.AdvPostEndScene);
+            if (this->AdvPreClear) this->RemoveHook(ActiveAddonHooks.AdvPreClear);
+            if (this->AdvPostClear) this->RemoveHook(ActiveAddonHooks.AdvPostClear);
+            if (this->AdvPreReset) this->RemoveHook(ActiveAddonHooks.AdvPreReset);
+            if (this->AdvPostReset) this->RemoveHook(ActiveAddonHooks.AdvPostReset);
+            if (this->AdvPrePresent) this->RemoveHook(ActiveAddonHooks.AdvPrePresent);
+            if (this->AdvPostPresent) this->RemoveHook(ActiveAddonHooks.AdvPostPresent);
+            if (this->AdvPreCreateTexture) this->RemoveHook(ActiveAddonHooks.AdvPreCreateTexture);
+            if (this->AdvPostCreateTexture) this->RemoveHook(ActiveAddonHooks.AdvPostCreateTexture);
+            if (this->AdvPreCreateVertexShader) this->RemoveHook(ActiveAddonHooks.AdvPreCreateVertexShader);
+            if (this->AdvPostCreateVertexShader) this->RemoveHook(ActiveAddonHooks.AdvPostCreateVertexShader);
+            if (this->AdvPreCreatePixelShader) this->RemoveHook(ActiveAddonHooks.AdvPreCreatePixelShader);
+            if (this->AdvPostCreatePixelShader) this->RemoveHook(ActiveAddonHooks.AdvPostCreatePixelShader);
+            if (this->AdvPreCreateRenderTarget) this->RemoveHook(ActiveAddonHooks.AdvPreCreateRenderTarget);
+            if (this->AdvPostCreateRenderTarget) this->RemoveHook(ActiveAddonHooks.AdvPostCreateRenderTarget);
+            if (this->AdvPreSetTexture) this->RemoveHook(ActiveAddonHooks.AdvPreSetTexture);
+            if (this->AdvPostSetTexture) this->RemoveHook(ActiveAddonHooks.AdvPostSetTexture);
+            if (this->AdvPreSetVertexShader) this->RemoveHook(ActiveAddonHooks.AdvPreSetVertexShader);
+            if (this->AdvPostSetVertexShader) this->RemoveHook(ActiveAddonHooks.AdvPostSetVertexShader);
+            if (this->AdvPreSetPixelShader) this->RemoveHook(ActiveAddonHooks.AdvPreSetPixelShader);
+            if (this->AdvPostSetPixelShader) this->RemoveHook(ActiveAddonHooks.AdvPostSetPixelShader);
+            if (this->AdvPreSetRenderTarget) this->RemoveHook(ActiveAddonHooks.AdvPreSetRenderTarget);
+            if (this->AdvPostSetRenderTarget) this->RemoveHook(ActiveAddonHooks.AdvPostSetRenderTarget);
+            if (this->AdvPreSetRenderState) this->RemoveHook(ActiveAddonHooks.AdvPreSetRenderState);
+            if (this->AdvPostSetRenderState) this->RemoveHook(ActiveAddonHooks.AdvPostSetRenderState);
+            if (this->AdvPreDrawIndexedPrimitive) this->RemoveHook(ActiveAddonHooks.AdvPreDrawIndexedPrimitive);
+            if (this->AdvPostDrawIndexedPrimitive) this->RemoveHook(ActiveAddonHooks.AdvPostDrawIndexedPrimitive);
+
             return true;
-        }
-
-        bool Addon::IsEnabledByConfig() const {
-            return AppConfig.GetAddonEnabled(this);
-        }
-
-
-        const AddonState Addon::GetState() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetState();
-            }
-            return this->state;
-        }
-
-        void Addon::ChangeState(AddonState state) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->ChangeState(state);
-            }
-            this->state = state;
-        }
-
-
-        bool Addon::SupportsLoading() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->SupportsLoading();
-            }
-            return true;
-        }
-
-        bool Addon::SupportsHotLoading() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->SupportsHotLoading();
-            }
-            return true;
-        }
-
-        bool Addon::SupportsSettings() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->SupportsSettings();
-            }
-            return true;
-        }
-
-        bool Addon::SupportsHomepage() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->SupportsHomepage();
-            }
-            return !this->GetHomepage().empty();
-        }
-
-
-        AddonType Addon::GetType() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetType();
-            }
-            return AddonType::AddonTypeUnknown;
-        }
-
-
-        UINT Addon::GetSdkVersion() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetSdkVersion();
-            }
-            return this->sdkVersion;
-        }
-
-        void Addon::SetSdkVersion(UINT sdkVersion) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->SetSdkVersion(sdkVersion);
-            }
-            this->sdkVersion = sdkVersion;
-        }
-
-        IDirect3D9* Addon::GetD3D9() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetD3D9();
-            }
-            return this->d3d9;
-        }
-
-        void Addon::SetD3D9(IDirect3D9* d3d9) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->SetD3D9(d3d9);
-            }
-            this->d3d9 = d3d9;
-        }
-
-        IDirect3DDevice9* Addon::GetD3DDevice9() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetD3DDevice9();
-            }
-            return this->d3ddevice9;
-        }
-
-        void Addon::SetD3DDevice9(IDirect3DDevice9* device) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->SetD3DDevice9(device);
-            }
-            this->d3ddevice9 = device;
-        }
-
-        HWND Addon::GetFocusWindow() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetFocusWindow();
-            }
-            return this->focusWindow;
-        }
-
-        void Addon::SetFocusWindow(HWND focusWindow) {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->SetFocusWindow(focusWindow);
-            }
-            this->focusWindow = focusWindow;
-        }
-
-
-        const path Addon::GetFilePath() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetFilePath();
-            }
-            return this->filePath;
-        }
-
-        const string Addon::GetID() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetID();
-            }
-            return this->GetFileName();
-        }
-
-        const string Addon::GetName() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetName();
-            }
-            return this->GetID();
-        }
-
-        const string Addon::GetAuthor() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetAuthor();
-            }
-            return "";
-        }
-
-        const string Addon::GetDescription() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetDescription();
-            }
-            return "";
-        }
-
-        const string Addon::GetVersion() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetVersion();
-            }
-            return "";
-        }
-
-        const string Addon::GetHomepage() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetHomepage();
-            }
-            return "";
-        }
-
-        IDirect3DTexture9* Addon::GetIcon() const {
-            if (this->HasBaseAddon()) {
-                return this->GetConstBaseAddon()->GetIcon();
-            }
-            return nullptr;
-        }
-
-
-        void Addon::OpenSettings() {
-            if (this->HasBaseAddon()) {
-                return this->GetBaseAddon()->OpenSettings();
-            }
         }
 
 
@@ -356,15 +224,6 @@ namespace loader {
         }
 
 
-        AddonMetric& Addon::GetMetricLoad() {
-            return this->metricLoad;
-        }
-
-        AddonMetric& Addon::GetMetricOverall() {
-            return this->metricOverall;
-        }
-
-
         void Addon::InitializeAddonFuncs() {
             this->HandleWndProc.GetMetric().SetMetricType(AddonMetricType::SingleMetric);
             this->DrawFrameBeforeGui.SetGlobalMetric(&this->metricOverall);
@@ -400,6 +259,15 @@ namespace loader {
             this->AdvPostSetRenderState.SetGlobalMetric(&this->metricOverall);
             this->AdvPreDrawIndexedPrimitive.SetGlobalMetric(&this->metricOverall);
             this->AdvPostDrawIndexedPrimitive.SetGlobalMetric(&this->metricOverall);
+        }
+
+
+        void Addon::AddHook(vector<Addon*>& addons) {
+            addons.push_back(this);
+        }
+
+        void Addon::RemoveHook(vector<Addon*>& addons) {
+            addons.erase(remove(addons.begin(), addons.end(), this), addons.end());
         }
 
     }

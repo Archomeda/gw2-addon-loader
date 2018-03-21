@@ -108,9 +108,6 @@
     <ClInclude Include="addons\NativeAddon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="addons\UnknownAddon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="updaters\update_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -222,6 +219,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="addons\AddonMetric.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\NativeAddon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

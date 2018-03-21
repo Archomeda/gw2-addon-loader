@@ -166,7 +166,6 @@
   <ItemGroup>
     <ClInclude Include="addons\AddonFunc.h" />
     <ClInclude Include="addons\NativeAddon.h" />
-    <ClInclude Include="addons\UnknownAddon.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="updaters\Downloader.h" />
     <ClInclude Include="updaters\GithubReleasesUpdater.h" />
@@ -205,6 +204,7 @@
     <ClInclude Include="gui\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="addons\NativeAddon.cpp" />
     <ClCompile Include="updaters\Downloader.cpp" />
     <ClCompile Include="updaters\GithubReleasesUpdater.cpp" />
     <ClCompile Include="gui\BitmapFontAtlas.cpp" />

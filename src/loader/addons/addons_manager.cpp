@@ -135,9 +135,9 @@ namespace loader {
             GetLog()->debug("loader::addons::InitializeAddons()");
             for (auto& addon : AddonsList) {
                 GetLog()->info("Initializing addon {0}", addon->GetFileName());
-                addon->SetSdkVersion(sdkVersion);
-                addon->SetD3D9(d3d9);
-                addon->SetD3DDevice9(device);
+                addon->D3D9SdkVersion = sdkVersion;
+                addon->D3D9 = d3d9;
+                addon->D3DDevice9 = device;
                 addon->Initialize();
                 GetLog()->info("Addon {0} is {1}", addon->GetFileName(), addon->GetTypeString());
             }
@@ -155,7 +155,7 @@ namespace loader {
         void LoadAddons(HWND hFocusWindow) {
             GetLog()->debug("loader::addons::LoadAddons()");
             for (auto& addon : AddonsList) {
-                addon->SetFocusWindow(hFocusWindow);
+                addon->FocusWindow = hFocusWindow;
                 if (addon->IsEnabledByConfig()) {
                     GetLog()->info("Loading enabled addon {0}", addon->GetFileName());
                     addon->Load();
