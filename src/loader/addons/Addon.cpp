@@ -12,6 +12,7 @@
 
 using namespace std;
 using namespace std::experimental::filesystem;
+using namespace loader::updaters;
 using namespace loader::utils;
 
 namespace loader {
@@ -142,6 +143,30 @@ namespace loader {
             if (this->AdvPostDrawIndexedPrimitive) this->RemoveHook(ActiveAddonHooks.AdvPostDrawIndexedPrimitive);
 
             return true;
+        }
+
+
+        VersionInfo Addon::GetLatestVersion() {
+            VersionInfo versionInfo;
+            versionInfo.version = AppConfig.GetLastestAddonVersion(this);
+            versionInfo.infoUrl = AppConfig.GetLastestAddonVersionInfoUrl(this);
+            versionInfo.downloadUrl = AppConfig.GetLastestAddonVersionDownloadUrl(this);
+            return versionInfo;
+        }
+
+
+        void Addon::CheckUpdate(const function<UpdateCheckCallback_t>& callback) {
+            shared_ptr<Updater> updater = this->GetUpdater();
+            if (updater != nullptr) {
+                // Force updater to be capsured, otherwise it goes out of scope and this lambda expression will never get called
+                updater->SetCheckCallback([updater, callback](const Updater* const updater, VersionInfo version) {
+                    callback(updater, version);
+                });
+                updater->CheckForUpdateAsync();
+            }
+            else {
+                callback(nullptr, {});
+            }
         }
 
 

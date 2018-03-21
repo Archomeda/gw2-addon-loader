@@ -24,7 +24,7 @@ namespace loader {
             targetSubfolder(BIN_FOLDER),
             targetFileName("d3d9.dll") { }
 
-        Installer::Installer(const VersionInfo version, const Addon* addon) :
+        Installer::Installer(const VersionInfo version, const Addon* const addon) :
             version(version),
             targetSubfolder(ADDONS_FOLDER),
             targetFileName(addon->GetFileName()) { }

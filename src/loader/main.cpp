@@ -125,17 +125,17 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     GetLog()->info("Starting MumbleLink loop");
     hooks::Gw2MumbleLink.Start();
 
-    // Check for updates if needed
-    GetLog()->info("Checking for updates");
-    updaters::CheckUpdates();
-
     // Initialize addons
     GetLog()->info("Initializing addons");
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
 
+    // Check for updates if needed
+    GetLog()->info("Checking for updates");
+    updaters::CheckUpdates();
+
     // Set up ImGui
     GetLog()->info("Initializing ImGui");
-    ImGuiIO imio = ImGui::GetIO();
+    ImGuiIO& imio = ImGui::GetIO();
     imGuiConfigFile = AppConfig.GetImGuiConfigPath();
     imio.IniFilename = imGuiConfigFile.c_str();
 

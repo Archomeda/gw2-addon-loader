@@ -3,10 +3,12 @@
 #include <d3d9.h>
 #include <chrono>
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <string>
 #include "AddonFunc.h"
 #include "AddonMetric.h"
+#include "../updaters/Updater.h"
 
 namespace loader {
     namespace addons {
@@ -53,7 +55,7 @@ namespace loader {
             virtual bool Uninitialize() { return false; }
             virtual bool Load();
             virtual bool Unload();
-            bool IsEnabledByConfig() const { return AppConfig.GetAddonEnabled(this); }
+            bool IsEnabledByConfig() { return AppConfig.GetAddonEnabled(this); }
 
             const AddonState GetState() const { return this->state; }
             const std::string GetStateString() const { return AddonStateToString(this->GetState()); }
@@ -63,6 +65,7 @@ namespace loader {
             virtual bool SupportsHotLoading() const { return false; }
             virtual bool SupportsSettings() const { return false; }
             virtual bool SupportsHomepage() const { return !this->GetHomepage().empty(); }
+            virtual bool SupportsUpdating() const { return false; }
 
             virtual AddonType GetType() const { return AddonType::AddonTypeUnknown; }
             const std::string GetTypeString() const { return AddonTypeToString(this->GetType()); }
@@ -76,8 +79,10 @@ namespace loader {
             virtual const std::string GetVersion() const { return ""; }
             virtual const std::string GetHomepage() const { return ""; }
             virtual IDirect3DTexture9* GetIcon() const { return nullptr; }
+            updaters::VersionInfo GetLatestVersion();
 
             virtual void OpenSettings() { }
+            void CheckUpdate(const std::function<updaters::UpdateCheckCallback_t>& callback);
 
             virtual void OnStartFrame(IDirect3DDevice9* device);
             virtual void OnEndFrame(IDirect3DDevice9* device);
@@ -126,6 +131,8 @@ namespace loader {
             AddonFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPostDrawIndexedPrimitive;
 
         protected:
+            virtual std::unique_ptr<updaters::Updater> GetUpdater() { return nullptr; }
+
             void ChangeState(AddonState state) { this->state = state; }
 
         private:

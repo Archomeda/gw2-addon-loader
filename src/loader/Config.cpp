@@ -60,45 +60,6 @@ namespace loader {
     }
 
 
-    bool Config::GetAddonEnabled(const string& addonId) const {
-        wstring key = u16("addon-" + addonId);
-        return this->ini.GetBoolValue(key.c_str(), L"enabled", false);
-    }
-
-    bool Config::GetAddonEnabled(const Addon* const addon) const {
-        return this->GetAddonEnabled(addon->GetID());
-    }
-
-    void Config::SetAddonEnabled(const string& addonId, bool enabled) {
-        wstring key = u16("addon-" + addonId);
-        this->ini.SetBoolValue(key.c_str(), L"enabled", enabled);
-        this->ini.SaveFile(this->configPath.c_str());
-    }
-
-    void Config::SetAddonEnabled(const Addon* const addon, bool enabled) {
-        this->SetAddonEnabled(addon->GetID(), enabled);
-    }
-
-    int Config::GetAddonOrder(const string& addonId) const {
-        wstring key = u16("addon-" + addonId);
-        return this->ini.GetLongValue(key.c_str(), L"order", -1);
-    }
-
-    int Config::GetAddonOrder(const Addon* const addon) const {
-        return this->GetAddonOrder(addon->GetID());
-    }
-
-    void Config::SetAddonOrder(const string& addonId, int order) {
-        wstring key = u16("addon-" + addonId);
-        this->ini.SetLongValue(key.c_str(), L"order", order);
-        this->ini.SaveFile(this->configPath.c_str());
-    }
-
-    void Config::SetAddonOrder(const Addon* const addon, int order) {
-        this->SetAddonOrder(addon->GetID(), order);
-    }
-
-
     const set<uint_fast8_t> Config::ParseKeybindString(const string& keys) const {
         set<uint_fast8_t> result;
         if (keys.length() > 0) {
@@ -155,22 +116,116 @@ namespace loader {
 
     void Config::SetLastestVersion(const string& version) {
         this->lastestVersion = version;
-        wstring u16Version = u16(version);
-        this->ini.SetValue(L"general", L"lastest_version", u16Version.c_str());
+        this->ini.SetValue(L"general", L"lastest_version", u16(version).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
     void Config::SetLastestVersionInfoUrl(const string& url) {
         this->lastestVersionInfoUrl = url;
-        wstring u16Url = u16(url);
-        this->ini.SetValue(L"general", L"lastest_version_info_url", u16Url.c_str());
+        this->ini.SetValue(L"general", L"lastest_version_info_url", u16(url).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
     void Config::SetLastestVersionDownloadUrl(const string& url) {
         this->lastestVersionDownloadUrl = url;
-        wstring u16Url = u16(url);
-        this->ini.SetValue(L"general", L"lastest_version_download_url", u16Url.c_str());
+        this->ini.SetValue(L"general", L"lastest_version_download_url", u16(url).c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+
+    bool Config::GetAddonEnabled(Addon* const addon) {
+        bool value;
+        if (this->addonEnabled.count(addon) == 0) {
+            wstring key = u16("addon-" + addon->GetID());
+            value = this->ini.GetBoolValue(key.c_str(), L"enabled", false);
+            this->addonEnabled[addon] = value;
+        }
+        else {
+            value = this->addonEnabled[addon];
+        }
+        return value;
+    }
+
+    int Config::GetAddonOrder(Addon* const addon) {
+        int value;
+        if (this->addonOrder.count(addon) == 0) {
+            wstring key = u16("addon-" + addon->GetID());
+            value = this->ini.GetLongValue(key.c_str(), L"order", -1);
+            this->addonOrder[addon] = value;
+        }
+        else {
+            value = this->addonOrder[addon];
+        }
+        return value;
+    }
+
+    string Config::GetLastestAddonVersion(Addon* const addon) {
+        string value;
+        if (this->lastestAddonVersion.count(addon) == 0) {
+            wstring key = u16("addon-" + addon->GetID());
+            value = u8(this->ini.GetValue(key.c_str(), L"latest_version", L""));
+            this->lastestAddonVersion[addon] = value;
+        }
+        else {
+            value = this->lastestAddonVersion[addon];
+        }
+        return value;
+    }
+
+    string Config::GetLastestAddonVersionInfoUrl(Addon* const addon) {
+        string value;
+        if (this->lastestAddonVersionInfoUrl.count(addon) == 0) {
+            wstring key = u16("addon-" + addon->GetID());
+            value = u8(this->ini.GetValue(key.c_str(), L"lastest_version_info_url", L""));
+            this->lastestAddonVersionInfoUrl[addon] = value;
+        }
+        else {
+            value = this->lastestAddonVersionInfoUrl[addon];
+        }
+        return value;
+    }
+
+    string Config::GetLastestAddonVersionDownloadUrl(Addon* const addon) {
+        string value;
+        if (this->lastestAddonVersionDownloadUrl.count(addon) == 0) {
+            wstring key = u16("addon-" + addon->GetID());
+            value = u8(this->ini.GetValue(key.c_str(), L"lastest_version_download_url", L""));
+            this->lastestAddonVersionDownloadUrl[addon] = value;
+        }
+        else {
+            value = this->lastestAddonVersionDownloadUrl[addon];
+        }
+        return value;
+    }
+
+
+    void Config::SetAddonEnabled(const Addon* const addon, bool enabled) {
+        wstring key = u16("addon-" + addon->GetID());
+        this->ini.SetBoolValue(key.c_str(), L"enabled", enabled);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetAddonOrder(const Addon* const addon, int order) {
+        wstring key = u16("addon-" + addon->GetID());
+        this->ini.SetLongValue(key.c_str(), L"order", order);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetLastestAddonVersion(const Addon* const addon, const string& version) {
+        wstring key = u16("addon-" + addon->GetID());
+        this->ini.SetValue(key.c_str(), L"latest_version", u16(version).c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetLastestAddonVersionInfoUrl(const Addon* const addon, const string& url) {
+        wstring key = u16("addon-" + addon->GetID());
+        this->ini.SetValue(key.c_str(), L"lastest_version_info_url", u16(url).c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetLastestAddonVersionDownloadUrl(const Addon* const addon, const string& url) {
+        wstring key = u16("addon-" + addon->GetID());
+        this->ini.SetValue(key.c_str(), L"lastest_version_download_url", u16(url).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 

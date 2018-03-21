@@ -20,6 +20,16 @@ And don't forget to use Unload to clean up your mess.
 
 
 /**
+The addon update method. Defaults to NoUpdateMethod.
+*/
+enum AddonUpdateMethod {
+    NoUpdateMethod = 0,
+    CustomUpdateMethod = 1, // Reserved
+    GithubReleasesUpdateMethod = 2
+};
+
+
+/**
 Gets called whenever the addon is loading.
 Can be used to initialize the addon when it gets enabled before it gets used.
 This function should return 0 on success. Any other value will be treated as an error.
@@ -347,11 +357,24 @@ typedef struct {
     void* icon;
     int iconSize = -1;
 
-    void* updateMethod; // Reserved
+    struct {
+        // The addon update method
+        // If none, the addon doesn't support updating
+        AddonUpdateMethod method = NoUpdateMethod;
+
+        union {
+            // Additional method information
+            const char* methodInfo;
+
+            // Alias; the GitHub repository (e.g. Archomeda/gw2-addon-loader) if using the GithubReleases method
+            const char* githubRepo;
+        };
+    } updateInfo;
 
 
     /** ADDON FUNCTION EXPORTS **/
     GW2AddonOpenSettings_t* OpenSettings;
+
     void* CheckUpdate; // Reserved
     void* DownloadUpdate; // Reserved
 

@@ -2,8 +2,10 @@
 #include <d3dx9tex.h>
 #include "addons_manager.h"
 #include "../log.h"
+#include "../updaters/GithubReleasesUpdater.h"
 
 using namespace std;
+using namespace loader::updaters;
 
 namespace loader {
     namespace addons {
@@ -64,6 +66,26 @@ namespace loader {
             this->version = v1->version;
             this->homepage = v1->homepage;
 
+            if (v1->icon) {
+                this->iconManaged = v1->iconSize > -1;
+                if (this->iconManaged) {
+                    // Icon is just image data, we have to create the texture
+                    D3DXCreateTextureFromFileInMemory(this->D3DDevice9, v1->icon, v1->iconSize, &this->icon);
+                    this->iconManaged = true;
+                }
+                else {
+                    // Icon is already a loaded texture
+                    this->icon = reinterpret_cast<IDirect3DTexture9*>(v1->icon);
+                }
+            }
+            
+            this->updateMethod = v1->updateInfo.method;
+            switch (this->updateMethod) {
+            case AddonUpdateMethod::GithubReleasesUpdateMethod:
+                this->githubRepo = v1->updateInfo.githubRepo;
+                break;
+            }
+
             this->AddonLoad = v1->Load;
             this->AddonOpenSettings = v1->OpenSettings;
 
@@ -101,19 +123,6 @@ namespace loader {
             this->AdvPostSetRenderState.Func = v1->AdvPostSetRenderState;
             this->AdvPreDrawIndexedPrimitive.Func = v1->AdvPreDrawIndexedPrimitive;
             this->AdvPostDrawIndexedPrimitive.Func = v1->AdvPostDrawIndexedPrimitive;
-
-            if (v1->icon) {
-                this->iconManaged = v1->iconSize > -1;
-                if (this->iconManaged) {
-                    // Icon is just image data, we have to create the texture
-                    D3DXCreateTextureFromFileInMemory(this->D3DDevice9, v1->icon, v1->iconSize, &this->icon);
-                    this->iconManaged = true;
-                }
-                else {
-                    // Icon is already a loaded texture
-                    this->icon = reinterpret_cast<IDirect3DTexture9*>(v1->icon);
-                }
-            }
 
             return true;
         }
@@ -215,6 +224,14 @@ namespace loader {
             if (this->AddonOpenSettings != nullptr) {
                 this->AddonOpenSettings();
             }
+        }
+
+        unique_ptr<Updater> NativeAddon::GetUpdater() {
+            switch (this->GetUpdateMethod()) {
+            case AddonUpdateMethod::GithubReleasesUpdateMethod:
+                return make_unique<GithubReleasesUpdater>(this->githubRepo);
+            }
+            return nullptr;
         }
 
     }

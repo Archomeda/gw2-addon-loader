@@ -26,6 +26,10 @@ namespace loader {
             void RenderTabStats();
             void RenderTabUpdate();
 
+            bool IsAddonLoaderUpdateAvailable();
+            bool IsAnyAddonUpdateAvailable();
+            std::vector<std::shared_ptr<addons::Addon>> GetAddonsWithAvailableUpdates();
+
             void SelectAddon(const addons::Addon* const addon);
 
             void PushTabStyle(int tabIndex);

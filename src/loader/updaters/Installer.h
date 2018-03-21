@@ -14,7 +14,7 @@ namespace loader {
         class Installer {
         public:
             Installer(const VersionInfo version);
-            Installer(const VersionInfo version, const addons::Addon* addon);
+            Installer(const VersionInfo version, const addons::Addon* const addon);
 
             void StartInstall();
 
