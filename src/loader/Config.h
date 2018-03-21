@@ -36,7 +36,7 @@ namespace loader {
 
         const std::set<uint_fast8_t> GetSettingsKeybind() const { return this->settingsKeybind; }
         bool GetOBSCompatibilityMode() const { return this->obsCompatibilityMode; }
-        bool GetShowUnsupportedAddons() const { return this->showUnsupportedAddons; }
+        bool GetShowIncompatibleAddons() const { return this->showIncompatibleAddons; }
         bool GetShowDebugFeatures() const { return this->showDebugFeatures; }
         timestamp GetLastUpdateCheck() const { return this->lastUpdateCheck; }
         std::string GetLastestVersion() const { return this->lastestVersion; }
@@ -45,7 +45,7 @@ namespace loader {
 
         void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
         void SetOBSCompatibilityMode(bool compatibilityMode);
-        void SetShowUnsupportedAddons(bool showUnsupportedAddons);
+        void SetShowIncompatibleAddons(bool showIncompatibleAddons);
         void SetShowDebugFeatures(bool showDebugFeatures);
         template<class Clock>
         void SetLastUpdateCheck(std::chrono::time_point<Clock, std::chrono::seconds> lastUpdate) {
@@ -68,7 +68,7 @@ namespace loader {
 
         std::set<uint_fast8_t> settingsKeybind;
         bool obsCompatibilityMode = false;
-        bool showUnsupportedAddons = false;
+        bool showIncompatibleAddons = false;
         bool showDebugFeatures = false;
         timestamp lastUpdateCheck;
         std::string lastestVersion;

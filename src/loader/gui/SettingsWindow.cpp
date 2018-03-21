@@ -41,7 +41,7 @@ namespace loader {
             if (!this->initializedState) {
                 this->windowKeybind = AppConfig.GetSettingsKeybind();
                 this->obsCompatibilityMode = AppConfig.GetOBSCompatibilityMode();
-                this->showUnsupportedAddons = AppConfig.GetShowUnsupportedAddons();
+                this->showIncompatibleAddons = AppConfig.GetShowIncompatibleAddons();
                 this->showDebugFeatures = AppConfig.GetShowDebugFeatures();
                 this->initializedState = true;
             }
@@ -217,7 +217,7 @@ namespace loader {
 
             vector<Addon*> addonsList;
             for (auto addon : AddonsList) {
-                if (AppConfig.GetShowUnsupportedAddons() || addon->SupportsLoading()) {
+                if (AppConfig.GetShowIncompatibleAddons() || addon->SupportsLoading()) {
                     addonsList.push_back(addon.get());
                 }
                 else {
@@ -313,7 +313,7 @@ namespace loader {
                         }
                         else {
                             ImGui::PushTextWrapPos();
-                            ImGui::Text("This addon type is not supported by the addon loader: %s.", addon->GetTypeString().c_str());
+                            ImGui::Text("This addon type is not compatible with the addon loader: %s.", addon->GetTypeString().c_str());
                             ImGui::PopTextWrapPos();
                         }
 
@@ -407,7 +407,7 @@ namespace loader {
             ImGui::PushTextWrapPos();
             ImGui::TextUnformatted(R"(Guild Wars 2 Addon Loader is an unofficial addon for Guild Wars 2 developed by Archomeda. It acts as a master addon that makes it easy to manage your Guild Wars 2 addons without the need to sort the files manually.
 
-Addons have to be compatible before they can be used with the Addon Loader. While unsupported addons will still show up in the list of addons, you can't activate them. If you want to use an addon that's not supported, ask its developer to make it compatible.
+Addons have to be compatible before they can be used with the Addon Loader. While incompatible addons will still show up in the list of addons, you can't activate them. If you want to use an addon that's not compatible, ask its developer to update it.
 
 Both this addon and its author do not support addons that are against the Guild Wars 2 Terms of Service. Support will not be provided if you're using these kind of addons. Please do not use them.
 
@@ -461,8 +461,8 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     ImGui::SetTooltip("When OBS compatibility mode is active, the addon loader will attempt to hide\nitself from OBS if the OBS third-party overlays capture setting is disabled.");
                 }
 
-                if (ImGui::Checkbox("Show unsupported addons", &this->showUnsupportedAddons)) {
-                    AppConfig.SetShowUnsupportedAddons(this->showUnsupportedAddons);
+                if (ImGui::Checkbox("Show incompatible addons", &this->showIncompatibleAddons)) {
+                    AppConfig.SetShowIncompatibleAddons(this->showIncompatibleAddons);
                 }
 
                 if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
