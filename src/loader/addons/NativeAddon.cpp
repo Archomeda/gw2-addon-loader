@@ -6,18 +6,16 @@
 
 using namespace std;
 using namespace loader::updaters;
+using namespace loader::utils;
 
 namespace loader {
     namespace addons {
 
         bool NativeAddon::Initialize() {
-            using namespace std;
-            using namespace loader::utils;
-
             HMODULE h = LoadLibrary(this->GetFilePath().c_str());
             if (h == NULL) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native addon {0}: Libray handle is empty", this->GetFileName());
+                GetLog()->error("Could not initialize native addon {0}: Library handle is empty", this->GetFileName());
                 return false;
             }
             this->addonHandle = h;

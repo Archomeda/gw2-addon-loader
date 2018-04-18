@@ -5,15 +5,15 @@
 namespace loader {
     namespace hooks {
 
-        typedef HRESULT(*PreCreateDevice_t)(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface);
-        typedef void(*PostCreateDevice_t)(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow);
-        typedef HRESULT(*PreCreateDeviceEx_t)(IDirect3D9Ex* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface);
-        typedef void(*PostCreateDeviceEx_t)(IDirect3D9Ex* d3d9, IDirect3DDevice9Ex* pDeviceInterface, HWND hFocusWindow);
+        typedef HRESULT(PreCreateDevice_t)(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface);
+        typedef void(PostCreateDevice_t)(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow);
+        typedef HRESULT(PreCreateDeviceEx_t)(IDirect3D9Ex* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface);
+        typedef void(PostCreateDeviceEx_t)(IDirect3D9Ex* d3d9, IDirect3DDevice9Ex* pDeviceInterface, HWND hFocusWindow);
 
-        extern PreCreateDevice_t PreCreateDeviceHook;
-        extern PostCreateDevice_t PostCreateDeviceHook;
-        extern PreCreateDeviceEx_t PreCreateDeviceExHook;
-        extern PostCreateDeviceEx_t PostCreateDeviceExHook;
+        extern PreCreateDevice_t* PreCreateDeviceHook;
+        extern PostCreateDevice_t* PostCreateDeviceHook;
+        extern PreCreateDeviceEx_t* PreCreateDeviceExHook;
+        extern PostCreateDeviceEx_t* PostCreateDeviceExHook;
 
 
         class LoaderDirect3D9 : public IDirect3D9
@@ -50,7 +50,7 @@ namespace loader {
         class LoaderDirect3D9Ex : public IDirect3D9Ex
         {
         public:
-            LoaderDirect3D9Ex(IDirect3D9Ex* d3d9Ex) : d3d9(d3d9) { }
+            LoaderDirect3D9Ex(IDirect3D9Ex* d3d9) : d3d9(d3d9) { }
             LoaderDirect3D9Ex() { }
 
             /*** IUnknown methods ***/

@@ -16,6 +16,12 @@ namespace loader {
             return path(fileName) / append;
         }
 
+        const path GetSystemFolder(const string& append) {
+            wchar_t systemDir[MAX_PATH];
+            GetSystemDirectory(systemDir, MAX_PATH);
+            return (path(systemDir) / append).u8string();
+        }
+
         bool FolderExists(const string& folderName) {
             DWORD fileType = GetFileAttributes(u16(folderName).c_str());
             if (fileType == INVALID_FILE_ATTRIBUTES) {

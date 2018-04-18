@@ -6,20 +6,13 @@
 namespace loader {
     namespace hooks {
 
-        typedef void(*PrePresentPostProcessing_t)(IDirect3DDevice9* pDeviceInterface);
-        typedef void(*PrePresentGui_t)(IDirect3DDevice9* pDeviceInterface);
+        typedef void(PreReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
+        typedef void(PostReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
+        typedef void(PrePresent_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
 
-        typedef void(*PreReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
-        typedef void(*PostReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
-        typedef void(*PrePresent_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-        typedef HRESULT(*Present_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-
-        extern PrePresentPostProcessing_t PrePresentPostProcessingHook;
-        extern PrePresentGui_t PrePresentGuiHook;
-
-        extern PreReset_t PreResetHook;
-        extern PostReset_t PostResetHook;
-        extern PrePresent_t PrePresentHook;
+        extern PreReset_t* PreResetHook;
+        extern PostReset_t* PostResetHook;
+        extern PrePresent_t* PrePresentHook;
 
         extern std::vector<float> DurationHistoryD3D9Processing;
         extern std::vector<float> DurationHistoryLoaderDrawFrame;

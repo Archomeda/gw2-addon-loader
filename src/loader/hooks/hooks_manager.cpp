@@ -1,95 +1,59 @@
 #include "hooks_manager.h"
 #include <filesystem>
+#include <d3d9-defines.h>
 #include "LoaderDirect3D9.h"
 #include "../log.h"
+#include "../utils/file.h"
 
 using namespace std;
 using namespace std::experimental::filesystem;
+using namespace loader::utils;
 
 namespace loader {
     namespace hooks {
 
-        typedef void* (WINAPI *Direct3DShaderValidatorCreate9_t)(void); // Unsure, no documentation available
-        typedef void(WINAPI *PSGPError_t)(void); // Unsure, no documentation available
-        typedef void(WINAPI *PSGPSampleTexture_t)(void); // Unsure, no documentation available
-        typedef int(WINAPI *D3DPERF_BeginEvent_t)(D3DCOLOR col, LPCWSTR wszName);
-        typedef int(WINAPI *D3DPERF_EndEvent_t)(void);
-        typedef DWORD(WINAPI *D3DPERF_GetStatus_t)(void);
-        typedef BOOL(WINAPI *D3DPERF_QueryRepeatFrame_t)(void);
-        typedef void(WINAPI *D3DPERF_SetMarker_t)(D3DCOLOR col, LPCWSTR wszName);
-        typedef void(WINAPI *D3DPERF_SetOptions_t)(DWORD dwOptions);
-        typedef void(WINAPI *D3DPERF_SetRegion_t)(D3DCOLOR col, LPCWSTR wszName);
-        typedef void(WINAPI *DebugSetLevel_t)(LONG level); // Unsure, no documentation available
-        typedef void(WINAPI *DebugSetMute_t)(void);
-        typedef void(WINAPI *Direct3D9EnableMaximizedWindowedModeShim_t)(void); // Unsure, no documentation available
-        typedef IDirect3D9* (WINAPI *Direct3DCreate9_t)(UINT SDKVersion);
-        typedef IDirect3D9Ex* (WINAPI *Direct3DCreate9Ex_t)(UINT SDKVersion);
-
-
         UINT SDKVersion;
-        HMODULE SystemD3D9 = nullptr;
-
-        struct SystemD3D9FuncsDLL {
-            Direct3DShaderValidatorCreate9_t Direct3DShaderValidatorCreate9;
-            PSGPError_t PSGPError;
-            PSGPSampleTexture_t PSGPSampleTexture;
-            D3DPERF_BeginEvent_t D3DPERF_BeginEvent;
-            D3DPERF_EndEvent_t D3DPERF_EndEvent;
-            D3DPERF_GetStatus_t D3DPERF_GetStatus;
-            D3DPERF_QueryRepeatFrame_t D3DPERF_QueryRepeatFrame;
-            D3DPERF_SetMarker_t D3DPERF_SetMarker;
-            D3DPERF_SetOptions_t D3DPERF_SetOptions;
-            D3DPERF_SetRegion_t D3DPERF_SetRegion;
-            DebugSetLevel_t DebugSetLevel;
-            DebugSetMute_t DebugSetMute;
-            Direct3D9EnableMaximizedWindowedModeShim_t Direct3D9EnableMaximizedWindowedModeShim;
-            Direct3DCreate9_t Direct3DCreate9;
-            Direct3DCreate9Ex_t Direct3DCreate9Ex;
-        } SystemD3D9Funcs;
+        HMODULE SystemD3D9Module = nullptr;
+        D3D9Exports SystemD3D9Funcs;
 
 
         void InitializeHooks() {
             GetLog()->debug("loader::hooks::InitializeHooks()");
             // It's unadvised to call LoadLibrary in DllMain, because it can cause a deadlock.
             // But eh whatever, we are just a proxy anyway, no one should call us except Guild Wars 2.
-
-            wchar_t systemDir[MAX_PATH];
-            GetSystemDirectory(systemDir, MAX_PATH);
-            path systemPath(systemDir);
-            systemPath /= "d3d9";
-            wstring wSystemD3D9Path = systemPath.wstring();
-            SystemD3D9 = LoadLibrary(wSystemD3D9Path.c_str());
-            if (!SystemD3D9) {
+            path systemD3D9 = GetSystemFolder("d3d9");
+            SystemD3D9Module = LoadLibrary(systemD3D9.c_str());
+            if (!SystemD3D9Module) {
                 GetLog()->error("Failed to load the system d3d9.dll: {0}", LastErrorToString(GetLastError()));
                 return;
             }
 
-            SystemD3D9Funcs.Direct3DShaderValidatorCreate9 = reinterpret_cast<Direct3DShaderValidatorCreate9_t>(GetProcAddress(SystemD3D9, "Direct3DShaderValidatorCreate9"));
-            SystemD3D9Funcs.PSGPError = reinterpret_cast<PSGPError_t>(GetProcAddress(SystemD3D9, "PSGPError"));
-            SystemD3D9Funcs.PSGPSampleTexture = reinterpret_cast<PSGPSampleTexture_t>(GetProcAddress(SystemD3D9, "PSGPSampleTexture"));
-            SystemD3D9Funcs.D3DPERF_BeginEvent = reinterpret_cast<D3DPERF_BeginEvent_t>(GetProcAddress(SystemD3D9, "D3DPERF_BeginEvent"));
-            SystemD3D9Funcs.D3DPERF_EndEvent = reinterpret_cast<D3DPERF_EndEvent_t>(GetProcAddress(SystemD3D9, "D3DPERF_EndEvent"));
-            SystemD3D9Funcs.D3DPERF_GetStatus = reinterpret_cast<D3DPERF_GetStatus_t>(GetProcAddress(SystemD3D9, "D3DPERF_GetStatus"));
-            SystemD3D9Funcs.D3DPERF_QueryRepeatFrame = reinterpret_cast<D3DPERF_QueryRepeatFrame_t>(GetProcAddress(SystemD3D9, "D3DPERF_QueryRepeatFrame"));
-            SystemD3D9Funcs.D3DPERF_SetMarker = reinterpret_cast<D3DPERF_SetMarker_t>(GetProcAddress(SystemD3D9, "D3DPERF_SetMarker"));
-            SystemD3D9Funcs.D3DPERF_SetOptions = reinterpret_cast<D3DPERF_SetOptions_t>(GetProcAddress(SystemD3D9, "D3DPERF_SetOptions"));
-            SystemD3D9Funcs.D3DPERF_SetRegion = reinterpret_cast<D3DPERF_SetRegion_t>(GetProcAddress(SystemD3D9, "D3DPERF_SetRegion"));
-            SystemD3D9Funcs.DebugSetLevel = reinterpret_cast<DebugSetLevel_t>(GetProcAddress(SystemD3D9, "DebugSetLevel"));
-            SystemD3D9Funcs.DebugSetMute = reinterpret_cast<DebugSetMute_t>(GetProcAddress(SystemD3D9, "DebugSetMute"));
-            SystemD3D9Funcs.Direct3D9EnableMaximizedWindowedModeShim = reinterpret_cast<Direct3D9EnableMaximizedWindowedModeShim_t>(GetProcAddress(SystemD3D9, "Direct3D9EnableMaximizedWindowedModeShim"));
-            SystemD3D9Funcs.Direct3DCreate9 = reinterpret_cast<Direct3DCreate9_t>(GetProcAddress(SystemD3D9, "Direct3DCreate9"));
-            SystemD3D9Funcs.Direct3DCreate9Ex = reinterpret_cast<Direct3DCreate9Ex_t>(GetProcAddress(SystemD3D9, "Direct3DCreate9Ex"));
+            SystemD3D9Funcs.Direct3DShaderValidatorCreate9 = reinterpret_cast<Direct3DShaderValidatorCreate9_t*>(GetProcAddress(SystemD3D9Module, "Direct3DShaderValidatorCreate9"));
+            SystemD3D9Funcs.PSGPError = reinterpret_cast<PSGPError_t*>(GetProcAddress(SystemD3D9Module, "PSGPError"));
+            SystemD3D9Funcs.PSGPSampleTexture = reinterpret_cast<PSGPSampleTexture_t*>(GetProcAddress(SystemD3D9Module, "PSGPSampleTexture"));
+            SystemD3D9Funcs.D3DPERF_BeginEvent = reinterpret_cast<D3DPERF_BeginEvent_t*>(GetProcAddress(SystemD3D9Module, "D3DPERF_BeginEvent"));
+            SystemD3D9Funcs.D3DPERF_EndEvent = reinterpret_cast<D3DPERF_EndEvent_t*>(GetProcAddress(SystemD3D9Module, "D3DPERF_EndEvent"));
+            SystemD3D9Funcs.D3DPERF_GetStatus = reinterpret_cast<D3DPERF_GetStatus_t*>(GetProcAddress(SystemD3D9Module, "D3DPERF_GetStatus"));
+            SystemD3D9Funcs.D3DPERF_QueryRepeatFrame = reinterpret_cast<D3DPERF_QueryRepeatFrame_t*>(GetProcAddress(SystemD3D9Module, "D3DPERF_QueryRepeatFrame"));
+            SystemD3D9Funcs.D3DPERF_SetMarker = reinterpret_cast<D3DPERF_SetMarker_t*>(GetProcAddress(SystemD3D9Module, "D3DPERF_SetMarker"));
+            SystemD3D9Funcs.D3DPERF_SetOptions = reinterpret_cast<D3DPERF_SetOptions_t*>(GetProcAddress(SystemD3D9Module, "D3DPERF_SetOptions"));
+            SystemD3D9Funcs.D3DPERF_SetRegion = reinterpret_cast<D3DPERF_SetRegion_t*>(GetProcAddress(SystemD3D9Module, "D3DPERF_SetRegion"));
+            SystemD3D9Funcs.DebugSetLevel = reinterpret_cast<DebugSetLevel_t*>(GetProcAddress(SystemD3D9Module, "DebugSetLevel"));
+            SystemD3D9Funcs.DebugSetMute = reinterpret_cast<DebugSetMute_t*>(GetProcAddress(SystemD3D9Module, "DebugSetMute"));
+            SystemD3D9Funcs.Direct3D9EnableMaximizedWindowedModeShim = reinterpret_cast<Direct3D9EnableMaximizedWindowedModeShim_t*>(GetProcAddress(SystemD3D9Module, "Direct3D9EnableMaximizedWindowedModeShim"));
+            SystemD3D9Funcs.Direct3DCreate9 = reinterpret_cast<Direct3DCreate9_t*>(GetProcAddress(SystemD3D9Module, "Direct3DCreate9"));
+            SystemD3D9Funcs.Direct3DCreate9Ex = reinterpret_cast<Direct3DCreate9Ex_t*>(GetProcAddress(SystemD3D9Module, "Direct3DCreate9Ex"));
         }
 
         void UninitializeHooks() {
             GetLog()->debug("loader::hooks::UnintializeHooks()");
 
-            if (SystemD3D9)
+            if (SystemD3D9Module)
             {
-                if (!FreeLibrary(SystemD3D9)) {
+                if (!FreeLibrary(SystemD3D9Module)) {
                     GetLog()->error("Failed to free system d3d9 library: {0}", LastErrorToString(GetLastError()));
                 }
-                SystemD3D9 = nullptr;
+                SystemD3D9Module = nullptr;
             }
         }
 

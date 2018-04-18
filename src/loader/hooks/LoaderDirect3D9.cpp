@@ -4,10 +4,10 @@
 namespace loader {
     namespace hooks {
 
-        PreCreateDevice_t PreCreateDeviceHook = nullptr;
-        PostCreateDevice_t PostCreateDeviceHook = nullptr;
-        PreCreateDeviceEx_t PreCreateDeviceExHook = nullptr;
-        PostCreateDeviceEx_t PostCreateDeviceExHook = nullptr;
+        PreCreateDevice_t* PreCreateDeviceHook = nullptr;
+        PostCreateDevice_t* PostCreateDeviceHook = nullptr;
+        PreCreateDeviceEx_t* PreCreateDeviceExHook = nullptr;
+        PostCreateDeviceEx_t* PostCreateDeviceExHook = nullptr;
 
 
         HRESULT LoaderDirect3D9::QueryInterface(REFIID riid, void** ppvObj) {

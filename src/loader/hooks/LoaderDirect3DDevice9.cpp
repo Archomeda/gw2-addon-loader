@@ -17,9 +17,9 @@ using namespace std::experimental::filesystem;
 namespace loader {
     namespace hooks {
 
-        PreReset_t PreResetHook = nullptr;
-        PostReset_t PostResetHook = nullptr;
-        PrePresent_t PrePresentHook = nullptr;
+        PreReset_t* PreResetHook = nullptr;
+        PostReset_t* PostResetHook = nullptr;
+        PrePresent_t* PrePresentHook = nullptr;
 
 
         D3DFORMAT stateFormat = D3DFMT_UNKNOWN;
