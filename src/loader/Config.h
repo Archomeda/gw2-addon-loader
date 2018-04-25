@@ -32,9 +32,9 @@ namespace loader {
         bool GetShowIncompatibleAddons() const { return this->showIncompatibleAddons; }
         bool GetShowDebugFeatures() const { return this->showDebugFeatures; }
         timestamp GetLastUpdateCheck() const { return this->lastUpdateCheck; }
-        std::string GetLastestVersion() const { return this->lastestVersion; }
-        std::string GetLastestVersionInfoUrl() const { return this->lastestVersionInfoUrl; }
-        std::string GetLastestVersionDownloadUrl() const { return this->lastestVersionDownloadUrl; }
+        std::string GetLatestVersion() const { return this->latestVersion; }
+        std::string GetLatestVersionInfoUrl() const { return this->latestVersionInfoUrl; }
+        std::string GetLatestVersionDownloadUrl() const { return this->latestVersionDownloadUrl; }
 
         void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
         void SetOBSCompatibilityMode(bool compatibilityMode);
@@ -48,23 +48,23 @@ namespace loader {
             this->ini.SetLongValue(L"general", L"last_update_check", static_cast<long>(duration.count()));
             this->ini.SaveFile(this->configPath.c_str());
         }
-        void SetLastestVersion(const std::string& version);
-        void SetLastestVersionInfoUrl(const std::string& url);
-        void SetLastestVersionDownloadUrl(const std::string& url);
+        void SetLatestVersion(const std::string& version);
+        void SetLatestVersionInfoUrl(const std::string& url);
+        void SetLatestVersionDownloadUrl(const std::string& url);
 
         /** Addon settings */
 
         bool GetAddonEnabled(addons::Addon* const addon);
         int GetAddonOrder(addons::Addon* const addon);
-        std::string GetLastestAddonVersion(addons::Addon* const addon);
-        std::string GetLastestAddonVersionInfoUrl(addons::Addon* const addon);
-        std::string GetLastestAddonVersionDownloadUrl(addons::Addon* const addon);
+        std::string GetLatestAddonVersion(addons::Addon* const addon);
+        std::string GetLatestAddonVersionInfoUrl(addons::Addon* const addon);
+        std::string GetLatestAddonVersionDownloadUrl(addons::Addon* const addon);
 
         void SetAddonEnabled(const addons::Addon* const addon, bool enabled);
         void SetAddonOrder(const addons::Addon* const addon, int order);
-        void SetLastestAddonVersion(const addons::Addon* const addon, const std::string& version);
-        void SetLastestAddonVersionInfoUrl(const addons::Addon* const addon, const std::string& url);
-        void SetLastestAddonVersionDownloadUrl(const addons::Addon* const addon, const std::string& url);
+        void SetLatestAddonVersion(const addons::Addon* const addon, const std::string& version);
+        void SetLatestAddonVersionInfoUrl(const addons::Addon* const addon, const std::string& url);
+        void SetLatestAddonVersionDownloadUrl(const addons::Addon* const addon, const std::string& url);
 
     private:
         const std::string configName = "loader.ini";
@@ -78,15 +78,15 @@ namespace loader {
         bool showIncompatibleAddons = false;
         bool showDebugFeatures = false;
         timestamp lastUpdateCheck;
-        std::string lastestVersion;
-        std::string lastestVersionInfoUrl;
-        std::string lastestVersionDownloadUrl;
+        std::string latestVersion;
+        std::string latestVersionInfoUrl;
+        std::string latestVersionDownloadUrl;
 
         std::map<addons::Addon*, bool> addonEnabled;
         std::map<addons::Addon*, int> addonOrder;
-        std::map<addons::Addon*, std::string> lastestAddonVersion;
-        std::map<addons::Addon*, std::string> lastestAddonVersionInfoUrl;
-        std::map<addons::Addon*, std::string> lastestAddonVersionDownloadUrl;
+        std::map<addons::Addon*, std::string> latestAddonVersion;
+        std::map<addons::Addon*, std::string> latestAddonVersionInfoUrl;
+        std::map<addons::Addon*, std::string> latestAddonVersionDownloadUrl;
 
         CSimpleIni ini;
     };

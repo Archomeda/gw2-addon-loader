@@ -54,9 +54,9 @@ namespace loader {
         this->showIncompatibleAddons = this->ini.GetBoolValue(L"addons", L"show_incompatible_addons", false);
         this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
         this->lastUpdateCheck = timestamp(chrono::seconds(this->ini.GetLongValue(L"general", L"last_update_check", 0)));
-        this->lastestVersion = u8(this->ini.GetValue(L"general", L"lastest_version", L""));
-        this->lastestVersionInfoUrl = u8(this->ini.GetValue(L"general", L"lastest_version_info_url", L""));
-        this->lastestVersionDownloadUrl = u8(this->ini.GetValue(L"general", L"lastest_version_download_url", L""));
+        this->latestVersion = u8(this->ini.GetValue(L"general", L"latest_version", L""));
+        this->latestVersionInfoUrl = u8(this->ini.GetValue(L"general", L"latest_version_info_url", L""));
+        this->latestVersionDownloadUrl = u8(this->ini.GetValue(L"general", L"latest_version_download_url", L""));
     }
 
 
@@ -114,21 +114,21 @@ namespace loader {
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestVersion(const string& version) {
-        this->lastestVersion = version;
-        this->ini.SetValue(L"general", L"lastest_version", u16(version).c_str());
+    void Config::SetLatestVersion(const string& version) {
+        this->latestVersion = version;
+        this->ini.SetValue(L"general", L"latest_version", u16(version).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestVersionInfoUrl(const string& url) {
-        this->lastestVersionInfoUrl = url;
-        this->ini.SetValue(L"general", L"lastest_version_info_url", u16(url).c_str());
+    void Config::SetLatestVersionInfoUrl(const string& url) {
+        this->latestVersionInfoUrl = url;
+        this->ini.SetValue(L"general", L"latest_version_info_url", u16(url).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestVersionDownloadUrl(const string& url) {
-        this->lastestVersionDownloadUrl = url;
-        this->ini.SetValue(L"general", L"lastest_version_download_url", u16(url).c_str());
+    void Config::SetLatestVersionDownloadUrl(const string& url) {
+        this->latestVersionDownloadUrl = url;
+        this->ini.SetValue(L"general", L"latest_version_download_url", u16(url).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
@@ -159,41 +159,41 @@ namespace loader {
         return value;
     }
 
-    string Config::GetLastestAddonVersion(Addon* const addon) {
+    string Config::GetLatestAddonVersion(Addon* const addon) {
         string value;
-        if (this->lastestAddonVersion.count(addon) == 0) {
+        if (this->latestAddonVersion.count(addon) == 0) {
             wstring key = u16("addon-" + addon->GetID());
             value = u8(this->ini.GetValue(key.c_str(), L"latest_version", L""));
-            this->lastestAddonVersion[addon] = value;
+            this->latestAddonVersion[addon] = value;
         }
         else {
-            value = this->lastestAddonVersion[addon];
+            value = this->latestAddonVersion[addon];
         }
         return value;
     }
 
-    string Config::GetLastestAddonVersionInfoUrl(Addon* const addon) {
+    string Config::GetLatestAddonVersionInfoUrl(Addon* const addon) {
         string value;
-        if (this->lastestAddonVersionInfoUrl.count(addon) == 0) {
+        if (this->latestAddonVersionInfoUrl.count(addon) == 0) {
             wstring key = u16("addon-" + addon->GetID());
-            value = u8(this->ini.GetValue(key.c_str(), L"lastest_version_info_url", L""));
-            this->lastestAddonVersionInfoUrl[addon] = value;
+            value = u8(this->ini.GetValue(key.c_str(), L"latest_version_info_url", L""));
+            this->latestAddonVersionInfoUrl[addon] = value;
         }
         else {
-            value = this->lastestAddonVersionInfoUrl[addon];
+            value = this->latestAddonVersionInfoUrl[addon];
         }
         return value;
     }
 
-    string Config::GetLastestAddonVersionDownloadUrl(Addon* const addon) {
+    string Config::GetLatestAddonVersionDownloadUrl(Addon* const addon) {
         string value;
-        if (this->lastestAddonVersionDownloadUrl.count(addon) == 0) {
+        if (this->latestAddonVersionDownloadUrl.count(addon) == 0) {
             wstring key = u16("addon-" + addon->GetID());
-            value = u8(this->ini.GetValue(key.c_str(), L"lastest_version_download_url", L""));
-            this->lastestAddonVersionDownloadUrl[addon] = value;
+            value = u8(this->ini.GetValue(key.c_str(), L"latest_version_download_url", L""));
+            this->latestAddonVersionDownloadUrl[addon] = value;
         }
         else {
-            value = this->lastestAddonVersionDownloadUrl[addon];
+            value = this->latestAddonVersionDownloadUrl[addon];
         }
         return value;
     }
@@ -211,21 +211,21 @@ namespace loader {
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestAddonVersion(const Addon* const addon, const string& version) {
+    void Config::SetLatestAddonVersion(const Addon* const addon, const string& version) {
         wstring key = u16("addon-" + addon->GetID());
         this->ini.SetValue(key.c_str(), L"latest_version", u16(version).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestAddonVersionInfoUrl(const Addon* const addon, const string& url) {
+    void Config::SetLatestAddonVersionInfoUrl(const Addon* const addon, const string& url) {
         wstring key = u16("addon-" + addon->GetID());
-        this->ini.SetValue(key.c_str(), L"lastest_version_info_url", u16(url).c_str());
+        this->ini.SetValue(key.c_str(), L"latest_version_info_url", u16(url).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetLastestAddonVersionDownloadUrl(const Addon* const addon, const string& url) {
+    void Config::SetLatestAddonVersionDownloadUrl(const Addon* const addon, const string& url) {
         wstring key = u16("addon-" + addon->GetID());
-        this->ini.SetValue(key.c_str(), L"lastest_version_download_url", u16(url).c_str());
+        this->ini.SetValue(key.c_str(), L"latest_version_download_url", u16(url).c_str());
         this->ini.SaveFile(this->configPath.c_str());
     }
 

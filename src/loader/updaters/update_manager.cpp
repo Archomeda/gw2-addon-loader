@@ -25,11 +25,11 @@ namespace loader {
             }
 
             LoaderUpdater.SetCheckCallback([](const Updater* const updater, VersionInfo version) {
-                if (AppConfig.GetLastestVersion() != version.version) {
+                if (AppConfig.GetLatestVersion() != version.version) {
                     GetLog()->info("New Addon Loader version found: {0}", version.version);
-                    AppConfig.SetLastestVersion(version.version);
-                    AppConfig.SetLastestVersionInfoUrl(version.infoUrl);
-                    AppConfig.SetLastestVersionDownloadUrl(version.downloadUrl);
+                    AppConfig.SetLatestVersion(version.version);
+                    AppConfig.SetLatestVersionInfoUrl(version.infoUrl);
+                    AppConfig.SetLatestVersionDownloadUrl(version.downloadUrl);
                 }
                 AppConfig.SetLastUpdateCheck(chrono::time_point_cast<chrono::seconds>(chrono::system_clock::now()));
             });
@@ -40,9 +40,9 @@ namespace loader {
                     addon->CheckUpdate([&addon](const Updater* const updater, VersionInfo version) {
                         if (addon->GetVersion() != version.version) {
                             GetLog()->info("New version found for {0}: {1}", addon->GetName(), version.version);
-                            AppConfig.SetLastestAddonVersion(addon.get(), version.version);
-                            AppConfig.SetLastestAddonVersionInfoUrl(addon.get(), version.infoUrl);
-                            AppConfig.SetLastestAddonVersionDownloadUrl(addon.get(), version.downloadUrl);
+                            AppConfig.SetLatestAddonVersion(addon.get(), version.version);
+                            AppConfig.SetLatestAddonVersionInfoUrl(addon.get(), version.infoUrl);
+                            AppConfig.SetLatestAddonVersionDownloadUrl(addon.get(), version.downloadUrl);
                         }
                     });
                 }
@@ -51,9 +51,9 @@ namespace loader {
 
         void InstallUpdate() {
             VersionInfo versionInfo;
-            versionInfo.version = AppConfig.GetLastestVersion();
-            versionInfo.infoUrl = AppConfig.GetLastestVersionInfoUrl();
-            versionInfo.downloadUrl = AppConfig.GetLastestVersionDownloadUrl();
+            versionInfo.version = AppConfig.GetLatestVersion();
+            versionInfo.infoUrl = AppConfig.GetLatestVersionInfoUrl();
+            versionInfo.downloadUrl = AppConfig.GetLatestVersionDownloadUrl();
             if (versionInfo.downloadUrl.empty()) {
                 return;
             }

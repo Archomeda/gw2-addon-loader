@@ -614,10 +614,10 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     ImGui::PopTextWrapPos();
                     ImGui::Dummy(ImVec2(0, 16));
                     ImGui::Text("Current version: %s", VERSION);
-                    ImGui::Text("Latest version: %s", AppConfig.GetLastestVersion().c_str());
+                    ImGui::Text("Latest version: %s", AppConfig.GetLatestVersion().c_str());
                     ImGui::Dummy(ImVec2(0, 8));
                     if (ImGui::Button(ICON_OC_MARK_GITHUB " Open release notes", ImVec2(160, 32))) {
-                        ShellExecute(0, 0, u16(AppConfig.GetLastestVersionInfoUrl()).c_str(), 0, 0, SW_SHOW);
+                        ShellExecute(0, 0, u16(AppConfig.GetLatestVersionInfoUrl()).c_str(), 0, 0, SW_SHOW);
                     }
                     ImGui::SameLine();
                     if (LoaderUpdaterInstaller != nullptr && (LoaderUpdaterInstaller->IsBusy() || LoaderUpdaterInstaller->HasCompleted())) {
@@ -672,7 +672,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
 
 
         bool SettingsWindow::IsAddonLoaderUpdateAvailable() {
-            string latestVersion = AppConfig.GetLastestVersion();
+            string latestVersion = AppConfig.GetLatestVersion();
             return !latestVersion.empty() && latestVersion != VERSION;
         }
 

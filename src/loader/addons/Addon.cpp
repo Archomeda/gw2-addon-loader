@@ -148,9 +148,9 @@ namespace loader {
 
         VersionInfo Addon::GetLatestVersion() {
             VersionInfo versionInfo;
-            versionInfo.version = AppConfig.GetLastestAddonVersion(this);
-            versionInfo.infoUrl = AppConfig.GetLastestAddonVersionInfoUrl(this);
-            versionInfo.downloadUrl = AppConfig.GetLastestAddonVersionDownloadUrl(this);
+            versionInfo.version = AppConfig.GetLatestAddonVersion(this);
+            versionInfo.infoUrl = AppConfig.GetLatestAddonVersionInfoUrl(this);
+            versionInfo.downloadUrl = AppConfig.GetLatestAddonVersionDownloadUrl(this);
             return versionInfo;
         }
 
