@@ -1,13 +1,13 @@
 #include "GithubReleasesUpdater.h"
-#include <rapidjson/document.h>
-#include <miniz.h>
 #include <regex>
+#include <json.hpp>
+#include <miniz.h>
 #include "../globals.h"
 #include "../log.h"
 #include "../utils/web.h"
 
 using namespace std;
-using namespace rapidjson;
+using json = nlohmann::json;
 using namespace loader::utils;
 
 namespace loader {
@@ -23,41 +23,38 @@ namespace loader {
                 return versionInfo;
             }
 
-            string jsonString(data.begin(), data.end());
-            Document json;
-            json.Parse<0>(jsonString.c_str());
-            if (!json.IsArray()) {
-                GetLog()->warn("Checking for updates on GitHub repository {0} failed: invalid response", this->repository);
-                return versionInfo;
-            }
-
-            for (SizeType i = 0; i < json.Size(); ++i) {
-                if (!json[i].HasMember("tag_name") || !json[i]["tag_name"].IsString()) {
-                    continue;
-                }
-                if (json[i].HasMember("prerelease") && json[i]["prerelease"].IsBool() && json[i]["prerelease"].GetBool()) {
-                    // Prerelease, skipping for now
-                    continue;
-                }
-                versionInfo.version = json[i]["tag_name"].GetString();
-                versionInfo.infoUrl = json[i]["html_url"].GetString();
-                if (json[i].HasMember("assets") && json[i]["assets"].IsArray()) {
-                    const auto& assets = json[i]["assets"];
-                    for (SizeType j = 0; j < assets.Size(); ++j) {
-                        if (!assets[j].HasMember("name") || !assets[j]["name"].IsString() ||
-                            !assets[j].HasMember("browser_download_url") || !assets[j]["browser_download_url"].IsString()) {
-                            continue;
-                        }
-                        string assetName = assets[j]["name"].GetString();
-                        regex re(".*" PLATFORM ".*\\.(zip|dll)");
-                        smatch match;
-                        if (regex_search(assetName, match, re) && match.size() > 1) {
-                            versionInfo.downloadUrl = assets[j]["browser_download_url"].GetString();
-                            break;
+            auto doc = json::parse(data.begin(), data.end());
+            try {
+                for (const auto& release : doc) {
+                    if (release.find("tag_name") == release.end()) {
+                        continue;
+                    }
+                    if (release.find("prerelease") != release.end() && release["prerelease"].get<bool>()) {
+                        // Prerelease, skipping for now
+                        continue;
+                    }
+                    versionInfo.version = release["tag_name"].get<string>();
+                    versionInfo.infoUrl = release["html_url"].get<string>();
+                    if (release.find("assets") != release.end()) {
+                        for (const auto& asset : release["assets"]) {
+                            if (asset.find("name") == asset.end() || asset.find("browser_download_url") == asset.end()) {
+                                continue;
+                            }
+                            string assetName = asset["name"].get<string>();
+                            regex re(".*" PLATFORM ".*\\.(zip|dll)");
+                            smatch match;
+                            if (regex_search(assetName, match, re) && match.size() > 1) {
+                                versionInfo.downloadUrl = asset["browser_download_url"].get<string>();
+                                break;
+                            }
                         }
                     }
+                    break;
                 }
-                break;
+            }
+            catch (const exception& ex) {
+                GetLog()->warn("Parsing JSON result from GitHub releases API for repository {0} failed: {1}", this->repository, ex.what());
+                return versionInfo;
             }
 
             if (versionInfo.version == "") {

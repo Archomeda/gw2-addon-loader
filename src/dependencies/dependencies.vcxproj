@@ -73,25 +73,25 @@
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x86</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x86</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x64</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName).x64</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)rapidjson\include;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -148,41 +148,6 @@
     <ClInclude Include="imgui\stb_textedit.h" />
     <ClInclude Include="imgui\stb_truetype.h" />
     <ClInclude Include="miniz\miniz.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\allocators.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\document.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\encodedstream.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\encodings.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\error\en.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\error\error.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\filereadstream.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\filewritestream.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\fwd.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\biginteger.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\diyfp.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\dtoa.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\ieee754.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\itoa.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\meta.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\pow10.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\regex.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\stack.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\strtod.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\internal\swap.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\istreamwrapper.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\memorybuffer.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\memorystream.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\msinttypes\inttypes.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\msinttypes\stdint.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\ostreamwrapper.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\pointer.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\prettywriter.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\rapidjson.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\reader.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\schema.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\stream.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\stringbuffer.h" />
-    <ClInclude Include="rapidjson\include\rapidjson\writer.h" />
     <ClInclude Include="simpleini\SimpleIni.h" />
     <ClInclude Include="spdlog\include\spdlog\spdlog.h" />
   </ItemGroup>

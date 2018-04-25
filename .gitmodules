@@ -10,6 +10,3 @@
 [submodule "src/dependencies/IconFontCppHeaders"]
 	path = src/dependencies/IconFontCppHeaders
 	url = https://github.com/juliettef/IconFontCppHeaders.git
-[submodule "src/dependencies/rapidjson"]
-	path = src/dependencies/rapidjson
-	url = https://github.com/Tencent/rapidjson.git
