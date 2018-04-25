@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <iomanip>
 #include <ShlObj.h>
+#include <sstream>
 #include <vector>
 #include <miniz.h>
 #include "../globals.h"
@@ -59,14 +61,20 @@ namespace loader {
 
 
         void Installer::DownloaderProgressUpdate(const Downloader* const downloader, size_t progress, size_t total) {
+            this->progressFraction = static_cast<float>(progress) / total;
             if (total > 0) {
-                this->SetDetailedProgress("Downloading (" + to_string(progress) + " / " + to_string(total) + ")");
+                stringstream ss;
+                ss << "Downloading... " << std::fixed << std::setprecision(1) << this->progressFraction * 100 << "%";
+                this->SetDetailedProgress(ss.str());
             }
             else if (progress > 0) {
-                this->SetDetailedProgress("Downloading (" + to_string(progress) + ")");
+                stringstream ss;
+                ss.imbue(locale());
+                ss << "Downloading... " << progress << " bytes";
+                this->SetDetailedProgress(ss.str());
             }
             else if (downloader->IsBusy()) {
-                this->SetDetailedProgress("Connecting");
+                this->SetDetailedProgress("Connecting...");
             }
             else {
                 this->SetDetailedProgress("");
@@ -96,7 +104,7 @@ namespace loader {
                 // Determine first if data is a Windows PE file or a ZIP file
                 if (data[0] == 0x4D && data[1] == 0x5A) {
                     // MZ, Windows PE
-                    this->SetDetailedProgress("Copying new file");
+                    this->SetDetailedProgress("Copying new file...");
                     const path target = folder / this->targetFileName;
                     try {
                         this->WriteFile(data, target);
@@ -123,7 +131,7 @@ namespace loader {
                     mz_zip_archive_file_stat fileStat;
                     mz_uint archiveNumFiles = mz_zip_reader_get_num_files(&archive);
                     for (mz_uint i = 0; i < archiveNumFiles; ++i) {
-                        this->SetDetailedProgress("Extracting files (" + to_string(i) + " / " + to_string(archiveNumFiles) + ")");
+                        this->SetDetailedProgress("Extracting files... " + to_string(i + 1) + " of " + to_string(archiveNumFiles));
 
                         if (!mz_zip_reader_file_stat(&archive, i, &fileStat)) {
                             this->SetDetailedProgress("Error while extracting: Could not read at index " + to_string(i));

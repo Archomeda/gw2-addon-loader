@@ -610,7 +610,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
             {
                 if (this->IsAddonLoaderUpdateAvailable()) {
                     ImGui::PushTextWrapPos();
-                    ImGui::TextUnformatted("A new update for the Addon Loader is available. Please refer the release notes to see what has changed. Click the \"Update\" button to automatically update the Addon Loader. After an update has finished, a full Guild Wars 2 restart is required.");
+                    ImGui::TextUnformatted("A new update for the Addon Loader is available. Please refer to the release notes to see what has changed. Click the \"Update\" button to automatically update the Addon Loader. After the update has finished, a full Guild Wars 2 restart is required.");
                     ImGui::PopTextWrapPos();
                     ImGui::Dummy(ImVec2(0, 16));
                     ImGui::Text("Current version: %s", VERSION);
@@ -621,7 +621,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     }
                     ImGui::SameLine();
                     if (LoaderUpdaterInstaller != nullptr && (LoaderUpdaterInstaller->IsBusy() || LoaderUpdaterInstaller->HasCompleted())) {
-                        ImGui::Text(LoaderUpdaterInstaller->GetDetailedProgress().c_str());
+                        ImGui::ProgressBar(LoaderUpdaterInstaller->GetProgressFraction(), ImVec2(300, 32), LoaderUpdaterInstaller->GetDetailedProgress().c_str());
                     }
                     else {
                         if (ImGui::Button(ICON_MD_FILE_DOWNLOAD " Update", ImVec2(100, 32))) {
@@ -634,7 +634,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
                 vector<shared_ptr<Addon>> addons = this->GetAddonsWithAvailableUpdates();
                 if (addons.size() > 0) {
                     ImGui::PushTextWrapPos();
-                    ImGui::TextUnformatted("The following addon updates are available. Be careful with updating addons automatically. The information to update addons is provided by the addons themselves and not by the Addon Loader. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. Always check the release notes first. Currently after an update has finished, a full Guild Wars 2 restart is required.");
+                    ImGui::TextUnformatted("The following addon updates are available. Be careful with updating addons automatically. The information to update addons is provided by the addons themselves and not by the Addon Loader. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. Always check the release notes first. After an update has finished, a full Guild Wars 2 restart is required.");
                     ImGui::PopTextWrapPos();
                     for (const auto& addon : addons) {
                         VersionInfo version = addon->GetLatestVersion();
@@ -657,7 +657,7 @@ The author of this library is not associated with ArenaNet nor with any of its p
                         }
                         ImGui::SameLine();
                         if (installer != nullptr && (installer->IsBusy() || installer->HasCompleted())) {
-                            ImGui::Text(installer->GetDetailedProgress().c_str());
+                            ImGui::ProgressBar(LoaderUpdaterInstaller->GetProgressFraction(), ImVec2(300, 32), LoaderUpdaterInstaller->GetDetailedProgress().c_str());
                         }
                         else {
                             if (ImGui::Button(ICON_MD_FILE_DOWNLOAD " Update", ImVec2(100, 32))) {

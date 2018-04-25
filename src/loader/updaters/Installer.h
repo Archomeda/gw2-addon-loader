@@ -20,6 +20,7 @@ namespace loader {
 
             bool IsBusy() const { return this->busy; }
             bool HasCompleted() const { return this->completed; }
+            float GetProgressFraction() const { return this->progressFraction; }
             const std::string GetDetailedProgress();
 
         private:
@@ -37,6 +38,7 @@ namespace loader {
 
             std::atomic_bool busy = false;
             std::atomic_bool completed = false;
+            std::atomic<float> progressFraction = 0;
             std::mutex detailedProgressMutex;
             std::string detailedProgress;
 
