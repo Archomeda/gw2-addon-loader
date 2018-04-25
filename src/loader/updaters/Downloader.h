@@ -5,6 +5,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include "../Event.h"
 
 namespace loader {
     namespace updaters {
@@ -19,10 +20,10 @@ namespace loader {
             Downloader() = default;
             Downloader(const std::string& url) : url(url) { }
 
-            void StartDownloadAsync();
+            Event<const Downloader* const, std::size_t, std::size_t> ProgressUpdate;
+            Event<const Downloader* const, const std::vector<char>&, const std::string&> DownloadComplete;
 
-            void SetProgressUpdateCallback(std::function<ProgressUpdateCallback_t> callback) { this->progressCallback = callback; }
-            void SetDownloadCompleteCallback(std::function<DownloadCompleteCallback_t> callback) { this->completeCallback = callback; }
+            void StartDownloadAsync();
 
             const std::string GetUrl() const { return this->url; }
             std::size_t GetTotalSize() const { return this->dataSize; }
@@ -46,9 +47,6 @@ namespace loader {
             std::atomic_bool busy = false;
             std::atomic_bool completed = false;
             std::string error;
-
-            std::function<ProgressUpdateCallback_t> progressCallback;
-            std::function<DownloadCompleteCallback_t> completeCallback;
         };
 
     }

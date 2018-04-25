@@ -166,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="addons\AddonFunc.h" />
     <ClInclude Include="addons\NativeAddon.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="updaters\Downloader.h" />
     <ClInclude Include="updaters\GithubReleasesUpdater.h" />

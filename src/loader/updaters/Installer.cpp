@@ -38,12 +38,12 @@ namespace loader {
             this->busy = true;
 
             this->downloader = make_unique<Downloader>(this->version.downloadUrl);
-            this->downloader->SetProgressUpdateCallback([this](const Downloader* const downloader, size_t progress, size_t total) {
+            this->downloader->ProgressUpdate += [this](const Downloader* const downloader, size_t progress, size_t total) {
                 this->DownloaderProgressUpdate(downloader, progress, total);
-            });
-            this->downloader->SetDownloadCompleteCallback([this](const Downloader* const downloader, const vector<char>& data, const string& errorMessage) {
+            };
+            this->downloader->DownloadComplete += [this](const Downloader* const downloader, const vector<char>& data, const string& errorMessage) {
                 this->DownloaderComplete(downloader, data, errorMessage);
-            });
+            };
             this->downloader->StartDownloadAsync();
         }
 

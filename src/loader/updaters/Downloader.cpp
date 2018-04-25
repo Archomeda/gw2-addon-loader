@@ -11,18 +11,17 @@ namespace loader {
 
         void Downloader::StartDownloadAsync() {
             if (!this->busy) {
-                this->downloadTask = async(launch::async, [=]() {
+                this->busy = true;
+                this->ProgressUpdate(this, 0, 0);
 
-                    this->busy = true;
+                this->downloadTask = async(launch::async, [=]() {
 
                     string url = this->url;
                     HINTERNET hSession = InternetOpen(L"Guild Wars 2 Addon Loader", 0, NULL, NULL, 0);
                     if (hSession == NULL) {
                         this->error = "Failed to open session";
                         this->busy = false;
-                        if (this->completeCallback != nullptr) {
-                            this->completeCallback(this, {}, this->error);
-                        }
+                        this->DownloadComplete(this, {}, this->error);
                         return;
                     }
 
@@ -31,9 +30,7 @@ namespace loader {
                         InternetCloseHandle(hSession);
                         this->error = "Failed to open URL";
                         this->busy = false;
-                        if (this->completeCallback != nullptr) {
-                            this->completeCallback(this, {}, this->error);
-                        }
+                        this->DownloadComplete(this, {}, this->error);
                         return;
                     }
 
@@ -54,9 +51,7 @@ namespace loader {
                             }
                             this->data.insert(this->data.end(), buffer, buffer + bytesRead);
                             this->dataProgress += bytesRead;
-                            if (this->progressCallback != nullptr) {
-                                this->progressCallback(this, this->dataProgress, this->dataSize);
-                            }
+                            this->ProgressUpdate(this, this->dataProgress, this->dataSize);
                         }
                         else {
                             this->error = "Failed to read from URL";
@@ -70,11 +65,7 @@ namespace loader {
 
                     this->busy = false;
                     this->completed = this->data.size() == this->dataSize;
-
-                    if (this->completeCallback != nullptr) {
-                        this->completeCallback(this, this->data, this->error);
-                    }
-
+                    this->DownloadComplete(this, this->data, this->error);
                     this->downloadTask = {};
 
                 });
