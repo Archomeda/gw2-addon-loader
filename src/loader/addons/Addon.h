@@ -60,6 +60,7 @@ namespace loader {
             const AddonState GetState() const { return this->state; }
             const std::string GetStateString() const { return AddonStateToString(this->GetState()); }
             bool IsLoaded() const { return this->GetState() == AddonState::LoadedState; }
+            bool HasUpdate() const;
 
             virtual bool SupportsLoading() const { return false; }
             virtual bool SupportsHotLoading() const { return false; }
@@ -79,7 +80,7 @@ namespace loader {
             virtual const std::string GetVersion() const { return ""; }
             virtual const std::string GetHomepage() const { return ""; }
             virtual IDirect3DTexture9* GetIcon() const { return nullptr; }
-            updaters::VersionInfo GetLatestVersion();
+            updaters::VersionInfo GetLatestVersion() const;
 
             virtual void OpenSettings() { }
             void CheckUpdate(const std::function<updaters::UpdateCheckCallback_t>& callback);

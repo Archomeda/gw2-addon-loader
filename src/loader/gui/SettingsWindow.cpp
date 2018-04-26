@@ -90,14 +90,14 @@ namespace loader {
                     ImGui::SetTooltip("Info");
                 }
 
-                if (this->IsAddonLoaderUpdateAvailable() || this->IsAnyAddonUpdateAvailable()) {
+                if (this->IsAddonLoaderUpdateAvailable()) {
                     this->PushTabStyle(++i);
                     if (ImGui::Button(ICON_MD_FILE_DOWNLOAD)) {
                         this->selectedTab = i;
                     }
                     this->PopTabStyle(i);
                     if (ImGui::IsItemHovered()) {
-                        ImGui::SetTooltip("Download available update(s)");
+                        ImGui::SetTooltip("Addon Loader update available");
                     }
                 }
             }
@@ -166,13 +166,20 @@ namespace loader {
                         // Fallback generic icon
                         ImGui::PushFont(imgui::FontIconButtons);
                         if (addon->SupportsLoading()) {
-                            ImGui::Text(ICON_MD_EXTENSION);
+                            ImGui::TextUnformatted(ICON_MD_EXTENSION);
                         }
                         ImGui::PopFont();
                     }
+                    if (addon->HasUpdate()) {
+                        ImGui::SetCursorPos(ImVec2(oldPos.x + 24, oldPos.y - listItemHeight + 18));
+                        ImGui::TextUnformatted(ICON_MD_FILE_DOWNLOAD);
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("There's an update available for this addon");
+                        }
+                    }
                     ImGui::SetCursorPos(ImVec2(oldPos.x + 32 + style.ItemSpacing.x, oldPos.y - style.ItemSpacing.y - ((listItemHeight + ImGui::GetTextLineHeightWithSpacing()) / 2)));
                     if (addon->SupportsLoading()) {
-                        ImGui::Text(addon->GetName().c_str());
+                        ImGui::TextUnformatted(addon->GetName().c_str());
                     }
                     else {
                         ImGui::TextDisabled(addon->GetName().c_str());
@@ -319,6 +326,36 @@ namespace loader {
                         if (!addon->GetDescription().empty()) {
                             ImGui::Spacing();
                             ImGui::TextWrapped(addon->GetDescription().c_str());
+                        }
+
+                        // Potential available update
+                        if (addon->HasUpdate()) {
+                            VersionInfo version = addon->GetLatestVersion();
+                            shared_ptr<Installer> installer = AddonUpdateInstallers[addon];
+
+                            ImGui::Dummy(ImVec2(0, 8));
+                            ImGui::PushTextWrapPos();
+                            ImGui::TextUnformatted("An update is available for this addon.\nDisclaimer: Be careful with updating addons automatically; the download information is provided by the addon itself and not by the Addon Loader. Always check the release notes first. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. After the update has finished, a full Guild Wars 2 restart is required.");
+                            ImGui::PopTextWrapPos();
+
+                            ImGui::Dummy(ImVec2(0, 4));
+                            ImGui::Text("Installed version: %s", addon->GetVersion().c_str());
+                            ImGui::Text("New version: %s", version.version.c_str());
+                            ImGui::Dummy(ImVec2(0, 4));
+                            if (!version.infoUrl.empty()) {
+                                if (ImGui::Button("Open release notes", ImVec2(160, 32))) {
+                                    ShellExecute(0, 0, u16(version.infoUrl).c_str(), 0, 0, SW_SHOW);
+                                }
+                            }
+                            ImGui::SameLine();
+                            if (installer != nullptr && (installer->IsBusy() || installer->HasCompleted())) {
+                                ImGui::ProgressBar(installer->GetProgressFraction(), ImVec2(-1, 32), installer->GetDetailedProgress().c_str());
+                            }
+                            else {
+                                if (ImGui::Button(ICON_MD_FILE_DOWNLOAD " Update", ImVec2(100, 32))) {
+                                    InstallUpdate(addon);
+                                }
+                            }
                         }
                     }
                     ImGui::EndChild();
@@ -612,57 +649,20 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     ImGui::PushTextWrapPos();
                     ImGui::TextUnformatted("A new update for the Addon Loader is available. Please refer to the release notes to see what has changed. Click the \"Update\" button to automatically update the Addon Loader. After the update has finished, a full Guild Wars 2 restart is required.");
                     ImGui::PopTextWrapPos();
-                    ImGui::Dummy(ImVec2(0, 16));
-                    ImGui::Text("Current version: %s", VERSION);
-                    ImGui::Text("Latest version: %s", AppConfig.GetLatestVersion().c_str());
-                    ImGui::Dummy(ImVec2(0, 8));
+                    ImGui::Dummy(ImVec2(0, 4));
+                    ImGui::Text("Installed version: %s", VERSION);
+                    ImGui::Text("New version: %s", AppConfig.GetLatestVersion().c_str());
+                    ImGui::Dummy(ImVec2(0, 4));
                     if (ImGui::Button(ICON_OC_MARK_GITHUB " Open release notes", ImVec2(160, 32))) {
                         ShellExecute(0, 0, u16(AppConfig.GetLatestVersionInfoUrl()).c_str(), 0, 0, SW_SHOW);
                     }
                     ImGui::SameLine();
                     if (LoaderUpdaterInstaller != nullptr && (LoaderUpdaterInstaller->IsBusy() || LoaderUpdaterInstaller->HasCompleted())) {
-                        ImGui::ProgressBar(LoaderUpdaterInstaller->GetProgressFraction(), ImVec2(300, 32), LoaderUpdaterInstaller->GetDetailedProgress().c_str());
+                        ImGui::ProgressBar(LoaderUpdaterInstaller->GetProgressFraction(), ImVec2(-1, 32), LoaderUpdaterInstaller->GetDetailedProgress().c_str());
                     }
                     else {
                         if (ImGui::Button(ICON_MD_FILE_DOWNLOAD " Update", ImVec2(100, 32))) {
                             InstallUpdate();
-                        }
-                    }
-                    ImGui::Dummy(ImVec2(0, 32));
-                }
-
-                vector<shared_ptr<Addon>> addons = this->GetAddonsWithAvailableUpdates();
-                if (addons.size() > 0) {
-                    ImGui::PushTextWrapPos();
-                    ImGui::TextUnformatted("The following addon updates are available. Be careful with updating addons automatically. The information to update addons is provided by the addons themselves and not by the Addon Loader. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. Always check the release notes first. After an update has finished, a full Guild Wars 2 restart is required.");
-                    ImGui::PopTextWrapPos();
-                    for (const auto& addon : addons) {
-                        VersionInfo version = addon->GetLatestVersion();
-                        shared_ptr<Installer> installer = AddonUpdateInstallers[addon.get()];
-
-                        ImGui::Dummy(ImVec2(0, 16));
-                        ImGui::TextUnformatted(addon->GetName().c_str());
-                        ImGui::Text("Current version: %s", addon->GetVersion().c_str());
-                        ImGui::Text("Latest version: %s", version.version.c_str());
-                        ImGui::Dummy(ImVec2(0, 8));
-                        if (!version.infoUrl.empty()) {
-                            if (ImGui::Button("Open release notes", ImVec2(160, 32))) {
-                                ShellExecute(0, 0, u16(version.infoUrl).c_str(), 0, 0, SW_SHOW);
-                            }
-                        }
-                        else if (addon->SupportsHomepage()) {
-                            if (ImGui::Button("Open homepage", ImVec2(160, 32))) {
-                                ShellExecute(0, 0, u16(addon->GetHomepage()).c_str(), 0, 0, SW_SHOW);
-                            }
-                        }
-                        ImGui::SameLine();
-                        if (installer != nullptr && (installer->IsBusy() || installer->HasCompleted())) {
-                            ImGui::ProgressBar(LoaderUpdaterInstaller->GetProgressFraction(), ImVec2(300, 32), LoaderUpdaterInstaller->GetDetailedProgress().c_str());
-                        }
-                        else {
-                            if (ImGui::Button(ICON_MD_FILE_DOWNLOAD " Update", ImVec2(100, 32))) {
-                                InstallUpdate(addon.get());
-                            }
                         }
                     }
                 }
@@ -674,27 +674,6 @@ The author of this library is not associated with ArenaNet nor with any of its p
         bool SettingsWindow::IsAddonLoaderUpdateAvailable() {
             string latestVersion = AppConfig.GetLatestVersion();
             return !latestVersion.empty() && latestVersion != VERSION;
-        }
-
-        bool SettingsWindow::IsAnyAddonUpdateAvailable() {
-            for (const auto& addon : AddonsList) {
-                VersionInfo version = addon->GetLatestVersion();
-                if (addon->SupportsUpdating() && !version.downloadUrl.empty() && version.version != addon->GetVersion()) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        vector<shared_ptr<Addon>> SettingsWindow::GetAddonsWithAvailableUpdates() {
-            vector<shared_ptr<Addon>> addons;
-            for (const auto& addon : AddonsList) {
-                VersionInfo version = addon->GetLatestVersion();
-                if (addon->SupportsUpdating() && !version.downloadUrl.empty() && version.version != addon->GetVersion()) {
-                    addons.push_back(addon);
-                }
-            }
-            return addons;
         }
 
 

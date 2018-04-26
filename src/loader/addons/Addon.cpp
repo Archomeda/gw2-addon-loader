@@ -145,8 +145,14 @@ namespace loader {
             return true;
         }
 
+        
+        bool Addon::HasUpdate() const {
+            VersionInfo version = this->GetLatestVersion();
+            return this->SupportsUpdating() && !version.downloadUrl.empty() && version.version != this->GetVersion();
+        }
 
-        VersionInfo Addon::GetLatestVersion() {
+
+        VersionInfo Addon::GetLatestVersion() const {
             VersionInfo versionInfo;
             versionInfo.version = AppConfig.GetLatestAddonVersion(this);
             versionInfo.infoUrl = AppConfig.GetLatestAddonVersionInfoUrl(this);

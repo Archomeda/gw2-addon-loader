@@ -133,67 +133,72 @@ namespace loader {
     }
 
 
-    bool Config::GetAddonEnabled(Addon* const addon) {
+    bool Config::GetAddonEnabled(const Addon* const addon) {
         bool value;
-        if (this->addonEnabled.count(addon) == 0) {
+        auto a = const_cast<Addon*>(addon);
+        if (this->addonEnabled.count(a) == 0) {
             wstring key = u16("addon-" + addon->GetID());
             value = this->ini.GetBoolValue(key.c_str(), L"enabled", false);
-            this->addonEnabled[addon] = value;
+            this->addonEnabled[a] = value;
         }
         else {
-            value = this->addonEnabled[addon];
+            value = this->addonEnabled[a];
         }
         return value;
     }
 
-    int Config::GetAddonOrder(Addon* const addon) {
+    int Config::GetAddonOrder(const Addon* const addon) {
         int value;
-        if (this->addonOrder.count(addon) == 0) {
+        auto a = const_cast<Addon*>(addon);
+        if (this->addonOrder.count(a) == 0) {
             wstring key = u16("addon-" + addon->GetID());
             value = this->ini.GetLongValue(key.c_str(), L"order", -1);
-            this->addonOrder[addon] = value;
+            this->addonOrder[a] = value;
         }
         else {
-            value = this->addonOrder[addon];
+            value = this->addonOrder[a];
         }
         return value;
     }
 
-    string Config::GetLatestAddonVersion(Addon* const addon) {
+    string Config::GetLatestAddonVersion(const Addon* const addon) {
         string value;
-        if (this->latestAddonVersion.count(addon) == 0) {
+        auto a = const_cast<Addon*>(addon);
+        if (this->latestAddonVersion.count(a) == 0) {
             wstring key = u16("addon-" + addon->GetID());
             value = u8(this->ini.GetValue(key.c_str(), L"latest_version", L""));
-            this->latestAddonVersion[addon] = value;
+            this->latestAddonVersion[a] = value;
         }
         else {
-            value = this->latestAddonVersion[addon];
+            value = this->latestAddonVersion[a];
         }
         return value;
     }
 
-    string Config::GetLatestAddonVersionInfoUrl(Addon* const addon) {
+    string Config::GetLatestAddonVersionInfoUrl(const Addon* const addon) {
         string value;
-        if (this->latestAddonVersionInfoUrl.count(addon) == 0) {
+        auto a = const_cast<Addon*>(addon);
+        if (this->latestAddonVersionInfoUrl.count(a) == 0) {
             wstring key = u16("addon-" + addon->GetID());
             value = u8(this->ini.GetValue(key.c_str(), L"latest_version_info_url", L""));
-            this->latestAddonVersionInfoUrl[addon] = value;
+            this->latestAddonVersionInfoUrl[a] = value;
         }
         else {
-            value = this->latestAddonVersionInfoUrl[addon];
+            value = this->latestAddonVersionInfoUrl[a];
         }
         return value;
     }
 
-    string Config::GetLatestAddonVersionDownloadUrl(Addon* const addon) {
+    string Config::GetLatestAddonVersionDownloadUrl(const Addon* const addon) {
         string value;
-        if (this->latestAddonVersionDownloadUrl.count(addon) == 0) {
+        auto a = const_cast<Addon*>(addon);
+        if (this->latestAddonVersionDownloadUrl.count(a) == 0) {
             wstring key = u16("addon-" + addon->GetID());
             value = u8(this->ini.GetValue(key.c_str(), L"latest_version_download_url", L""));
-            this->latestAddonVersionDownloadUrl[addon] = value;
+            this->latestAddonVersionDownloadUrl[a] = value;
         }
         else {
-            value = this->latestAddonVersionDownloadUrl[addon];
+            value = this->latestAddonVersionDownloadUrl[a];
         }
         return value;
     }

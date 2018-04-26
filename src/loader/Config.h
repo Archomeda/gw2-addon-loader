@@ -54,11 +54,11 @@ namespace loader {
 
         /** Addon settings */
 
-        bool GetAddonEnabled(addons::Addon* const addon);
-        int GetAddonOrder(addons::Addon* const addon);
-        std::string GetLatestAddonVersion(addons::Addon* const addon);
-        std::string GetLatestAddonVersionInfoUrl(addons::Addon* const addon);
-        std::string GetLatestAddonVersionDownloadUrl(addons::Addon* const addon);
+        bool GetAddonEnabled(const addons::Addon* const addon);
+        int GetAddonOrder(const addons::Addon* const addon);
+        std::string GetLatestAddonVersion(const addons::Addon* const addon);
+        std::string GetLatestAddonVersionInfoUrl(const addons::Addon* const addon);
+        std::string GetLatestAddonVersionDownloadUrl(const addons::Addon* const addon);
 
         void SetAddonEnabled(const addons::Addon* const addon, bool enabled);
         void SetAddonOrder(const addons::Addon* const addon, int order);
