@@ -34,6 +34,19 @@ By developing addons against *Guild Wars 2 Addon Loader*, you acknowledge that d
 Inside the *src* folder, there are some examples on how to create native addons.
 There are also a few pre-made addons available inside the same folder.
 
+## Third-party software
+*Guild Wars 2 Addon Loader* uses a number of third-party software.
+Please refer to their GitHub repository or website for more information.
+
+- [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)
+- [ImGui 1.53](https://github.com/ocornut/imgui)
+- [JSON for Modern C++ 3.1.2](https://github.com/nlohmann/json)
+- [miniz 2.0.7](https://github.com/richgel999/miniz)
+- [simpleini 4.17](https://github.com/brofield/simpleini)
+- [spdlog 0.16.3](https://github.com/gabime/spdlog)
+- [Various stb libraries](https://github.com/nothings/stb) (font-atlas-packer-only)
+- [zlib 1.2.11](https://zlib.net/) (font-atlas-packer only)
+
 ## Disclaimer
 This is an **unofficial** library.
 The author of this library is not associated with ArenaNet nor with any of its partners.
