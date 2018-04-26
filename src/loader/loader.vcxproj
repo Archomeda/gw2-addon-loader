@@ -168,6 +168,8 @@
     <ClInclude Include="addons\NativeAddon.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="gui\elements\AddonListItem.h" />
+    <ClInclude Include="gui\elements\ExtraImGuiElements.h" />
     <ClInclude Include="updaters\Downloader.h" />
     <ClInclude Include="updaters\GithubReleasesUpdater.h" />
     <ClInclude Include="gui\BitmapFontAtlas.h" />
@@ -206,6 +208,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="addons\NativeAddon.cpp" />
+    <ClCompile Include="gui\elements\AddonListItem.cpp" />
     <ClCompile Include="updaters\Downloader.cpp" />
     <ClCompile Include="updaters\GithubReleasesUpdater.cpp" />
     <ClCompile Include="gui\BitmapFontAtlas.cpp" />

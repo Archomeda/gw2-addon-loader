@@ -8,10 +8,12 @@
 #include <vector>
 #include <IconsMaterialDesign.h>
 #include "imgui.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
 #include "gui_manager.h"
 #include "AddonInfoWindow.h"
 #include "MessageWindow.h"
+#include "elements/ExtraImGuiElements.h"
 #include "../Config.h"
 #include "../IconsOcticons.h"
 #include "../input.h"
@@ -141,7 +143,6 @@ namespace loader {
             }
 
             ImGuiStyle style = ImGui::GetStyle();
-            listItemHeight += style.FramePadding.y * 2;
             bool value_changed = false;
             ImGuiListClipper clipper(static_cast<int>(addons.size()), listItemHeight);
             while (clipper.Step()) {
@@ -150,41 +151,10 @@ namespace loader {
                     auto addon = addons.at(i);
 
                     ImGui::PushID(i);
-                    if (ImGui::Selectable("##dummy", item_selected, 0, ImVec2(0, listItemHeight))) {
+                    if (elements::AddonListItem(addon, item_selected, ImVec2(0, listItemHeight))) {
                         *current_item = i;
                         value_changed = true;
                     }
-
-                    ImVec2 oldPos = ImGui::GetCursorPos();
-                    ImGui::SetCursorPosY(oldPos.y - listItemHeight);
-                    IDirect3DTexture9* icon = addon->GetIcon();
-                    if (icon) {
-                        // Dedicated addon icon
-                        ImGui::Image(icon, ImVec2(32, 32));
-                    }
-                    else {
-                        // Fallback generic icon
-                        ImGui::PushFont(imgui::FontIconButtons);
-                        if (addon->SupportsLoading()) {
-                            ImGui::TextUnformatted(ICON_MD_EXTENSION);
-                        }
-                        ImGui::PopFont();
-                    }
-                    if (addon->HasUpdate()) {
-                        ImGui::SetCursorPos(ImVec2(oldPos.x + 24, oldPos.y - listItemHeight + 18));
-                        ImGui::TextUnformatted(ICON_MD_FILE_DOWNLOAD);
-                        if (ImGui::IsItemHovered()) {
-                            ImGui::SetTooltip("There's an update available for this addon");
-                        }
-                    }
-                    ImGui::SetCursorPos(ImVec2(oldPos.x + 32 + style.ItemSpacing.x, oldPos.y - style.ItemSpacing.y - ((listItemHeight + ImGui::GetTextLineHeightWithSpacing()) / 2)));
-                    if (addon->SupportsLoading()) {
-                        ImGui::TextUnformatted(addon->GetName().c_str());
-                    }
-                    else {
-                        ImGui::TextDisabled(addon->GetName().c_str());
-                    }
-                    ImGui::SetCursorPos(oldPos);
                     ImGui::PopID();
                 }
             }
