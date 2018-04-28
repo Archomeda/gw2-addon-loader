@@ -35,7 +35,7 @@ namespace loader {
             });
             LoaderUpdater.CheckForUpdateAsync();
 
-            for (const auto& addon : AddonsList) {
+            for (const auto& addon : Addons) {
                 if (addon->SupportsUpdating()) {
                     addon->CheckUpdate([&addon](const Updater* const updater, VersionInfo version) {
                         if (addon->GetVersion() != version.version) {

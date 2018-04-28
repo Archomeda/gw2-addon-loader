@@ -1,32 +1,17 @@
 #pragma once
-#include "../windows.h"
 #include <d3d9.h>
-#include <vector>
 
 namespace loader {
-    namespace hooks {
+    namespace addons {
 
-        typedef void(PreReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
-        typedef void(PostReset_t)(IDirect3DDevice9* pDeviceInterface, D3DPRESENT_PARAMETERS* pPresentationParameters);
-        typedef void(PrePresent_t)(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-
-        extern PreReset_t* PreResetHook;
-        extern PostReset_t* PostResetHook;
-        extern PrePresent_t* PrePresentHook;
-
-        extern std::vector<float> DurationHistoryD3D9Processing;
-        extern std::vector<float> DurationHistoryLoaderDrawFrame;
-
-        extern IDirect3DDevice9* LegacyAddonChainDevice;
-
-        class LoaderDirect3DDevice9 : public IDirect3DDevice9
+        class ProxyDirect3DDevice9 : public IDirect3DDevice9
         {
         public:
-            LoaderDirect3DDevice9(IDirect3DDevice9* dev) : dev(dev) { }
-            LoaderDirect3DDevice9() { }
+            ProxyDirect3DDevice9(IDirect3DDevice9* dev) : dev(dev) { }
+            ProxyDirect3DDevice9() { }
 
-            IDirect3DDevice9* GetSystemDevice() { return this->dev; }
-           
+            void SetDevice(IDirect3DDevice9* dev) { this->dev = dev; }
+
             /*** IUnknown methods ***/
             STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
             STDMETHOD_(ULONG, AddRef)();
@@ -151,17 +136,17 @@ namespace loader {
             STDMETHOD(CreateQuery)(D3DQUERYTYPE Type, IDirect3DQuery9** ppQuery);
 
         private:
-            IDirect3DDevice9* dev = nullptr;
+            IDirect3DDevice9* dev;
         };
 
-        class LoaderDirect3DDevice9Ex : public IDirect3DDevice9Ex
+        class ProxyDirect3DDevice9Ex : public IDirect3DDevice9Ex
         {
         public:
-            LoaderDirect3DDevice9Ex(IDirect3DDevice9Ex* dev) : dev(dev) { }
-            LoaderDirect3DDevice9Ex() { }
+            ProxyDirect3DDevice9Ex(IDirect3DDevice9Ex* dev) : dev(dev) { }
+            ProxyDirect3DDevice9Ex() { }
 
-            IDirect3DDevice9Ex* GetSystemDevice() { return this->dev; }
-         
+            void SetDevice(IDirect3DDevice9Ex* dev) { this->dev = dev; }
+
             /*** IUnknown methods ***/
             STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
             STDMETHOD_(ULONG, AddRef)();
@@ -301,7 +286,7 @@ namespace loader {
             STDMETHOD(GetDisplayModeEx)(UINT iSwapChain, D3DDISPLAYMODEEX* pMode, D3DDISPLAYROTATION* pRotation);
 
         private:
-            IDirect3DDevice9Ex* dev = nullptr;
+            IDirect3DDevice9Ex* dev;
         };
 
     }

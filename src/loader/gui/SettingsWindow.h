@@ -42,7 +42,7 @@ namespace loader {
 
             bool initializedState = false;
             bool obsCompatibilityMode;
-            bool showIncompatibleAddons;
+            bool showHiddenAddons;
             bool windowKeybindEditActive = false;
             std::set<uint_fast8_t> windowKeybind;
             bool showDebugFeatures;

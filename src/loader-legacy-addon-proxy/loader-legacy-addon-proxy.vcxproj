@@ -20,32 +20,32 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{9A4064CF-5604-4363-9B07-02F4F7071DE3}</ProjectGuid>
-    <RootNamespace>dependencies</RootNamespace>
+    <ProjectGuid>{999C5E3A-E10C-43F4-866A-910F5608B7DF}</ProjectGuid>
+    <RootNamespace>loaderlegacyaddonproxy</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,44 +70,58 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x86</TargetName>
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <TargetName>d3d9-proxy</TargetName>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x86</TargetName>
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <TargetName>d3d9-proxy</TargetName>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x64</TargetName>
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <TargetName>d3d9-proxy</TargetName>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x64</TargetName>
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
+    <TargetName>d3d9-proxy</TargetName>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -116,12 +130,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/Qspectre %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,44 +147,25 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/Qspectre %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="IconFontCppHeaders\IconsMaterialDesign.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\stb_rect_pack.h" />
-    <ClInclude Include="imgui\stb_textedit.h" />
-    <ClInclude Include="imgui\stb_truetype.h" />
-    <ClInclude Include="minhook\include\MinHook.h" />
-    <ClInclude Include="minhook\src\buffer.h" />
-    <ClInclude Include="minhook\src\hde\hde32.h" />
-    <ClInclude Include="minhook\src\hde\hde64.h" />
-    <ClInclude Include="minhook\src\hde\pstdint.h" />
-    <ClInclude Include="minhook\src\hde\table32.h" />
-    <ClInclude Include="minhook\src\hde\table64.h" />
-    <ClInclude Include="minhook\src\trampoline.h" />
-    <ClInclude Include="miniz\miniz.h" />
-    <ClInclude Include="simpleini\SimpleIni.h" />
-    <ClInclude Include="spdlog\include\spdlog\spdlog.h" />
+    <None Include="exports.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="minhook\src\buffer.c" />
-    <ClCompile Include="minhook\src\hde\hde32.c" />
-    <ClCompile Include="minhook\src\hde\hde64.c" />
-    <ClCompile Include="minhook\src\hook.c" />
-    <ClCompile Include="minhook\src\trampoline.c" />
-    <ClCompile Include="miniz\miniz.c" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ProxyDirect3D9.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ProxyDirect3D9.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

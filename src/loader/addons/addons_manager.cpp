@@ -15,10 +15,16 @@ using namespace loader::utils;
 namespace loader {
     namespace addons {
 
-        vector<shared_ptr<Addon>> AddonsList;
+        AddonsList Addons;
         AddonHooks ActiveAddonHooks = {};
 
         bool sortAddonsRawPtrFunc(Addon* a, Addon* b) {
+            if (a->IsForced()) {
+                return true;
+            }
+            if (b->IsForced()) {
+                return false;
+            }
             if (!a->SupportsLoading() && !b->SupportsLoading()) {
                 return b->GetID() > a->GetID();
             }
@@ -42,7 +48,7 @@ namespace loader {
             // Clear our list
             //TODO: Don't clear this, but instead check what's removed and what's new, because we do lose some references here otherwise
             // Until ^ is solved, refreshing can only be done by restarting
-            AddonsList.clear();
+            //AddonsList.clear();
 
             // Create path
             path addonsFolder = GetGuildWars2Folder(ADDONS_FOLDER);
@@ -55,45 +61,34 @@ namespace loader {
             for (const auto& pathFile : directory_iterator(addonsFolder)) {
                 if (pathFile.path().extension() == ".dll") {
                     GetLog()->info("Found {0}", pathFile.path().u8string());
-                    AddonsList.push_back(move(Addon::GetAddon(pathFile.path().u8string())));
+                    auto addon = Addon::GetAddon(pathFile.path().u8string());
+                    if (addon->GetType() == AddonType::AddonTypeLegacy) {
+                        Addons.Add(shared_ptr<LegacyAddon>(static_cast<LegacyAddon*>(addon.release())));
+                    }
+                    else {
+                        Addons.Add(move(addon));
+                    }
                 }
             }
         }
 
 
-        void MoveAddonUp(const Addon* const addon) {
-            int index = -1;
-            for (auto it = AddonsList.rbegin(); it != AddonsList.rend(); ++it) {
-                if ((*it)->GetID() == addon->GetID()) {
-                    index = static_cast<int>(it - AddonsList.rbegin());
-                }
-                else if (index > -1) {
-                    AppConfig.SetAddonOrder(it->get(), static_cast<int>(AddonsList.size() - (index + 1)));
-                    iter_swap(AddonsList.rbegin() + index, it);
-                    AppConfig.SetAddonOrder(it->get(), static_cast<int>(AddonsList.size() - (index + 2)));
-                    break;
-                }
-            }
+        void SwapAddonOrder(const Addon* const a, const Addon* const b) {
+            Addons.Swap(a, b);
+            SaveAddonOrder();
             ReorderAddonHooks();
         }
-        
-        void MoveAddonDown(const Addon* const addon) {
-            int index = -1;
-            for (auto it = AddonsList.begin(); it != AddonsList.end(); ++it) {
-                if ((*it)->GetID() == addon->GetID()) {
-                    index = static_cast<int>(it - AddonsList.begin());
-                }
-                else if (index > -1) {
-                    AppConfig.SetAddonOrder(it->get(), index);
-                    iter_swap(AddonsList.begin() + index, it);
-                    AppConfig.SetAddonOrder(it->get(), index + 1);
-                    break;
-                }
+
+        void SaveAddonOrder() {
+            int i = 0;
+            for (const auto& addon : Addons) {
+                AppConfig.SetAddonOrder(addon.get(), i);
+                ++i;
             }
-            ReorderAddonHooks();
         }
 
         void ReorderAddonHooks() {
+            // Sort hooks of generic addons
             sort(ActiveAddonHooks.HandleWndProc.begin(), ActiveAddonHooks.HandleWndProc.end(), sortAddonsRawPtrFunc);
             sort(ActiveAddonHooks.DrawFrameBeforePostProcessing.begin(), ActiveAddonHooks.DrawFrameBeforePostProcessing.end(), sortAddonsRawPtrFunc);
             sort(ActiveAddonHooks.DrawFrameBeforeGui.begin(), ActiveAddonHooks.DrawFrameBeforeGui.end(), sortAddonsRawPtrFunc);
@@ -128,25 +123,59 @@ namespace loader {
             sort(ActiveAddonHooks.AdvPostSetRenderState.begin(), ActiveAddonHooks.AdvPostSetRenderState.end(), sortAddonsRawPtrFunc);
             sort(ActiveAddonHooks.AdvPreDrawIndexedPrimitive.begin(), ActiveAddonHooks.AdvPreDrawIndexedPrimitive.end(), sortAddonsRawPtrFunc);
             sort(ActiveAddonHooks.AdvPostDrawIndexedPrimitive.begin(), ActiveAddonHooks.AdvPostDrawIndexedPrimitive.end(), sortAddonsRawPtrFunc);
+
+            // Set proper chain of enabled legacy addons
+            ResetLegacyAddonChain();
+        }
+
+        void ResetLegacyAddonChain() {
+            shared_ptr<LegacyAddon> lastAddon;
+            for (auto& addon : Addons.GetLegacyAddons()) {
+                if (addon->GetState() == AddonState::LoadedState) {
+                    if (lastAddon == nullptr) {
+                        hooks::LegacyAddonChainDevice = addon->AddonD3DDevice9;
+                    }
+                    else {
+                        lastAddon->SetNextAddonChain(addon.get());
+                    }
+                    lastAddon = addon;
+                }
+            }
+            if (lastAddon == nullptr) {
+                hooks::LegacyAddonChainDevice = nullptr;
+            }
+            else {
+                lastAddon->SetNextAddonChain(nullptr);
+            }
         }
 
 
-        void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9, IDirect3DDevice9* device) {
+        void InitializeAddons(UINT sdkVersion, hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* device) {
             GetLog()->debug("loader::addons::InitializeAddons()");
-            for (auto& addon : AddonsList) {
+          
+            // We force the initialization order with legacy addons as last to prevent problems
+            // with those addons initializing before our proxy addon is loaded
+            auto exec = [=](shared_ptr<Addon> addon) {
                 GetLog()->info("Initializing addon {0}", addon->GetFileName());
                 addon->D3D9SdkVersion = sdkVersion;
                 addon->D3D9 = d3d9;
                 addon->D3DDevice9 = device;
                 addon->Initialize();
                 GetLog()->info("Addon {0} is {1}", addon->GetFileName(), addon->GetTypeString());
+            };
+            for (auto& addon : Addons.GetAddons()) {
+                exec(addon);
             }
-            sort(AddonsList.begin(), AddonsList.end(), sortAddonsFunc);
+            for (auto& addon : Addons.GetLegacyAddons()) {
+                exec(addon);
+            }
+
+            Addons.Sort(sortAddonsFunc);
         }
 
         void UninitializeAddons() {
             GetLog()->debug("loader::addons::UninitializeAddons()");
-            for (auto& addon : AddonsList) {
+            for (auto& addon : Addons) {
                 GetLog()->info("Uninitializing addon {0}", addon->GetFileName());
                 addon->Uninitialize();
             }
@@ -154,22 +183,36 @@ namespace loader {
 
         void LoadAddons(HWND hFocusWindow) {
             GetLog()->debug("loader::addons::LoadAddons()");
-            for (auto& addon : AddonsList) {
+
+            // We force the loading order with legacy addons as last to prevent problems
+            // with those addons loading before our proxy addon is loaded
+            auto exec = [=](shared_ptr<Addon> addon) {
                 addon->FocusWindow = hFocusWindow;
-                if (addon->IsEnabledByConfig()) {
+                if (addon->IsForced()) {
+                    GetLog()->info("Loading forced enabled addon {0}", addon->GetFileName());
+                    addon->Load();
+                } 
+                else if (addon->IsEnabledByConfig()) {
                     GetLog()->info("Loading enabled addon {0}", addon->GetFileName());
                     addon->Load();
                 }
                 else {
                     GetLog()->info("Addon {0} is disabled", addon->GetFileName());
                 }
+            };
+            for (auto& addon : Addons.GetAddons()) {
+                exec(addon);
             }
+            for (auto& addon : Addons.GetLegacyAddons()) {
+                exec(addon);
+            }
+
             ReorderAddonHooks();
         }
 
         void UnloadAddons() {
             GetLog()->debug("loader::addons::UnloadAddons()");
-            for (auto& addon : AddonsList) {
+            for (auto& addon : Addons) {
                 GetLog()->info("Unloading addon {0}", addon->GetFileName());
                 addon->Unload();
             }
@@ -177,7 +220,7 @@ namespace loader {
 
 
         void OnStartFrame(IDirect3DDevice9* device) {
-            for (auto& addon : AddonsList) {
+            for (auto& addon : Addons) {
                 if (addon->IsLoaded()) {
                     addon->OnStartFrame(device);
                 }
@@ -185,7 +228,7 @@ namespace loader {
         }
 
         void OnEndFrame(IDirect3DDevice9* device) {
-            for (auto& addon : AddonsList) {
+            for (auto& addon : Addons) {
                 if (addon->IsLoaded()) {
                     addon->OnEndFrame(device);
                 }

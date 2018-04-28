@@ -42,9 +42,6 @@
     <ClInclude Include="gui\gui_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\MessageWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="addons\exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -138,6 +135,21 @@
     <ClInclude Include="gui\elements\AddonListItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="addons\LegacyAddon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\ProxyAddon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\ProxyDirect3DDevice9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="minhook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\AddonsList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -162,9 +174,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\gui_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\MessageWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hooks\LoaderDirect3D9.cpp">
@@ -234,6 +243,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\elements\AddonListItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\LegacyAddon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\ProxyAddon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\ProxyDirect3DDevice9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\AddonsList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -68,7 +68,7 @@ namespace loader {
                 this->iconManaged = v1->iconSize > -1;
                 if (this->iconManaged) {
                     // Icon is just image data, we have to create the texture
-                    D3DXCreateTextureFromFileInMemory(this->D3DDevice9, v1->icon, v1->iconSize, &this->icon);
+                    D3DXCreateTextureFromFileInMemory(this->D3DDevice9->GetSystemDevice(), v1->icon, v1->iconSize, &this->icon);
                     this->iconManaged = true;
                 }
                 else {
@@ -191,7 +191,7 @@ namespace loader {
 
             if (this->AddonLoad != nullptr) {
                 this->GetMetricLoad().StartMeasurement();
-                GW2ADDON_RESULT result = this->AddonLoad(this->FocusWindow, this->D3DDevice9);
+                GW2ADDON_RESULT result = this->AddonLoad(this->FocusWindow, this->D3DDevice9->GetSystemDevice());
                 this->GetMetricLoad().EndMeasurement();
 
                 if (result) {

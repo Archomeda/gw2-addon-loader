@@ -5,7 +5,9 @@
 #include <gw2addon-native.h>
 #include "addons_manager.h"
 #include "exceptions.h"
+#include "LegacyAddon.h"
 #include "NativeAddon.h"
+#include "ProxyAddon.h"
 #include "../Config.h"
 #include "../log.h"
 #include "../utils/encoding.h"
@@ -22,6 +24,10 @@ namespace loader {
             switch (type) {
             case AddonType::AddonTypeNative:
                 return "Native";
+            case AddonType::AddonTypeLegacy:
+                return "Legacy";
+            case AddonType::AddonTypeLoaderProxy:
+                return "Proxy";
             default:
                 return "Unknown";
             }
@@ -57,9 +63,17 @@ namespace loader {
             unique_ptr<Addon> addon = make_unique<Addon>(filePath);
             HMODULE hAddon = LoadLibraryEx(filePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
 
-            if (GetProcAddress(hAddon, GW2ADDON_DLL_Initialize) != nullptr) {
+            if (GetProcAddress(hAddon, "ProxyInitialize") != nullptr) {
+                // Our addon is our loader proxy
+                addon = make_unique<ProxyAddon>(filePath);
+            }
+            else if (GetProcAddress(hAddon, GW2ADDON_DLL_Initialize) != nullptr) {
                 // Our addon is native
                 addon = make_unique<NativeAddon>(filePath);
+            }
+            else if (GetProcAddress(hAddon, "Direct3DCreate9") != nullptr) {
+                // Our addon is legacy
+                addon = make_unique<LegacyAddon>(filePath);
             }
             FreeLibrary(hAddon);
 

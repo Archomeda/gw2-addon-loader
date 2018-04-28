@@ -8,6 +8,8 @@
 #include <string>
 #include "AddonFunc.h"
 #include "AddonMetric.h"
+#include "../hooks/LoaderDirect3D9.h"
+#include "../hooks/LoaderDirect3DDevice9.h"
 #include "../updaters/Updater.h"
 
 namespace loader {
@@ -15,7 +17,9 @@ namespace loader {
 
         enum AddonType {
             AddonTypeUnknown,
-            AddonTypeNative
+            AddonTypeNative,
+            AddonTypeLegacy,
+            AddonTypeLoaderProxy
         };
 
         enum AddonState {
@@ -62,6 +66,8 @@ namespace loader {
             bool IsLoaded() const { return this->GetState() == AddonState::LoadedState; }
             bool HasUpdate() const;
 
+            virtual bool IsForced() const { return false; }
+            virtual bool IsHidden() const { return this->IsForced() || !this->SupportsLoading(); }
             virtual bool SupportsLoading() const { return false; }
             virtual bool SupportsHotLoading() const { return false; }
             virtual bool SupportsSettings() const { return false; }
@@ -92,8 +98,8 @@ namespace loader {
             AddonMetric& GetMetricOverall() { return this->metricOverall; }
 
             UINT D3D9SdkVersion = 0;
-            IDirect3D9* D3D9 = nullptr;
-            IDirect3DDevice9* D3DDevice9 = nullptr;
+            hooks::LoaderDirect3D9* D3D9 = nullptr;
+            hooks::LoaderDirect3DDevice9* D3DDevice9 = nullptr;
             HWND FocusWindow = NULL;
 
             AddonFunc<bool, HWND, UINT, WPARAM, LPARAM> HandleWndProc;

@@ -2,6 +2,7 @@
 #include <list>
 #include <stdint.h>
 #include <imgui.h>
+#include "minhook.h"
 #include "addons/addons_manager.h"
 #include "addons/Addon.h"
 #include "gui/gui_manager.h"
@@ -110,7 +111,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 
-HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
+HRESULT PreCreateDevice(hooks::LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
     // Hook WindowProc
     if (!BaseWndProc) {
         BaseWndProc = (WNDPROC)GetWindowLongPtr(hFocusWindow, GWLP_WNDPROC);
@@ -120,7 +121,7 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
     return D3D_OK;
 }
 
-void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
+void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
     // Hook MumbleLink
     GetLog()->info("Starting MumbleLink loop");
     hooks::Gw2MumbleLink.Start();
@@ -226,6 +227,11 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         GetLog()->info("GW2 Addon Loader attached");
         LaunchDebugger();
 
+        if (MH_Initialize() != MH_OK) {
+            GetLog()->error("Failed to initialize MinHook, aborting");
+            return false;
+        }
+
         dllModule = hModule;
         hooks::InitializeHooks();
 
@@ -245,14 +251,19 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         break;
     }
     case DLL_PROCESS_DETACH: {
+        MH_Uninitialize();
+
         GetLog()->info("Stopping MumbleLink loop");
         hooks::Gw2MumbleLink.Stop();
         gui::imgui::Shutdown();
+
         GetLog()->info("Unloading and uninitializing addons");
         addons::UnloadAddons();
         addons::UninitializeAddons();
+
         GetLog()->info("Uninitializing hooks");
         hooks::UninitializeHooks();
+
         GetLog()->info("GW2 Addon Loader detached");
         break;
     }

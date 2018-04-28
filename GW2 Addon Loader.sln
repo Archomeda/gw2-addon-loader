@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bitmap-font-packer", "src\b
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "font-atlas-packer", "src\font-atlas-packer\font-atlas-packer.vcxproj", "{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "loader-legacy-addon-proxy", "src\loader-legacy-addon-proxy\loader-legacy-addon-proxy.vcxproj", "{999C5E3A-E10C-43F4-866A-910F5608B7DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -125,6 +127,21 @@ Global
 		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Tools|x64.Build.0 = Debug|x64
 		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Tools|x86.ActiveCfg = Debug|Win32
 		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3}.Tools|x86.Build.0 = Debug|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Debug|x64.ActiveCfg = Debug|x64
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Debug|x64.Build.0 = Debug|x64
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Debug|x86.ActiveCfg = Debug|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Debug|x86.Build.0 = Debug|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.DebugExamples|x64.ActiveCfg = Debug|x64
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.DebugExamples|x64.Build.0 = Debug|x64
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.DebugExamples|x86.ActiveCfg = Debug|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.DebugExamples|x86.Build.0 = Debug|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Release|x64.ActiveCfg = Release|x64
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Release|x64.Build.0 = Release|x64
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Release|x86.ActiveCfg = Release|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Release|x86.Build.0 = Release|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Tools|x64.ActiveCfg = Release|x64
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Tools|x86.ActiveCfg = Release|Win32
+		{999C5E3A-E10C-43F4-866A-910F5608B7DF}.Tools|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -75,7 +75,7 @@ namespace loader {
                 const char* text = name.c_str();
                 ImVec2 textSize = ImGui::CalcTextSize(text);
                 ImGui::SetCursorPos(pos + ImVec2(42, (32 - textSize.y) / 2 - size.y - style.ItemSpacing.y - 2));
-                if (addon->SupportsLoading()) {
+                if (!addon->IsForced() && addon->SupportsLoading()) {
                     ImGui::TextUnformatted(text);
                 }
                 else {
