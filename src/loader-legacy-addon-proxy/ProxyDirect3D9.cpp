@@ -79,13 +79,14 @@ HRESULT ProxyDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND h
         *ppReturnedDeviceInterface = this->loaderApi->GetDirect3DDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters);
     }
 
+    HRESULT hr = D3D_OK;
     if (*ppReturnedDeviceInterface == nullptr) {
         // Somehow we didn't get the created device, redirect to original D3D9 as a catch
-        return this->d3d9->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
+        hr = this->d3d9->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
     }
 
     *ppReturnedDeviceInterface = this->loaderApi->CreateProxyDirect3DDevice9(*ppReturnedDeviceInterface);
-    return D3D_OK;
+    return hr;
 }
 
 
@@ -186,13 +187,14 @@ HRESULT ProxyDirect3D9Ex::CreateDeviceEx(UINT Adapter, D3DDEVTYPE DeviceType, HW
         *ppReturnedDeviceInterface = reinterpret_cast<IDirect3DDevice9Ex*>(this->loaderApi->GetDirect3DDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters));
     }
 
+    HRESULT hr;
     if (*ppReturnedDeviceInterface == nullptr) {
         // Somehow we didn't get the created device, redirect to original D3D9 as a catch
-        return this->d3d9->CreateDeviceEx(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, pFullscreenDisplayMode, ppReturnedDeviceInterface);
+        hr = this->d3d9->CreateDeviceEx(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, pFullscreenDisplayMode, ppReturnedDeviceInterface);
     }
 
     *ppReturnedDeviceInterface = this->loaderApi->CreateProxyDirect3DDevice9Ex(*ppReturnedDeviceInterface);
-    return D3D_OK;
+    return hr;
 }
 
 HRESULT ProxyDirect3D9Ex::GetAdapterLUID(UINT Adapter, LUID* pLUID) {

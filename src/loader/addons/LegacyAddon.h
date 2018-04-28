@@ -5,6 +5,7 @@
 #include <string>
 #include "Addon.h"
 #include "ProxyDirect3DDevice9.h"
+#include "../hooks/vftable.h"
 
 namespace loader {
     namespace addons {
@@ -13,12 +14,17 @@ namespace loader {
 
         class LegacyAddon : public Addon {
         public:
+            enum SafeEnvType {
+                Initialization,
+                Loading
+            };
+
             LegacyAddon() : Addon() { }
             LegacyAddon(const std::string& filePath) : Addon(filePath) { }
             LegacyAddon(const std::experimental::filesystem::path& filePath) : Addon(filePath) { }
 
-            bool ApplySafeEnv(bool isInitialize = false);
-            bool RevertSafeEnv(bool isInitialize = false);
+            bool ApplySafeEnv(SafeEnvType envType);
+            bool RevertSafeEnv(SafeEnvType envType);
             void SetNextAddonChain(LegacyAddon* addon);
 
             virtual bool Initialize() override;
@@ -37,6 +43,7 @@ namespace loader {
         private:
             HMODULE addonHandle = NULL;
             DWORD proxyAddonNumberOfExports = 0;
+            D3DDevice9_vft proxyVft = { 0 };
 
             Direct3DCreate9_t* AddonCreate = nullptr;
         };
