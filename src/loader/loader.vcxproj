@@ -170,6 +170,7 @@
     <ClInclude Include="addons\NativeAddon.h" />
     <ClInclude Include="addons\ProxyAddon.h" />
     <ClInclude Include="addons\ProxyDirect3DDevice9.h" />
+    <ClInclude Include="disasm\opcodes.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="gui\elements\AddonListItem.h" />
@@ -189,7 +190,7 @@
     <ClInclude Include="hooks\LoaderDirect3D9.h" />
     <ClInclude Include="hooks\LoaderDirect3DDevice9.h" />
     <ClInclude Include="hooks\MumbleLink.h" />
-    <ClInclude Include="hooks\vftable.h" />
+    <ClInclude Include="disasm\d3d9Vtbl.h" />
     <ClInclude Include="IconsOcticons.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
@@ -232,7 +233,7 @@
     <ClCompile Include="hooks\LoaderDirect3D9.cpp" />
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp" />
     <ClCompile Include="hooks\MumbleLink.cpp" />
-    <ClCompile Include="hooks\vftable.c" />
+    <ClCompile Include="disasm\d3d9Vtbl.c" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="gui\AddonInfoWindow.cpp" />

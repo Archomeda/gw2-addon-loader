@@ -78,7 +78,7 @@ namespace loader {
         map<Direct3DDevice9Id, IDirect3DDevice9*> devices;
 
         Direct3DDevice9Information globalDeviceInformation = {};
-        IDirect3DDevice9* GetCreatedDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+        IDirect3DDevice9* GW2PROXY_CALL GetCreatedDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters) {
             Direct3DDevice9Id id = {
                 Adapter,
                 DeviceType,

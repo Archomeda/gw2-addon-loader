@@ -1,11 +1,15 @@
 #pragma once
 #include "../windows.h"
 #include <d3d9.h>
+#include <algorithm>
 #include <functional>
+#include <stdint.h>
 #include <string>
+#include <d3d9-defines.h>
 #include "Addon.h"
 #include "ProxyDirect3DDevice9.h"
-#include "../hooks/vftable.h"
+#include "../disasm/d3d9Vtbl.h"
+#include "../disasm/opcodes.h"
 
 namespace loader {
     namespace addons {
@@ -41,9 +45,37 @@ namespace loader {
             ProxyDirect3DDevice9* ProxyD3DDevice9 = nullptr;
 
         private:
+            template<typename T>
+            void CopyPointerIfNotEqual(T* target, LPVOID p1, LPVOID p2) {
+                if (p1 != p2) {
+                    *target = reinterpret_cast<T>(p1);
+                }
+            }
+
+            template<typename T>
+            void CopyAndRestorePointerIfHooked(T* target, uint8_t* orig, LPVOID comp, size_t size) {
+                uint8_t* c = reinterpret_cast<uint8_t*>(comp);
+                if (!std::equal(orig, orig + size, c, c + size)) {
+                    if (c[0] == 0xE9) {
+                        // JMP
+                        disasm::JMP_REL jmpRel = *reinterpret_cast<disasm::JMP_REL*>(c);
+                        void* pJmpFunction = c + sizeof(disasm::JMP_REL) + jmpRel.operand;
+                        *target = reinterpret_cast<T>(pJmpFunction);
+                    }
+                    // If the only JMP instruction above doesn't cover this, just restore it for safety reasons
+                    // In that case it "just doesn't work", but at least we don't crash, hopefully
+                    DWORD protection = PAGE_READWRITE;
+                    if (VirtualProtect(c, size, protection, &protection)) {
+                        memcpy(c, orig, size);
+                        VirtualProtect(c, size, protection, &protection);
+                    }
+                }
+            }
+
             HMODULE addonHandle = NULL;
             DWORD proxyAddonNumberOfExports = 0;
-            D3DDevice9_vft proxyVft = { 0 };
+            D3DDevice9Vtbl proxyVtbl = { 0 };
+            D3DDevice9Functions<uint8_t[5]> proxyFunctionInstructions;
 
             Direct3DCreate9_t* AddonCreate = nullptr;
         };

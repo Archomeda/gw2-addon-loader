@@ -9,13 +9,13 @@ using namespace std;
 namespace loader {
     namespace addons {
 
-        IDirect3DDevice9* CreateProxyDirect3DDevice9(IDirect3DDevice9* sourceDev) {
+        IDirect3DDevice9* GW2PROXY_CALL CreateProxyDirect3DDevice9(IDirect3DDevice9* sourceDev) {
             ProxyDirect3DDevice9* proxyDev = new ProxyDirect3DDevice9(sourceDev);
             ProxyAddon::Instance->LastProxiedDevice = proxyDev;
             return proxyDev;
         }
 
-        IDirect3DDevice9Ex* CreateProxyDirect3DDevice9Ex(IDirect3DDevice9Ex* sourceDev) {
+        IDirect3DDevice9Ex* GW2PROXY_CALL CreateProxyDirect3DDevice9Ex(IDirect3DDevice9Ex* sourceDev) {
             ProxyDirect3DDevice9Ex* proxyDev = new ProxyDirect3DDevice9Ex(sourceDev);
             ProxyAddon::Instance->LastProxiedDevice = dynamic_cast<ProxyDirect3DDevice9*>(proxyDev);
             return proxyDev;

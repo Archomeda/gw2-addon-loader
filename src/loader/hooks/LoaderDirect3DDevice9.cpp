@@ -6,10 +6,10 @@
 #include <string>
 #include "ChainHook.h"
 #include "MumbleLink.h"
-#include "vftable.h"
 #include "../Config.h"
 #include "../log.h"
 #include "../addons/addons_manager.h"
+#include "../disasm/d3d9Vtbl.h"
 
 using namespace std;
 using namespace std::experimental::filesystem;
@@ -224,8 +224,8 @@ namespace loader {
             }
 
             // Before we start, determine the hook chain and see if we need to adapt
-            auto vft = GetVftD3DDevice9(this->dev);
-            ChainHook newHook = ChainHook::FindCurrentChainHook(ChainHookFunctionType::PresentFunction, vft.Present);
+            D3DDevice9Vtbl vtbl = GetD3DDevice9Vtbl(this->dev);
+            ChainHook newHook = ChainHook::FindCurrentChainHook(ChainHookFunctionType::PresentFunction, vtbl.Present);
             if (newHook.GetType() != currentChainHook.GetType()) {
                 // New chain hook type
                 GetLog()->info("New chain hook type detected: {0}", newHook.GetTypeString());
@@ -236,7 +236,7 @@ namespace loader {
 
             // Hook the hook chain
             if (currentChainHook.GetType() != ChainHookType::NoHookType) {
-                currentChainHook.HookCallback(static_cast<HRESULT(*)(IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*)>(&PresentAddonLoader));
+                currentChainHook.HookCallback(static_cast<HRESULT(WINAPI*)(IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*)>(&PresentAddonLoader));
             }
 
             HRESULT hr;

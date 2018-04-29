@@ -81,9 +81,6 @@
     <ClInclude Include="version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hooks\vftable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="hooks\FunctionHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -150,6 +147,12 @@
     <ClInclude Include="addons\AddonsList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="disasm\opcodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm\d3d9Vtbl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -203,9 +206,6 @@
     <ClCompile Include="gui\BitmapFontAtlas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hooks\vftable.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="hooks\FunctionHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -255,6 +255,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="addons\AddonsList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm\d3d9Vtbl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

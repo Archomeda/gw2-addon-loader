@@ -1,6 +1,7 @@
 #pragma once
 #include "../windows.h"
 #include <d3d9.h>
+#include <gw2addon-legacy.h>
 
 namespace loader {
     namespace hooks {
@@ -20,7 +21,7 @@ namespace loader {
         extern PreCreateDeviceEx_t* PreCreateDeviceExHook;
         extern PostCreateDeviceEx_t* PostCreateDeviceExHook;
 
-        IDirect3DDevice9* GetCreatedDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters);
+        IDirect3DDevice9* GW2PROXY_CALL GetCreatedDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters);
         struct Direct3DDevice9Information {
             UINT Adapter;
             D3DDEVTYPE DeviceType;

@@ -138,7 +138,7 @@ IDirect3D9Ex* WINAPI Direct3DCreate9Ex(UINT sdkVersion) {
 
 #pragma endregion
 
-bool ProxyInitialize(const GW2LegacyAddonProxyAPI* const api) {
+bool GW2PROXY_CALL ProxyInitialize(const GW2LegacyAddonProxyAPI* const api) {
     wchar_t systemDir[MAX_PATH];
     GetSystemDirectory(systemDir, MAX_PATH);
     path systemPath(systemDir);
@@ -172,7 +172,7 @@ bool ProxyInitialize(const GW2LegacyAddonProxyAPI* const api) {
     return true;
 }
 
-bool ProxyRelease() {
+bool GW2PROXY_CALL ProxyRelease() {
     FreeLibrary(SystemD3D9Module);
     SystemD3D9Module = NULL;
     LoaderApi = nullptr;

@@ -141,10 +141,10 @@ extern "C" {
         LPVOID CreateDepthStencilSurfaceEx;
         LPVOID ResetEx;
         LPVOID GetDisplayModeEx;
-    } D3DDevice9_vft;
+    } D3DDevice9Vtbl;
 
-    D3DDevice9_vft GetVftD3DDevice9(const IDirect3DDevice9* const obj);
-    void SetVftD3DDevice9(IDirect3DDevice9* const obj, const D3DDevice9_vft vft);
+    D3DDevice9Vtbl GetD3DDevice9Vtbl(const IDirect3DDevice9* const obj);
+    void SetD3DDevice9Vtbl(IDirect3DDevice9* const obj, const D3DDevice9Vtbl vtbl);
 
 #ifdef __cplusplus
 }
