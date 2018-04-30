@@ -75,11 +75,9 @@ namespace loader {
             if (this->ProxyInitialize == nullptr) {
                 return false;
             }
-
             if (this->GetState() != AddonState::UnloadedState) {
                 return false;
             }
-
             this->ChangeState(AddonState::LoadingState);
 
             if (!this->ProxyInitialize(&this->proxyApi)) {
@@ -97,8 +95,10 @@ namespace loader {
                 return false;
             }
             this->ChangeState(AddonState::UnloadingState);
+
             bool result = Addon::Unload();
             this->ProxyRelease();
+
             this->ChangeState(AddonState::UnloadedState);
             return result;
         }

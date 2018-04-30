@@ -186,7 +186,6 @@ namespace loader {
             if (this->GetState() != AddonState::UnloadedState) {
                 return false;
             }
-
             this->ChangeState(AddonState::LoadingState);
 
             if (this->AddonLoad != nullptr) {
@@ -211,8 +210,10 @@ namespace loader {
                 return false;
             }
             this->ChangeState(AddonState::UnloadingState);
+
             bool result = Addon::Unload();
             this->AddonRelease();
+
             this->ChangeState(AddonState::UnloadedState);
             return result;
         }

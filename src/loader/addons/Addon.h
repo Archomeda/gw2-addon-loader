@@ -59,6 +59,8 @@ namespace loader {
             virtual bool Uninitialize() { return false; }
             virtual bool Load();
             virtual bool Unload();
+            virtual bool LoadNextRestart();
+            virtual bool UnloadNextRestart();
             bool IsEnabledByConfig() { return AppConfig.GetAddonEnabled(this); }
 
             const AddonState GetState() const { return this->state; }

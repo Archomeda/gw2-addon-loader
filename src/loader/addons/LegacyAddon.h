@@ -18,17 +18,12 @@ namespace loader {
 
         class LegacyAddon : public Addon {
         public:
-            enum SafeEnvType {
-                Initialization,
-                Loading
-            };
-
             LegacyAddon() : Addon() { }
             LegacyAddon(const std::string& filePath) : Addon(filePath) { }
             LegacyAddon(const std::experimental::filesystem::path& filePath) : Addon(filePath) { }
 
-            bool ApplySafeEnv(SafeEnvType envType);
-            bool RevertSafeEnv(SafeEnvType envType);
+            bool ApplySafeEnv();
+            bool RevertSafeEnv();
             void SetNextAddonChain(LegacyAddon* addon);
 
             virtual bool Initialize() override;
@@ -36,7 +31,7 @@ namespace loader {
             virtual bool Load() override;
             virtual bool Unload() override;
 
-            virtual bool SupportsLoading() const override { return this->AddonCreate != nullptr; }
+            virtual bool SupportsLoading() const override { return true; }
 
             virtual AddonType GetType() const override { return AddonType::AddonTypeLegacy; }
 

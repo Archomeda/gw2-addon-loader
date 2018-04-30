@@ -159,6 +159,16 @@ namespace loader {
             return true;
         }
 
+        bool Addon::LoadNextRestart() {
+            this->ChangeState(AddonState::ActivatedOnRestartState);
+            return true;
+        }
+
+        bool Addon::UnloadNextRestart() {
+            this->ChangeState(AddonState::DeactivatedOnRestartState);
+            return true;
+        }
+
         
         bool Addon::HasUpdate() const {
             VersionInfo version = this->GetLatestVersion();

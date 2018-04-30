@@ -284,23 +284,32 @@ namespace loader {
                             ImGui::TextColored(color, addon->GetStateString().c_str());
                         }
                         else {
-                            ImGui::PushTextWrapPos();
-                            ImGui::Text("This addon type is not compatible with the addon loader: %s.", addon->GetTypeString().c_str());
-                            ImGui::PopTextWrapPos();
+                            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 51, 0, 255));
+                            ImGui::TextWrapped("This addon type is not compatible: %s.", addon->GetTypeString().c_str());
+                            ImGui::PopStyleColor();
                         }
 
                         if (addon->IsForced()) {
                             ImGui::Spacing();
                             ImGui::TextWrapped("This is a supportive addon for the Addon Loader and cannot be disabled.");
                         }
-
-                        if (addon->GetState() == AddonState::DeactivatedOnRestartState) {
+                        else if (addon->GetState() == AddonState::DeactivatedOnRestartState) {
                             ImGui::Spacing();
+                            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
                             ImGui::TextWrapped("This add-on cannot be deactivated while Guild Wars 2 is running. A full Guild Wars 2 client restart is required.");
+                            ImGui::PopStyleColor();
                         }
                         else if (addon->GetState() == AddonState::ActivatedOnRestartState) {
                             ImGui::Spacing();
+                            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
                             ImGui::TextWrapped("This add-on cannot be activated while Guild Wars 2 is running. A full Guild Wars 2 client restart is required.");
+                            ImGui::PopStyleColor();
+                        }
+                        else if (addon->GetType() == AddonType::AddonTypeLegacy) {
+                            ImGui::Spacing();
+                            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
+                            ImGui::TextWrapped(ICON_MD_WARNING " WARNING " ICON_MD_WARNING "\nThis is a legacy add-on. Support for legacy add-ons are experimental at best and crashes may happen. Please contact the add-on developer to make it properly compatible.");
+                            ImGui::PopStyleColor();
                         }
 
                         if (!addon->GetDescription().empty()) {
@@ -347,21 +356,32 @@ namespace loader {
                             if (addon->GetState() == AddonState::LoadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Deactivate", ImVec2(100, 0))) {
                                     AppConfig.SetAddonEnabled(addon, false);
-                                    addon->Unload();
+                                    if (addon->SupportsHotLoading()) {
+                                        addon->Unload();
+                                    }
+                                    else {
+                                        addon->UnloadNextRestart();
+                                    }
                                 }
                             }
                             else if (addon->GetState() == AddonState::UnloadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Activate", ImVec2(100, 0))) {
-                                    if (addon->Load()) {
-                                        AppConfig.SetAddonEnabled(addon, false);
-                                        auto state = addon->GetState();
-                                        if (state == AddonState::LoadedState) {
-                                            AppConfig.SetAddonEnabled(addon, true);
+                                    AppConfig.SetAddonEnabled(addon, false);
+                                    if (addon->SupportsHotLoading()) {
+                                        if (addon->Load()) {
+                                            auto state = addon->GetState();
+                                            if (state == AddonState::LoadedState) {
+                                                AppConfig.SetAddonEnabled(addon, true);
+                                            }
+                                        }
+                                        else {
+                                            addon->Unload();
                                         }
                                     }
                                     else {
-                                        AppConfig.SetAddonEnabled(addon, false);
-                                        addon->Unload();
+                                        if (addon->LoadNextRestart()) {
+                                            AppConfig.SetAddonEnabled(addon, true);
+                                        }
                                     }
                                 }
                             }
