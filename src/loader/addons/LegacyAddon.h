@@ -11,6 +11,8 @@
 #include "../disasm/d3d9Vtbl.h"
 #include "../disasm/opcodes.h"
 
+#define INSTRUCTION_BACKUP_SIZE 5
+
 namespace loader {
     namespace addons {
 
@@ -70,7 +72,7 @@ namespace loader {
             HMODULE addonHandle = NULL;
             DWORD proxyAddonNumberOfExports = 0;
             D3DDevice9Vtbl proxyVtbl = { 0 };
-            D3DDevice9Functions<uint8_t[5]> proxyFunctionInstructions;
+            D3DDevice9Functions<uint8_t[INSTRUCTION_BACKUP_SIZE]> proxyFunctionInstructions;
 
             Direct3DCreate9_t* AddonCreate = nullptr;
         };
