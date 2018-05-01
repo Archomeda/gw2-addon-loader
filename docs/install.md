@@ -38,5 +38,10 @@ You'll need additional addons.
 Installing additional compatible addons is fairly easy.
 Place the addon in the following folder inside your Guild Wars 2 installation folder: *bin/addons* (32-bit) or *bin64/addons* (64-bit).
 Create the folder if it doesn't exist already.
-If the addon is compatible, it will show up in the addon list the next time Guild Wars 2 is restarted (default keybind is Alt+Shift+F11).
+It will show up in the addon list the next time Guild Wars 2 is restarted (default keybind is Alt + Shift + F11).
 Don't forget to activate it!
+
+**Note:** If the addon is a legacy addon, you'll be greeted with a warning.
+Please make sure you understand the consequences when using legacy addons.
+Any *additional* file that's included with a legacy addon needs to be placed in the original location as if you were not using the addon loader.
+Follow the instructions provided by the addon.

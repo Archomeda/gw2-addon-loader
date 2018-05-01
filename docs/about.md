@@ -13,22 +13,30 @@ It will check for additional addons and load them regardless of the filenames, i
 
 ### How it works
 This addon is intended to be used as your main addon.
-Additional compatible addons have to be placed in a certain folder that the addon loader checks when Guild Wars 2 is starting up.
+Additional addons have to be placed in a certain folder that the addon loader checks when Guild Wars 2 is starting up.
 These addons will be made available in the user interface of the addon loader.
 You choose which addons are actually enabled, and in which order they are executed.
 
 The addon loader forwards all the necessary functions to these addons in the order that you choose.
 These addons will do whatever they need to do in those functions, and return to the addon loader once they are done.
-In contrast, this is very much like traditional chainloading, however in this case, the addon loader takes care of it all and those addons don't have to implement support for chainloading themselves anymore.
+This is very much like traditional chainloading, however in this case the addon loader takes care of it all and those addons don't have to implement additional support for chainloading themselves anymore.
 
 Of course, addons can still have their own additional plugins built into them.
 If that's the case, the addon loader has no influence on that and the state of those plugins are managed by that addon instead.
 
 ### Compatibility
-Due to the nature of how this system works, addons that use the traditional D3D9 hooking are not compatible.
-Addon developers have to make their addon specifically compatible with the addon loader.
-It's not too difficult to make addons compatible, depending on the features that the addon needs.
-There's an example in the repository that shows how to develop addons against the addon loader.
+There are two types of addons: native and legacy.
+
+Native addons are fully compatible.
+They are developed against our API that enables special features for these addons.
+
+Legacy addons use traditional D3D9 hooking in order to do their work.
+Due to the nature of how this system works, compatibility for these addons is highly experimental.
+Using these addons may crash your game.
+Support for these addons will be given a low priority.
+It's your best bet to ask the addon developer to make it compatible by converting it to a native addon.
+
+If you're an addon developer and want to make your addon compatible, it's a good start to take a look at the examples in the repository.
 
 ### ArenaNet
 Of course, making and releasing addons for Guild Wars 2 will always include the usual disclaimer.

@@ -21,7 +21,7 @@ Will I get banned from using this?
   Use your own judgment to decide whether or not using an addon is allowed within the Guild Wars 2 Terms of Service.
 
 How do I open the addons list in-game?
-: Use the keybind to open the window. It's Alt+Shift+F11 by default, and can be changed in the settings.
+: Use the keybind to open the window. It's Alt + Shift + F11 by default, and can be changed in the settings.
 
 The keybind is not opening the addons list.
 : Are you sure the addon loader is installed properly?
@@ -33,8 +33,8 @@ The keybind is not opening the addons list.
 
 I want to report a bug or a crash related to the addon loader.
 : Great!
-  Please submit it as [an issue on the repository][issues] with the log if necessary (which can be found as *addons/loader/loader.log* inside the Guild Wars 2 installation folder).
-  Do check if it has been reported already.
+  Submit it as [an issue on the repository][issues] with the log if necessary (which can be found as *addons/loader/loader.log* inside the Guild Wars 2 installation folder).
+  Please do check if it has been reported already.
 
 What are the debug features?
 : Those are mostly meant for debugging addons.
@@ -42,12 +42,13 @@ What are the debug features?
   Right now it doesn't contain much else than that, but it might be expanded upon in the future.
   If you don't require the debug features, please disable them.
 
-Why is &lt;insert some mod name&gt; not working?
+Why is &lt;insert some addon name&gt; not working?
 : Are you sure it's compatible and that you placed it in the correct folder?
-  If it's not compatible, the addon loader won't show you the addon in the list by default.
-  You can enable the listing for incompatible addons in the settings.
-  However, this won't allow you to enable those addons.
-  If the addon is incompatible, please contact the author of that addon and ask them to make it compatible.
+  If it's a legacy addon and it crashes your game, your best bet is to ask the developer of the addon to make it compatible.
+  Support for legacy addons will be given a low priority here.  
+  If it's not showing up in the list, it might not be compatible at all.
+  You can enable the listing for incompatible addons in the settings, however this won't allow you to enable those addons.
+  Please contact the developer of the addon to make it compatible.
 
 How do I make my addon compatible?
 : Go to the [repository][repository] and check out the readme and the provided examples.
