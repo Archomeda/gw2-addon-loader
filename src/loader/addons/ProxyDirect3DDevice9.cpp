@@ -16,13 +16,9 @@ namespace loader {
         }
 
         ULONG ProxyDirect3DDevice9::Release() {
-            ULONG count = this->FunctionAddresses.Release != nullptr ?
+            return this->FunctionAddresses.Release != nullptr ?
                 this->FunctionAddresses.Release(this->dev) :
                 this->dev->Release();
-            if (count == 0) {
-                delete this;
-            }
-            return count;
         }
 
         HRESULT ProxyDirect3DDevice9::TestCooperativeLevel() {
@@ -735,13 +731,9 @@ namespace loader {
         }
 
         ULONG ProxyDirect3DDevice9Ex::Release() {
-            ULONG count = this->FunctionAddresses.Release != nullptr ?
+            return this->FunctionAddresses.Release != nullptr ?
                 this->FunctionAddresses.Release(this->dev) :
                 this->dev->Release();
-            if (count == 0) {
-                delete this;
-            }
-            return count;
         }
 
         HRESULT ProxyDirect3DDevice9Ex::TestCooperativeLevel() {

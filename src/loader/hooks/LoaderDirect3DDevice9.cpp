@@ -52,14 +52,9 @@ namespace loader {
         }
 
         ULONG LoaderDirect3DDevice9::Release() {
-            ULONG count = LegacyAddonChainDevice != nullptr ?
+            return LegacyAddonChainDevice != nullptr ?
                 LegacyAddonChainDevice->Release() :
                 this->dev->Release();
-
-            if (count == 0) {
-                delete this;
-            }
-            return count;
         }
 
         HRESULT LoaderDirect3DDevice9::TestCooperativeLevel() {
@@ -1174,14 +1169,9 @@ namespace loader {
         }
 
         ULONG LoaderDirect3DDevice9Ex::Release() {
-            ULONG count = LegacyAddonChainDevice != nullptr ?
+            return LegacyAddonChainDevice != nullptr ?
                 LegacyAddonChainDevice->Release() :
                 this->dev->Release();
-
-            if (count == 0) {
-                delete this;
-            }
-            return count;
         }
 
         HRESULT LoaderDirect3DDevice9Ex::TestCooperativeLevel() {

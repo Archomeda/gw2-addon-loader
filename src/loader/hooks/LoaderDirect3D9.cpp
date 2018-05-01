@@ -108,11 +108,7 @@ namespace loader {
         }
 
         ULONG LoaderDirect3D9::Release() {
-            ULONG count = this->d3d9->Release();
-            if (count == 0) {
-                delete this;
-            }
-            return count;
+            return this->d3d9->Release();
         }
 
         HRESULT LoaderDirect3D9::RegisterSoftwareDevice(void* pInitializeFunction) {
@@ -226,11 +222,7 @@ namespace loader {
         }
 
         ULONG LoaderDirect3D9Ex::Release() {
-            ULONG count = this->d3d9->Release();
-            if (count == 0) {
-                delete this;
-            }
-            return count;
+            return this->d3d9->Release();
         }
 
         HRESULT LoaderDirect3D9Ex::RegisterSoftwareDevice(void* pInitializeFunction) {

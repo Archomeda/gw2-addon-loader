@@ -9,11 +9,7 @@ ULONG ProxyDirect3D9::AddRef() {
 }
 
 ULONG ProxyDirect3D9::Release() {
-    ULONG count = this->d3d9->Release();
-    if (count == 0) {
-        delete this;
-    }
-    return count;
+    return this->d3d9->Release();
 }
 
 HRESULT ProxyDirect3D9::RegisterSoftwareDevice(void* pInitializeFunction) {
@@ -99,11 +95,7 @@ ULONG ProxyDirect3D9Ex::AddRef() {
 }
 
 ULONG ProxyDirect3D9Ex::Release() {
-    ULONG count = this->d3d9->Release();
-    if (count == 0) {
-        delete this;
-    }
-    return count;
+    return this->d3d9->Release();
 }
 
 HRESULT ProxyDirect3D9Ex::RegisterSoftwareDevice(void* pInitializeFunction) {
