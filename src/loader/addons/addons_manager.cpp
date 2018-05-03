@@ -88,7 +88,7 @@ namespace loader {
         }
 
         void ReorderAddonHooks() {
-            // Sort hooks of generic addons
+            // Sort hooks of generic add-ons
             sort(ActiveAddonHooks.HandleWndProc.begin(), ActiveAddonHooks.HandleWndProc.end(), sortAddonsRawPtrFunc);
             sort(ActiveAddonHooks.DrawFrameBeforePostProcessing.begin(), ActiveAddonHooks.DrawFrameBeforePostProcessing.end(), sortAddonsRawPtrFunc);
             sort(ActiveAddonHooks.DrawFrameBeforeGui.begin(), ActiveAddonHooks.DrawFrameBeforeGui.end(), sortAddonsRawPtrFunc);
@@ -124,7 +124,7 @@ namespace loader {
             sort(ActiveAddonHooks.AdvPreDrawIndexedPrimitive.begin(), ActiveAddonHooks.AdvPreDrawIndexedPrimitive.end(), sortAddonsRawPtrFunc);
             sort(ActiveAddonHooks.AdvPostDrawIndexedPrimitive.begin(), ActiveAddonHooks.AdvPostDrawIndexedPrimitive.end(), sortAddonsRawPtrFunc);
 
-            // Set proper chain of enabled legacy addons
+            // Set proper chain of enabled legacy add-ons
             ResetLegacyAddonChain();
         }
 
@@ -153,15 +153,15 @@ namespace loader {
         void InitializeAddons(UINT sdkVersion, hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* device) {
             GetLog()->debug("loader::addons::InitializeAddons()");
           
-            // We force the initialization order with legacy addons as last to prevent problems
-            // with those addons initializing before our proxy addon is loaded
+            // We force the initialization order with legacy add-ons as last to prevent problems
+            // with those add-ons initializing before our proxy addon is loaded
             auto exec = [=](shared_ptr<Addon> addon) {
-                GetLog()->info("Initializing addon {0}", addon->GetFileName());
+                GetLog()->info("Initializing add-on {0}", addon->GetFileName());
                 addon->D3D9SdkVersion = sdkVersion;
                 addon->D3D9 = d3d9;
                 addon->D3DDevice9 = device;
                 addon->Initialize();
-                GetLog()->info("Addon {0} is {1}", addon->GetFileName(), addon->GetTypeString());
+                GetLog()->info("Add-on {0} is {1}", addon->GetFileName(), addon->GetTypeString());
             };
             for (auto& addon : Addons.GetAddons()) {
                 exec(addon);
@@ -184,20 +184,20 @@ namespace loader {
         void LoadAddons(HWND hFocusWindow) {
             GetLog()->debug("loader::addons::LoadAddons()");
 
-            // We force the loading order with legacy addons as last to prevent problems
-            // with those addons loading before our proxy addon is loaded
+            // We force the loading order with legacy add-ons as last to prevent problems
+            // with those add-ons loading before our proxy addon is loaded
             auto exec = [=](shared_ptr<Addon> addon) {
                 addon->FocusWindow = hFocusWindow;
                 if (addon->IsForced()) {
-                    GetLog()->info("Loading forced enabled addon {0}", addon->GetFileName());
+                    GetLog()->info("Loading forced enabled add-on {0}", addon->GetFileName());
                     addon->Load();
                 } 
                 else if (addon->IsEnabledByConfig()) {
-                    GetLog()->info("Loading enabled addon {0}", addon->GetFileName());
+                    GetLog()->info("Loading enabled add-on {0}", addon->GetFileName());
                     addon->Load();
                 }
                 else {
-                    GetLog()->info("Addon {0} is disabled", addon->GetFileName());
+                    GetLog()->info("Add-on {0} is disabled", addon->GetFileName());
                 }
             };
             for (auto& addon : Addons.GetAddons()) {
@@ -213,7 +213,7 @@ namespace loader {
         void UnloadAddons() {
             GetLog()->debug("loader::addons::UnloadAddons()");
             for (auto& addon : Addons) {
-                GetLog()->info("Unloading addon {0}", addon->GetFileName());
+                GetLog()->info("Unloading add-on {0}", addon->GetFileName());
                 addon->Unload();
             }
         }
@@ -245,8 +245,8 @@ namespace loader {
                     }
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call HandleWndProc in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call HandleWndProc in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -259,8 +259,8 @@ namespace loader {
                     addon->DrawFrameBeforePostProcessing(device);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call DrawFrameBeforePostProcessing in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call DrawFrameBeforePostProcessing in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -272,8 +272,8 @@ namespace loader {
                     addon->DrawFrameBeforeGui(device);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call DrawFrameBeforeGui in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call DrawFrameBeforeGui in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -285,8 +285,8 @@ namespace loader {
                     addon->DrawFrame(device);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call DrawFrame in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call DrawFrame in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -298,8 +298,8 @@ namespace loader {
                     addon->AdvPreBeginScene(device);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreBeginScene in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreBeginScene in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -311,8 +311,8 @@ namespace loader {
                     addon->AdvPostBeginScene(device);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostBeginScene in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostBeginScene in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -324,8 +324,8 @@ namespace loader {
                     addon->AdvPreEndScene(device);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreEndScene in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreEndScene in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -337,8 +337,8 @@ namespace loader {
                     addon->AdvPostEndScene(device);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostEndScene in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostEndScene in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -350,8 +350,8 @@ namespace loader {
                     addon->AdvPreClear(device, Count, pRects, Flags, Color, Z, Stencil);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreClear in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreClear in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -363,8 +363,8 @@ namespace loader {
                     addon->AdvPostClear(device, Count, pRects, Flags, Color, Z, Stencil);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostClear in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostClear in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -376,8 +376,8 @@ namespace loader {
                     addon->AdvPreReset(device, pPresentationParameters);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreReset in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreReset in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -389,8 +389,8 @@ namespace loader {
                     addon->AdvPostReset(device, pPresentationParameters);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostReset in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostReset in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -402,8 +402,8 @@ namespace loader {
                     addon->AdvPrePresent(device, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPrePresent in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPrePresent in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -415,8 +415,8 @@ namespace loader {
                     addon->AdvPostPresent(device, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostPresent in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostPresent in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -432,8 +432,8 @@ namespace loader {
                     }
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreCreateTexture in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreCreateTexture in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -446,8 +446,8 @@ namespace loader {
                     addon->AdvPostCreateTexture(device, pTexture, Width, Height, Levels, Usage, Format, Pool, pSharedHandle);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostCreateTexture in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostCreateTexture in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -463,8 +463,8 @@ namespace loader {
                     }
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreCreateVertexShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreCreateVertexShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -477,8 +477,8 @@ namespace loader {
                     addon->AdvPostCreateVertexShader(device, pShader, pFunction);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostCreateVertexShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostCreateVertexShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -494,8 +494,8 @@ namespace loader {
                     }
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreCreatePixelShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreCreatePixelShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -508,8 +508,8 @@ namespace loader {
                     addon->AdvPostCreatePixelShader(device, pShader, pFunction);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostCreatePixelShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostCreatePixelShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -525,8 +525,8 @@ namespace loader {
                     }
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreCreateRenderTarget in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreCreateRenderTarget in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -539,8 +539,8 @@ namespace loader {
                     addon->AdvPostCreateRenderTarget(device, pSurface, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, pSharedHandle);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostCreateRenderTarget in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostCreateRenderTarget in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -552,8 +552,8 @@ namespace loader {
                     addon->AdvPreSetTexture(device, Stage, pTexture);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreSetTexture in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreSetTexture in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -565,8 +565,8 @@ namespace loader {
                     addon->AdvPostSetTexture(device, Stage, pTexture);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostSetTexture in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostSetTexture in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -578,8 +578,8 @@ namespace loader {
                     addon->AdvPreSetVertexShader(device, pShader);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreSetVertexShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreSetVertexShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -591,8 +591,8 @@ namespace loader {
                     addon->AdvPostSetVertexShader(device, pShader);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostSetVertexShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostSetVertexShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -604,8 +604,8 @@ namespace loader {
                     addon->AdvPreSetPixelShader(device, pShader);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreSetPixelShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreSetPixelShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -617,8 +617,8 @@ namespace loader {
                     addon->AdvPostSetPixelShader(device, pShader);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostSetPixelShader in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostSetPixelShader in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -630,8 +630,8 @@ namespace loader {
                     addon->AdvPreSetRenderTarget(device, RenderTargetIndex, pRenderTarget);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreSetRenderTarget in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreSetRenderTarget in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -643,8 +643,8 @@ namespace loader {
                     addon->AdvPostSetRenderTarget(device, RenderTargetIndex, pRenderTarget);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostSetRenderTarget in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostSetRenderTarget in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -656,8 +656,8 @@ namespace loader {
                     addon->AdvPreSetRenderState(device, State, Value);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreSetRenderState in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreSetRenderState in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -669,8 +669,8 @@ namespace loader {
                     addon->AdvPostSetRenderState(device, State, Value);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call function in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call function in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -682,8 +682,8 @@ namespace loader {
                     addon->AdvPreDrawIndexedPrimitive(device, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPreDrawIndexedPrimitive in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPreDrawIndexedPrimitive in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }
@@ -695,8 +695,8 @@ namespace loader {
                     addon->AdvPostDrawIndexedPrimitive(device, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
                 }
                 catch (const exceptions::AddonException& ex) {
-                    GetLog()->error("Failed to call AdvPostDrawIndexedPrimitive in addon {0}: {1}", addon->GetFileName(), ex.what());
-                    GetLog()->error("Addon will be disabled on next restart");
+                    GetLog()->error("Failed to call AdvPostDrawIndexedPrimitive in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    GetLog()->error("Add-on will be disabled on next restart");
                     AppConfig.SetAddonEnabled(addon, false);
                 }
             }

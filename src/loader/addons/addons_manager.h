@@ -13,7 +13,7 @@ namespace loader {
 
         extern AddonsList Addons;
         
-        // These are pointers to the addons with enabled hooks.
+        // These are pointers to the add-ons with enabled hooks.
         // With this we can improve the performance because these addon functions are called repeatedly every frame.
         // Especially in the debug build this can cause major performance issues if we would just iterate naively.
         struct AddonHooks {

@@ -54,7 +54,7 @@ namespace loader {
         void SetLatestVersionInfoUrl(const std::string& url);
         void SetLatestVersionDownloadUrl(const std::string& url);
 
-        /** Addon settings */
+        /** Add-on settings */
 
         bool GetAddonEnabled(const addons::Addon* const addon);
         int GetAddonOrder(const addons::Addon* const addon);

@@ -33,7 +33,7 @@ namespace loader {
     namespace gui {
 
         SettingsWindow::SettingsWindow() {
-            this->SetTitle("Addon Loader");
+            this->SetTitle("Add-on Loader");
             this->SetFlags(ImGuiWindowFlags_NoCollapse);
         }
 
@@ -97,7 +97,7 @@ namespace loader {
                     }
                     this->PopTabStyle(i);
                     if (ImGui::IsItemHovered()) {
-                        ImGui::SetTooltip("Addon Loader update available");
+                        ImGui::SetTooltip("Add-on Loader update available");
                     }
                 }
             }
@@ -196,7 +196,7 @@ namespace loader {
                 }
             }
 
-            // Get selected addon info
+            // Get selected add-on info
             Addon* addon = nullptr;
             if (this->selectedAddon >= static_cast<int>(addonsList.size())) {
                 this->selectedAddon = -1;
@@ -207,7 +207,7 @@ namespace loader {
             {
                 ImGui::BeginChild("##LeftPanel", ImVec2(200, -ImGui::GetFrameHeightWithSpacing()), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
                 {
-                    // Listbox with addons
+                    // Listbox with add-ons
                     if (addonsList.size() > 0) {
                         ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
                         ImGuiAddonsList("##Addons", &this->selectedAddon, addonsList, ImVec2(-1, -1), 32);
@@ -217,11 +217,11 @@ namespace loader {
                 ImGui::EndChild();
 
                 if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size())) {
-                    // Set the selected addon after the listbox, in case the listbox selection has changed in this frame
+                    // Set the selected add-on after the listbox, in case the listbox selection has changed in this frame
                     addon = addonsList[this->selectedAddon];
                 }
 
-                // Button group for sorting addons
+                // Button group for sorting add-ons
                 ImVec2 buttonSize((200 - style.ItemSpacing.x) / 2, 0);
                 if (this->selectedAddon > 0 && Addons.CanSwap(addon, addonsList[this->selectedAddon - 1])) {
                     if (ImGui::Button(ICON_MD_ARROW_UPWARD, buttonSize)) {
@@ -229,7 +229,7 @@ namespace loader {
                         this->SelectAddon(addon);
                     }
                     if (ImGui::IsItemHovered()) {
-                        ImGui::SetTooltip("Move selected addon up");
+                        ImGui::SetTooltip("Move selected add-on up");
                     }
                 }
                 else {
@@ -242,7 +242,7 @@ namespace loader {
                         this->SelectAddon(addon);
                     }
                     if (ImGui::IsItemHovered()) {
-                        ImGui::SetTooltip("Move selected addon down");
+                        ImGui::SetTooltip("Move selected add-on down");
                     }
                 }
             }
@@ -253,7 +253,7 @@ namespace loader {
             if (this->selectedAddon > -1) {
                 ImGui::BeginGroup();
                 {
-                    // Addon information
+                    // Add-on information
                     ImGui::BeginChild("##Addon", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
                     {
                         // Header
@@ -284,7 +284,7 @@ namespace loader {
                         }
                         else {
                             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 51, 0, 255));
-                            ImGui::TextWrapped("This addon type is not compatible: %s.", addon->GetTypeString().c_str());
+                            ImGui::TextWrapped("This add-on type is not compatible: %s.", addon->GetTypeString().c_str());
                             ImGui::PopStyleColor();
                         }
 
@@ -309,7 +309,7 @@ namespace loader {
                         if (addon->IsForced()) {
                             ImGui::Spacing();
                             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
-                            ImGui::TextWrapped("This is a supportive addon for the Addon Loader and cannot be disabled.");
+                            ImGui::TextWrapped("This is a supportive add-on for the Addon Loader and cannot be disabled.");
                             ImGui::PopStyleColor();
                         }
                         else if (addon->GetType() == AddonType::AddonTypeLegacy) {
@@ -326,7 +326,7 @@ namespace loader {
 
                             ImGui::Dummy(ImVec2(0, 8));
                             ImGui::PushTextWrapPos();
-                            ImGui::TextUnformatted("An update is available for this addon.\nDisclaimer: Be careful with updating addons automatically; the download information is provided by the addon itself and not by the Addon Loader. Always check the release notes first. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. After the update has finished, a full Guild Wars 2 restart is required.");
+                            ImGui::TextUnformatted("An update is available for this add-on.\nDisclaimer: Be careful with updating addons automatically; the download information is provided by the add-on itself and not by the Addon Loader. Always check the release notes first. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. After the update has finished, a full Guild Wars 2 restart is required.");
                             ImGui::PopTextWrapPos();
 
                             ImGui::Dummy(ImVec2(0, 4));
@@ -433,25 +433,25 @@ namespace loader {
             }
             else if (addonsList.size() > 0) {
                 ImGui::PushTextWrapPos();
-                ImGui::TextUnformatted("No addon selected. Select an addon in the list to the left.");
+                ImGui::TextUnformatted("No add-on selected. Select an add-on in the list to the left.");
                 ImGui::PopTextWrapPos();
             }
             else {
                 ImGui::PushTextWrapPos();
-                ImGui::TextUnformatted("No addons available. Install at least one addon and restart Guild Wars 2.");
+                ImGui::TextUnformatted("No add-ons available. Install at least one add-on and restart Guild Wars 2.");
                 ImGui::PopTextWrapPos();
             }
         }
 
         void SettingsWindow::RenderTabInfo() {
             ImGui::PushTextWrapPos();
-            ImGui::TextUnformatted(R"(Guild Wars 2 Addon Loader is an unofficial addon for Guild Wars 2 developed by Archomeda. It acts as a master addon that makes it easy to manage your Guild Wars 2 addons without the need to sort the files manually.
+            ImGui::TextUnformatted(R"(Guild Wars 2 Add-on Loader is an unofficial add-on for Guild Wars 2 developed by Archomeda. It acts as a master add-on that makes it easy to manage your Guild Wars 2 addons without the need to sort the files manually.
 
-Addons have to be compatible before they can be used with the Addon Loader. While incompatible addons will still show up in the list of addons, you can't activate them. If you want to use an addon that's not compatible, ask its developer to update it.
+Addons have to be compatible before they can be used with the Add-on Loader. While incompatible addons will still show up in the list of addons, you can't activate them. If you want to use an add-on that's not compatible, ask its developer to update it.
 
-Both this addon and its author do not support addons that are against the Guild Wars 2 Terms of Service. Support will not be provided if you're using these kind of addons. Please do not use them.
+Both this add-on and its author do not support addons that are against the Guild Wars 2 Terms of Service. Support will not be provided if you're using these kind of addons. Please do not use them.
 
-Visit the GitHub repository for more information, third party licenses, and report any issues related to the Addon Loader there. Keep in mind that the Addon Loader has no influence on what other addons do. Therefore if there are issues related to a specific addon, please report that issue to its developer instead.
+Visit the GitHub repository for more information, third party licenses, and report any issues related to the Add-on Loader there. Keep in mind that the Add-on Loader has no influence on what other addons do. Therefore if there are issues related to a specific add-on, please report that issue to its developer instead.
 
 
 Disclaimer:
@@ -475,7 +475,7 @@ Also, the author of this library is not responsible for the potential risks by u
                 char keysBuff[64];
                 keysStr._Copy_s(keysBuff, sizeof(keysBuff), keysStr.length());
                 keysBuff[keysStr.length()] = 0;
-                ImGui::TextUnformatted("Addon Loader Window keybind");
+                ImGui::TextUnformatted("Add-on Loader Window keybind");
                 ImGui::SameLine();
                 ImGui::InputTextEx("##LoaderKeybind", keysBuff, sizeof(keysBuff), ImVec2(200, 0), ImGuiInputTextFlags_ReadOnly);
                 if (ImGui::IsItemActive()) {
@@ -501,12 +501,12 @@ Also, the author of this library is not responsible for the potential risks by u
                     AppConfig.SetOBSCompatibilityMode(this->obsCompatibilityMode);
                 }
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip(R"(When OBS compatibility mode is active, the addon loader will
+                    ImGui::SetTooltip(R"(When OBS compatibility mode is active, the add-on loader will
 attempt to hide native add-ons and itself from OBS if the
 OBS third-party overlays capture setting is disabled.)");
                 }
 
-                if (ImGui::Checkbox("Show hidden addons", &this->showHiddenAddons)) {
+                if (ImGui::Checkbox("Show hidden add-ons", &this->showHiddenAddons)) {
                     AppConfig.SetShowHiddenAddons(this->showHiddenAddons);
                 }
 
@@ -518,7 +518,7 @@ OBS third-party overlays capture setting is disabled.)");
 
             ImGui::BeginChild("##Metadata");
             {
-                ImGui::Text("Addon Loader version: " VERSION);
+                ImGui::Text("Add-on Loader version: " VERSION);
             }
             ImGui::EndChild();
         }
@@ -526,7 +526,7 @@ OBS third-party overlays capture setting is disabled.)");
         void SettingsWindow::RenderTabStats() {
             shared_ptr<Addon> selectedAddon;
             stringstream sstream;
-            sstream << "Guild Wars 2" << '\0' << "Addon Loader" << '\0';
+            sstream << "Guild Wars 2" << '\0' << "Add-on Loader" << '\0';
             int i = 2;
             for (const auto& addon : Addons) {
                 if ((AppConfig.GetShowHiddenAddons() || !addon->IsHidden()) && addon->GetState() == AddonState::LoadedState) {
@@ -596,7 +596,7 @@ OBS third-party overlays capture setting is disabled.)");
                 }
                 if (ImGui::CollapsingHeader("Rendering")) {
                     const auto history = selectedAddon->GetMetricOverall().GetMovingHistory();
-                    ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Addon frame time (µs)", 0, 10000, ImVec2(0, 100));
+                    ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Add-on frame time (µs)", 0, 10000, ImVec2(0, 100));
                     ImGui::Columns(5);
                     ImGui::SetColumnWidth(0, 180);
                     ImGui::NextColumn();
@@ -656,7 +656,7 @@ OBS third-party overlays capture setting is disabled.)");
             {
                 if (this->IsAddonLoaderUpdateAvailable()) {
                     ImGui::PushTextWrapPos();
-                    ImGui::TextUnformatted("A new update for the Addon Loader is available. Please refer to the release notes to see what has changed. Click the \"Update\" button to automatically update the Addon Loader. After the update has finished, a full Guild Wars 2 restart is required.");
+                    ImGui::TextUnformatted("A new update for the Add-on Loader is available. Please refer to the release notes to see what has changed. Click the \"Update\" button to automatically update the Add-on Loader. After the update has finished, a full Guild Wars 2 restart is required.");
                     ImGui::PopTextWrapPos();
                     ImGui::Dummy(ImVec2(0, 4));
                     ImGui::Text("Installed version: %s", VERSION);

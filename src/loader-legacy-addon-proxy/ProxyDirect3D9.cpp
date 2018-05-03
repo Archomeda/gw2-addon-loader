@@ -174,7 +174,7 @@ HRESULT ProxyDirect3D9Ex::CreateDeviceEx(UINT Adapter, D3DDEVTYPE DeviceType, HW
     // At this point, the device has already been created by the loader,
     // so we have to obtain the already created device from that.
     // Since Guild Wars 2 doesn't use CreateDeviceEx, this implicitly calls CreateDevice instead.
-    // If Guild Wars 2 (or any legacy addon) starts using CreateDeviceEx and has issues, update this to reflect it
+    // If Guild Wars 2 (or any legacy add-on) starts using CreateDeviceEx and has issues, update this to reflect it
     if (this->loaderApi->GetDirect3DDevice != nullptr) {
         *ppReturnedDeviceInterface = reinterpret_cast<IDirect3DDevice9Ex*>(this->loaderApi->GetDirect3DDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters));
     }

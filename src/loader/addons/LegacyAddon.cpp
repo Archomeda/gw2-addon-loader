@@ -53,7 +53,7 @@ namespace loader {
 
                 // 2) Redirect third-party modules inside the Guild Wars 2 bin(64) folder
                 // Temporarily disabled for now until a more reliable way can be found
-                // (addons that manually check if a file exists won't work with this way)
+                // (add-ons that manually check if a file exists won't work with this way)
 
                 //string fileNameString = filePath.filename().u8string();
                 //string filePathString = path(filePath).remove_filename().u8string();
@@ -164,7 +164,7 @@ namespace loader {
 
         bool LegacyAddon::ApplySafeEnv() {
             // Make sure to save some states to restore later
-            // In order for addons to hook into D3D9, they either do one of the following:
+            // In order for add-ons to hook into D3D9, they either do one of the following:
             //  - Overwrite the virtual table of D3DDevice9
             //  - Overwrite the CPU instructions inside the functions of the D3DDevice9 object
             //  - Return a new object that wraps the D3DDevice9 object (already covered by our ProxyDirect3DDevice9 object)
@@ -173,7 +173,7 @@ namespace loader {
             // Case 1: Overwritten virtual table (ReShade, Gw2Hook)
             ProxyDirect3DDevice9 proxyDevice;
             this->proxyVtbl = GetD3DDevice9Vtbl(&proxyDevice);
-            GetLog()->info("Stored state of legacy addon {0} ProxyD3DDevice9 vtbl", this->GetFileName());
+            GetLog()->info("Stored state of legacy add-on {0} ProxyD3DDevice9 vtbl", this->GetFileName());
 
             // Case 2: Overwritten CPU instructions
             //  a) minhook (GW2Mounts)
@@ -316,7 +316,7 @@ namespace loader {
             mhStatus = MH_QueueEnableHook(&GetModuleHandleExA);
             mhStatus = MH_QueueEnableHook(&GetModuleHandleExW);
             mhStatus = MH_ApplyQueued();
-            GetLog()->info("Redirected WinAPI functions for legacy addon {0}", this->GetFileName());
+            GetLog()->info("Redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
             return mhStatus == MH_OK;
         }
 
@@ -348,23 +348,23 @@ namespace loader {
             hooks::SystemGetModuleHandleW = nullptr;
             hooks::SystemGetModuleHandleExA = nullptr;
             hooks::SystemGetModuleHandleExW = nullptr;
-            GetLog()->info("Reverted redirected WinAPI functions for legacy addon {0}", this->GetFileName());
+            GetLog()->info("Reverted redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
 
             // Make sure to restore the states from earlier, check ApplySafeEnv
             // This is only needed whenever the addon returns the same pointer as the proxied D3D9 device
-            // (in addon terms: the proxied D3D9 device is what the addon believes what is the system D3D9 device,
-            // the addon device is what the addon wraps or changed the system D3D9 and returns to the game)
+            // (in add-on terms: the proxied D3D9 device is what the addon believes what is the system D3D9 device,
+            // the add-on device is what the add-on wraps or changed the system D3D9 and returns to the game)
             if (this->AddonD3DDevice9 == this->ProxyD3DDevice9) {
-                GetLog()->info("Detected overwrites in ProxyD3DDevice9 object for legacy addon {0}", this->GetFileName());
+                GetLog()->info("Detected overwrites in ProxyD3DDevice9 object for legacy add-on {0}", this->GetFileName());
                     
-                // Wrap the addon device first
+                // Wrap the add-on device first
                 ProxyDirect3DDevice9* newAddonDev = new ProxyDirect3DDevice9(this->ProxyD3DDevice9);
 
                 // Case 1: Overwritten virtual table (ReShade, Gw2Hook)
                 // We get the new vtbl first and then restore the original vtbl to the proxied device
                 D3DDevice9Vtbl vtbl = GetD3DDevice9Vtbl(this->ProxyD3DDevice9);
                 SetD3DDevice9Vtbl(this->ProxyD3DDevice9, this->proxyVtbl);
-                // Compare the pointers and copy them to the addon device if they are different
+                // Compare the pointers and copy them to the add-on device if they are different
                 this->CopyPointerIfNotEqual(&newAddonDev->FunctionAddresses.QueryInterface, vtbl.QueryInterface, this->proxyVtbl.QueryInterface);
                 this->CopyPointerIfNotEqual(&newAddonDev->FunctionAddresses.AddRef, vtbl.AddRef, this->proxyVtbl.AddRef);
                 this->CopyPointerIfNotEqual(&newAddonDev->FunctionAddresses.Release, vtbl.Release, this->proxyVtbl.Release);
@@ -607,8 +607,8 @@ namespace loader {
                 this->CopyAndRestorePointerIfHooked(&newAddonDev->FunctionAddresses.DeletePatch, this->proxyFunctionInstructions.DeletePatch, vtbl.DeletePatch, INSTRUCTION_BACKUP_SIZE);
                 this->CopyAndRestorePointerIfHooked(&newAddonDev->FunctionAddresses.CreateQuery, this->proxyFunctionInstructions.CreateQuery, vtbl.CreateQuery, INSTRUCTION_BACKUP_SIZE);
 
-                GetLog()->info("Restored ProxyD3DDevice9 state for legacy addon {0}", this->GetFileName());
-                GetLog()->info("Legacy addon {0} new AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(newAddonDev));
+                GetLog()->info("Restored ProxyD3DDevice9 state for legacy add-on {0}", this->GetFileName());
+                GetLog()->info("Legacy add-on {0} new AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(newAddonDev));
                 this->AddonD3DDevice9 = newAddonDev;
             }
 
@@ -623,7 +623,7 @@ namespace loader {
 
 
         bool LegacyAddon::Initialize() {
-            // Make sure to load the proxy addon beforehand
+            // Make sure to load the proxy add-on beforehand
             if (ProxyAddon::Instance == nullptr) {
                 return false;
             }
@@ -647,11 +647,11 @@ namespace loader {
             // Ensure a safe environment that we can restore to later on
             if (!this->ApplySafeEnv()) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not load legacy addon {0}: Redirecting WinAPI functions failed", this->GetFileName());
+                GetLog()->error("Could not load legacy add-on {0}: Redirecting WinAPI functions failed", this->GetFileName());
                 return false;
             }
 
-            // Start loading the addon
+            // Start loading the add-on
             HMODULE h = hooks::SystemLoadLibraryExW(this->GetFilePath().c_str(), NULL, 0);
             if (h != NULL) {
                 this->addonHandle = h;
@@ -659,38 +659,38 @@ namespace loader {
             }
             else {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize load addon {0}: Library handle is empty", this->GetFileName());
+                GetLog()->error("Could not initialize load add-on {0}: Library handle is empty", this->GetFileName());
                 return false;
             }
 
             if (this->AddonCreate == NULL) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize load addon {0}: Addon doesn't have a Direct3DCreate9 export", this->GetFileName());
+                GetLog()->error("Could not initialize load add-on {0}: Add-on doesn't have a Direct3DCreate9 export", this->GetFileName());
                 FreeLibrary(this->addonHandle);
                 this->addonHandle = NULL;
                 return false;
             }
 
-            // Make sure the addon is created and loaded properly.
-            // At this point, the addon we are loading should use a reference to our proxy D3D9 DLL,
+            // Make sure the add-on is created and loaded properly.
+            // At this point, the add-on we are loading should use a reference to our proxy D3D9 DLL,
             // which in turn simulates the CreateDevice call to use an already created device.
             // This way we make sure it's not creating a duplicate device, but instead using the one we already have.
             this->AddonD3D9 = this->AddonCreate(this->D3D9SdkVersion);
-            GetLog()->info("Legacy addon {0} AddonD3D9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3D9));
+            GetLog()->info("Legacy add-on {0} AddonD3D9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3D9));
             Direct3DDevice9Information deviceInfo = GetGlobalDeviceInformation();
             ProxyAddon::Instance->LastProxiedDevice = nullptr; 
             HRESULT result = this->AddonD3D9->CreateDevice(deviceInfo.Adapter, deviceInfo.DeviceType, deviceInfo.hFocusWindow, deviceInfo.BehaviorFlags, &deviceInfo.PresentationParameters, &this->AddonD3DDevice9);
-            GetLog()->info("Legacy addon {0} AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3DDevice9));
+            GetLog()->info("Legacy add-on {0} AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3DDevice9));
             if (result != D3D_OK) {
                 this->ChangeState(AddonState::ErroredState);
                 GetLog()->error("Could not load legacy addon {0}: Obtaining the device failed", this->GetFileName());
             }
             this->ProxyD3DDevice9 = ProxyAddon::Instance->LastProxiedDevice;
-            GetLog()->info("Legacy addon {0} ProxyD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->ProxyD3DDevice9));
+            GetLog()->info("Legacy add-on {0} ProxyD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->ProxyD3DDevice9));
 
             if (!this->RevertSafeEnv()) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not load legacy addon {0}: Reverting WinAPI functions failed", this->GetFileName());
+                GetLog()->error("Could not load legacy add-on {0}: Reverting WinAPI functions failed", this->GetFileName());
             }
 
             if (this->GetState() == AddonState::ErroredState) {
@@ -709,7 +709,7 @@ namespace loader {
             }
             this->ChangeState(AddonState::UnloadingState);
 
-            // This will flush the addon from the chain because it only takes *loaded* addons
+            // This will flush the add-on from the chain because it only takes *loaded* addons
             ResetLegacyAddonChain();
 
             this->AddonCreate = NULL;

@@ -1,17 +1,17 @@
 /**
-This is a proxy DLL that impersonates the real d3d9.dll when legacy addons are loading.
-The goal is to support legacy addons without having them to be ported to native addons.
+This is a proxy DLL that impersonates the real d3d9.dll when legacy add-ons are loading.
+The goal is to support legacy add-ons without having them to be ported to native add-ons.
 This DLL will intercept all necessary D3D9 functions and redirect them to the real D3D9
 library. It does nothing else.
 
-However, if you're an addon developer, please consider making a native addon. An
+However, if you're an add-on developer, please consider making a native add-on. An
 example is available as the example-addon-native project. If needed, it's possible to
-make a native + legacy hybrid. This means it's compatible with the addon loader, while
-also being able to be used on its own without the addon loader. While an example is
+make a native + legacy hybrid. This means it's compatible with the add-on loader, while
+also being able to be used on its own without the add-on loader. While an example is
 out-of-scope for this project, you can refer to the example-addon-native project that
-shows how you can detect the addon loader in the DllMain function.
+shows how you can detect the add-on loader in the DllMain function.
 
-This project creates a file called d3d9-proxy.dll. The addon loader expects this file
+This project creates a file called d3d9-proxy.dll. The add-on loader expects this file
 to be present inside the addon folder.
 */
 

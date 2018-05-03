@@ -64,15 +64,15 @@ namespace loader {
             HMODULE hAddon = LoadLibraryEx(filePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
 
             if (GetProcAddress(hAddon, "ProxyInitialize") != nullptr) {
-                // Our addon is our loader proxy
+                // Our add-on is our loader proxy
                 addon = make_unique<ProxyAddon>(filePath);
             }
             else if (GetProcAddress(hAddon, GW2ADDON_DLL_Initialize) != nullptr) {
-                // Our addon is native
+                // Our add-on is native
                 addon = make_unique<NativeAddon>(filePath);
             }
             else if (GetProcAddress(hAddon, "Direct3DCreate9") != nullptr) {
-                // Our addon is legacy
+                // Our add-on is legacy
                 addon = make_unique<LegacyAddon>(filePath);
             }
             FreeLibrary(hAddon);

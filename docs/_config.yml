@@ -13,11 +13,11 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Guild Wars 2 Addon Loader
+title: Guild Wars 2 Add-on Loader
 description: >-
-  Guild Wars 2 Addon Loader is an unofficial addon for Guild Wars 2.
-  It acts as a master addon that makes it easy to manage your
-  Guild Wars 2 addons without the need to manage the files manually.
+  Guild Wars 2 Add-on Loader is an unofficial add-on for Guild Wars 2.
+  It acts as a master add-on that makes it easy to manage your
+  Guild Wars 2 add-ons without the need to manage the files manually.
 url: "https://archomeda.github.io"
 baseurl: "/gw2-addon-loader"
 permalink: pretty

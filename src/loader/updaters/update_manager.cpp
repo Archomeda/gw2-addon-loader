@@ -26,7 +26,7 @@ namespace loader {
 
             LoaderUpdater.SetCheckCallback([](const Updater* const updater, VersionInfo version) {
                 if (AppConfig.GetLatestVersion() != version.version) {
-                    GetLog()->info("New Addon Loader version found: {0}", version.version);
+                    GetLog()->info("New Add-on Loader version found: {0}", version.version);
                     AppConfig.SetLatestVersion(version.version);
                     AppConfig.SetLatestVersionInfoUrl(version.infoUrl);
                     AppConfig.SetLatestVersionDownloadUrl(version.downloadUrl);
