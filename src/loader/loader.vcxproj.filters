@@ -54,9 +54,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\AddonInfoWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="gui\SettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -183,9 +180,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\AddonInfoWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\SettingsWindow.cpp">

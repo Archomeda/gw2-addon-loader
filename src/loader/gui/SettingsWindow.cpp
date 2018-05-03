@@ -11,7 +11,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
 #include "gui_manager.h"
-#include "AddonInfoWindow.h"
 #include "elements/ExtraImGuiElements.h"
 #include "../Config.h"
 #include "../IconsOcticons.h"
@@ -349,6 +348,25 @@ namespace loader {
                                 }
                             }
                         }
+
+                        // Some metadata
+                        ImGui::Spacing();
+                        ImGui::Separator();
+                        if (!addon->GetID().empty()) {
+                            ImGui::Text("ID: %s", addon->GetID().c_str());
+                        }
+                        if (!addon->GetVersion().empty()) {
+                            ImGui::Text("Version: %s", addon->GetVersion().c_str());
+                        }
+                        if (!addon->GetAuthor().empty()) {
+                            ImGui::Text("Author: %s", addon->GetAuthor().c_str());
+                        }
+                        if (!addon->GetFileName().empty()) {
+                            ImGui::Text("File: %s", addon->GetFileName().c_str());
+                        }
+                        if (!addon->GetTypeString().empty()) {
+                            ImGui::Text("Type: %s", addon->GetTypeString().c_str());
+                        }
                     }
                     ImGui::EndChild();
 
@@ -398,13 +416,6 @@ namespace loader {
                                 this->Close();
                                 addon->OpenSettings();
                             }
-                        }
-
-                        // Info button
-                        ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 176 - style.ItemSpacing.x - 8); // -8 for the resize grip
-                        if (ImGui::Button(ICON_MD_INFO " Details", ImVec2(80, 0))) {
-                            AddonInfoWnd->SetAddon(addon);
-                            ShowWindow(AddonInfoWnd.get());
                         }
 
                         // Homepage button

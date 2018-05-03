@@ -207,7 +207,6 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="hooks\hooks_manager.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="gui\AddonInfoWindow.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="gui\Window.h" />
   </ItemGroup>
@@ -236,7 +235,6 @@
     <ClCompile Include="disasm\d3d9Vtbl.c" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="gui\AddonInfoWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui\Window.cpp" />
     <ClCompile Include="addons\AddonMetric.cpp" />
