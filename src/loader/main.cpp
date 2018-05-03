@@ -124,7 +124,7 @@ HRESULT PreCreateDevice(hooks::LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE D
 
 void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
     // Hook MumbleLink
-    hooks::Gw2MumbleLink.Start();
+    hooks::MumbleLink::GetInstance().Start();
 
     // Initialize add-ons
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
@@ -250,7 +250,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     case DLL_PROCESS_DETACH: {
         MH_Uninitialize();
 
-        hooks::Gw2MumbleLink.Stop();
+        hooks::MumbleLink::GetInstance().Stop();
         gui::imgui::Shutdown();
 
         addons::UnloadAddons();

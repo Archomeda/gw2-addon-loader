@@ -5,6 +5,7 @@
 #include <atomic>
 #include <chrono>
 #include <codecvt>
+#include <condition_variable>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
@@ -59,6 +60,7 @@
 #include <Shlwapi.h>
 #include <strsafe.h>
 #include <WinInet.h>
+#include <WinSock2.h>
 
 // Third-party
 #include <IconsMaterialDesign.h>
@@ -70,7 +72,6 @@
 #include <miniz.h>
 #include <SimpleIni.h>
 #include <spdlog/spdlog.h>
-
 
 // Project
 #include <d3d9-defines.h>

@@ -257,6 +257,9 @@ namespace loader {
             d3d9ProcessingStart = {};
             addons::OnEndFrame(this->dev);
 
+            // Signal MumbleLink
+            MumbleLink::GetInstance().SignalFrame();
+
             return hr;
         }
 
@@ -299,7 +302,7 @@ namespace loader {
         HRESULT LoaderDirect3DDevice9::CreateTexture(UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture, HANDLE* pSharedHandle) {
             IDirect3DTexture9* pOldTexture = *ppTexture;
             HRESULT hr;
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 hr = addons::AdvPreCreateTexture(this->dev, Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
                 if (hr != D3D_OK) {
                     // Fail
@@ -317,7 +320,7 @@ namespace loader {
                 }
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostCreateTexture(this->dev, *ppTexture, Width, Height, Levels, Usage, Format, Pool, pSharedHandle);
             }
 
@@ -351,7 +354,7 @@ namespace loader {
         HRESULT LoaderDirect3DDevice9::CreateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9** ppSurface, HANDLE* pSharedHandle) {
             IDirect3DSurface9* pOldSurface = *ppSurface;
             HRESULT hr;
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 hr = addons::AdvPreCreateRenderTarget(this->dev, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
                 if (hr != D3D_OK) {
                     // Fail
@@ -369,7 +372,7 @@ namespace loader {
                 }
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostCreateRenderTarget(this->dev, *ppSurface, Width, Height, Format, MultiSample, MultisampleQuality, Lockable, pSharedHandle);
             }
 
@@ -425,7 +428,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
             }
 
@@ -466,7 +469,7 @@ namespace loader {
                 return hr;
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
             }
 
@@ -618,7 +621,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value) {
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPreSetRenderState(this->dev, State, Value);
             }
 
@@ -642,7 +645,7 @@ namespace loader {
                 break;
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostSetRenderState(this->dev, State, Value);
             }
 
@@ -692,7 +695,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture) {
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPreSetTexture(this->dev, Stage, pTexture);
             }
 
@@ -704,7 +707,7 @@ namespace loader {
                 return hr;
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostSetTexture(this->dev, Stage, pTexture);
             }
 
@@ -808,7 +811,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPreDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
             }
 
@@ -837,7 +840,7 @@ namespace loader {
                 }
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostDrawIndexedPrimitive(this->dev, PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
             }
 
@@ -895,7 +898,7 @@ namespace loader {
         HRESULT LoaderDirect3DDevice9::CreateVertexShader(CONST DWORD* pFunction, IDirect3DVertexShader9** ppShader) {
             IDirect3DVertexShader9* pOldShader = *ppShader;
             HRESULT hr;
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 hr = addons::AdvPreCreateVertexShader(this->dev, pFunction, ppShader);
                 if (hr != D3D_OK) {
                     // Fail
@@ -913,7 +916,7 @@ namespace loader {
                 }
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostCreateVertexShader(this->dev, *ppShader, pFunction);
             }
 
@@ -921,7 +924,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetVertexShader(IDirect3DVertexShader9* pShader) {
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPreSetVertexShader(this->dev, pShader);
             }
 
@@ -951,7 +954,7 @@ namespace loader {
                 pStateBlock->Release();
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostSetVertexShader(this->dev, pShader);
             }
 
@@ -1039,7 +1042,7 @@ namespace loader {
         HRESULT LoaderDirect3DDevice9::CreatePixelShader(CONST DWORD* pFunction, IDirect3DPixelShader9** ppShader) {
             IDirect3DPixelShader9* pOldShader = *ppShader;
             HRESULT hr;
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 hr = addons::AdvPreCreatePixelShader(this->dev, pFunction, ppShader);
                 if (hr != D3D_OK) {
                     // Fail
@@ -1057,7 +1060,7 @@ namespace loader {
                 }
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostCreatePixelShader(this->dev, *ppShader, pFunction);
             }
 
@@ -1065,7 +1068,7 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3DDevice9::SetPixelShader(IDirect3DPixelShader9* pShader) {
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPreSetPixelShader(this->dev, pShader);
             }
 
@@ -1077,7 +1080,7 @@ namespace loader {
                 return hr;
             }
 
-            if (!hooks::Gw2MumbleLink.IsTypeCompetitive()) {
+            if (!MumbleLink::GetInstance().IsTypeCompetitive()) {
                 addons::AdvPostSetPixelShader(this->dev, pShader);
             }
 
