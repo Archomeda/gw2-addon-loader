@@ -308,7 +308,7 @@ namespace loader {
                         else if (addon->GetType() == AddonType::AddonTypeLegacy) {
                             ImGui::Spacing();
                             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
-                            ImGui::TextWrapped(ICON_MD_WARNING " WARNING " ICON_MD_WARNING "\nThis is a legacy add-on. Support for legacy add-ons are experimental at best and crashes may happen. Please contact the add-on developer to make it properly compatible.");
+                            ImGui::TextWrapped(ICON_MD_WARNING " WARNING " ICON_MD_WARNING "\nThis is a legacy add-on. Support for legacy add-ons is experimental at best and crashes may happen. Please contact the add-on developer to make it properly compatible.");
                             ImGui::PopStyleColor();
                         }
 
