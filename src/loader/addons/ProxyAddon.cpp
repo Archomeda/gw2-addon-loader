@@ -80,7 +80,8 @@ namespace loader {
             }
             this->ChangeState(AddonState::LoadingState);
 
-            if (!this->ProxyInitialize(&this->proxyApi)) {
+            this->proxyMetadata = this->ProxyInitialize(&this->proxyApi);
+            if (!this->proxyMetadata.name) {
                 this->ChangeState(AddonState::ErroredState);
                 GetLog()->error("Could not load proxy addon {0}", this->GetFileName());
                 return false;

@@ -32,10 +32,14 @@ namespace loader {
 
             virtual AddonType GetType() const override { return AddonType::AddonTypeLoaderProxy; }
 
+            virtual const std::string GetName() const override { return this->proxyMetadata.name; }
+            virtual const std::string GetDescription() const override { return this->proxyMetadata.description; }
+
         private:
             HMODULE addonHandle = NULL;
 
             GW2LegacyAddonProxyAPI proxyApi;
+            GW2LegacyAddonProxyAPIMetadata proxyMetadata = {};
 
             ProxyInitialize_t* ProxyInitialize = nullptr;
             ProxyRelease_t* ProxyRelease = nullptr;

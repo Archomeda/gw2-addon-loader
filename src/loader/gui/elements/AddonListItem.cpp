@@ -55,8 +55,11 @@ namespace loader {
                 else {
                     // Fallback generic
                     ImGui::PushFont(imgui::FontIconButtons);
-                    if (addon->SupportsLoading()) {
+                    if (addon->SupportsLoading() && !addon->IsForced()) {
                         ImGui::TextUnformatted(ICON_MD_EXTENSION);
+                    }
+                    else if (addon->IsForced()) {
+                        ImGui::TextDisabled(ICON_MD_EXTENSION);
                     }
                     ImGui::PopFont();
                 }

@@ -138,18 +138,18 @@ IDirect3D9Ex* WINAPI Direct3DCreate9Ex(UINT sdkVersion) {
 
 #pragma endregion
 
-bool GW2PROXY_CALL ProxyInitialize(const GW2LegacyAddonProxyAPI* const api) {
+GW2LegacyAddonProxyAPIMetadata GW2PROXY_CALL ProxyInitialize(const GW2LegacyAddonProxyAPI* const api) {
     wchar_t systemDir[MAX_PATH];
     GetSystemDirectory(systemDir, MAX_PATH);
     path systemPath(systemDir);
     systemPath /= "d3d9";
     SystemD3D9Module = LoadLibrary(systemPath.c_str());
     if (SystemD3D9Module == NULL) {
-        return false;
+        return {};
     }
 
     if (api == nullptr) {
-        return false;
+        return {};
     }
 
     SystemD3D9.Direct3DShaderValidatorCreate9 = reinterpret_cast<Direct3DShaderValidatorCreate9_t*>(GetProcAddress(SystemD3D9Module, "Direct3DShaderValidatorCreate9"));
@@ -169,12 +169,14 @@ bool GW2PROXY_CALL ProxyInitialize(const GW2LegacyAddonProxyAPI* const api) {
     SystemD3D9.Direct3DCreate9Ex = reinterpret_cast<Direct3DCreate9Ex_t*>(GetProcAddress(SystemD3D9Module, "Direct3DCreate9Ex"));
     LoaderApi = api;
 
-    return true;
+    static GW2LegacyAddonProxyAPIMetadata metadata;
+    metadata.name = "Proxy for legacy add-ons";
+    metadata.description = "An add-on to support proxying various functions that are used in legacy add-ons.";
+    return metadata;
 }
 
-bool GW2PROXY_CALL ProxyRelease() {
+void GW2PROXY_CALL ProxyRelease() {
     FreeLibrary(SystemD3D9Module);
     SystemD3D9Module = NULL;
     LoaderApi = nullptr;
-    return true;
 }

@@ -289,11 +289,7 @@ namespace loader {
                             ImGui::PopStyleColor();
                         }
 
-                        if (addon->IsForced()) {
-                            ImGui::Spacing();
-                            ImGui::TextWrapped("This is a supportive addon for the Addon Loader and cannot be disabled.");
-                        }
-                        else if (addon->GetState() == AddonState::DeactivatedOnRestartState) {
+                        if (addon->GetState() == AddonState::DeactivatedOnRestartState) {
                             ImGui::Spacing();
                             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
                             ImGui::TextWrapped("This add-on cannot be deactivated while Guild Wars 2 is running. A full Guild Wars 2 client restart is required.");
@@ -305,16 +301,23 @@ namespace loader {
                             ImGui::TextWrapped("This add-on cannot be activated while Guild Wars 2 is running. A full Guild Wars 2 client restart is required.");
                             ImGui::PopStyleColor();
                         }
+                        
+                        if (!addon->GetDescription().empty()) {
+                            ImGui::Spacing();
+                            ImGui::TextWrapped(addon->GetDescription().c_str());
+                        }
+
+                        if (addon->IsForced()) {
+                            ImGui::Spacing();
+                            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
+                            ImGui::TextWrapped("This is a supportive addon for the Addon Loader and cannot be disabled.");
+                            ImGui::PopStyleColor();
+                        }
                         else if (addon->GetType() == AddonType::AddonTypeLegacy) {
                             ImGui::Spacing();
                             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
                             ImGui::TextWrapped(ICON_MD_WARNING " WARNING " ICON_MD_WARNING "\nThis is a legacy add-on. Support for legacy add-ons is experimental at best and crashes may happen. Please contact the add-on developer to make it properly compatible.");
                             ImGui::PopStyleColor();
-                        }
-
-                        if (!addon->GetDescription().empty()) {
-                            ImGui::Spacing();
-                            ImGui::TextWrapped(addon->GetDescription().c_str());
                         }
 
                         // Potential available update

@@ -11,6 +11,11 @@ typedef IDirect3DDevice9* (GW2PROXY_CALL GetDirect3DDevice9_t)(UINT Adapter, D3D
 typedef IDirect3DDevice9* (GW2PROXY_CALL CreateProxyDirect3DDevice9_t)(IDirect3DDevice9* sourceDev);
 typedef IDirect3DDevice9Ex* (GW2PROXY_CALL CreateProxyDirect3DDevice9Ex_t)(IDirect3DDevice9Ex* sourceDev);
 
+typedef struct {
+    const char* name;
+    const char* description;
+} GW2LegacyAddonProxyAPIMetadata;
+
 struct GW2LegacyAddonProxyAPI {
     GetDirect3DDevice9_t* GetDirect3DDevice;
     CreateProxyDirect3DDevice9_t* CreateProxyDirect3DDevice9;
@@ -18,9 +23,9 @@ struct GW2LegacyAddonProxyAPI {
 };
 
 
-typedef bool(GW2PROXY_CALL ProxyInitialize_t)(const GW2LegacyAddonProxyAPI* const api);
+typedef GW2LegacyAddonProxyAPIMetadata(GW2PROXY_CALL ProxyInitialize_t)(const GW2LegacyAddonProxyAPI* const api);
 #define GW2PROXY_DLL_Initialize "ProxyInitialize"
-typedef bool(GW2PROXY_CALL ProxyRelease_t)();
+typedef void(GW2PROXY_CALL ProxyRelease_t)();
 #define GW2PROXY_DLL_Release "ProxyRelease"
 
 
@@ -28,6 +33,6 @@ typedef bool(GW2PROXY_CALL ProxyRelease_t)();
 Ensure compiler errors when exported addon functions are wrong.
 */
 #ifndef _GW2ADDON_IMPORTS
-bool GW2PROXY_CALL ProxyInitialize(const GW2LegacyAddonProxyAPI* const api);
-bool GW2PROXY_CALL ProxyRelease();
+GW2LegacyAddonProxyAPIMetadata GW2PROXY_CALL ProxyInitialize(const GW2LegacyAddonProxyAPI* const api);
+void GW2PROXY_CALL ProxyRelease();
 #endif
