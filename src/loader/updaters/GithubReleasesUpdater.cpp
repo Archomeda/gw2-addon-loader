@@ -16,10 +16,10 @@ namespace loader {
         VersionInfo GithubReleasesUpdater::CheckLatestVersion() {
             VersionInfo versionInfo = {};
 
-            GetLog()->info("Start checking for updates on GitHub repository {0}", this->repository);
+            UPDATERS_LOG()->info("Start checking for updates on GitHub repository {0}", this->repository);
             const auto data = DownloadFromUrl(string(this->githubApiBaseUrl) + "/repos/" + this->repository + "/releases");
             if (data.size() == 0) {
-                GetLog()->warn("Checking for updates on GitHub repository {0} failed: empty response", this->repository);
+                UPDATERS_LOG()->warn("Checking for updates on GitHub repository {0} failed: empty response", this->repository);
                 return versionInfo;
             }
 
@@ -53,15 +53,15 @@ namespace loader {
                 }
             }
             catch (const exception& ex) {
-                GetLog()->warn("Parsing JSON result from GitHub releases API for repository {0} failed: {1}", this->repository, ex.what());
+                UPDATERS_LOG()->warn("Parsing JSON result from GitHub releases API for repository {0} failed: {1}", this->repository, ex.what());
                 return versionInfo;
             }
 
             if (versionInfo.version == "") {
-                GetLog()->info("No update info found on GitHub repository {0}", this->repository);
+                UPDATERS_LOG()->info("No update info found on GitHub repository {0}", this->repository);
             }
             else {
-                GetLog()->info("Latest update on GitHub repository {0}: {1} - {2} ({3})", this->repository, versionInfo.version, versionInfo.infoUrl, versionInfo.downloadUrl);
+                UPDATERS_LOG()->info("Latest update on GitHub repository {0}: {1} - {2} ({3})", this->repository, versionInfo.version, versionInfo.infoUrl, versionInfo.downloadUrl);
             }
             return versionInfo;
         }

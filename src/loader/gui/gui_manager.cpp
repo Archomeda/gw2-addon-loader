@@ -18,12 +18,12 @@ namespace loader {
 
 
         void ShowWindow(Window* const window) {
-            GetLog()->info("Opening window {0}", window->GetTitle());
+            GUI_LOG()->info("Opening window {0}", window->GetTitle());
             openWindows[window] = true;
         }
 
         void CloseWindow(Window* const window) {
-            GetLog()->info("Closing window {0}", window->GetTitle());
+            GUI_LOG()->info("Closing window {0}", window->GetTitle());
             openWindows[window] = false;
         }
 

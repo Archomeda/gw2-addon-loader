@@ -84,12 +84,12 @@ namespace loader {
         void Installer::DownloaderComplete(const Downloader* const downloader, const vector<char>& data, const string& errorMessage) {
             if (!errorMessage.empty()) {
                 this->SetDetailedProgress("Error while downloading: " + errorMessage);
-                GetLog()->error("Error while downloading " + downloader->GetUrl() + ": " + errorMessage);
+                UPDATERS_LOG()->error("Error while downloading " + downloader->GetUrl() + ": " + errorMessage);
                 this->busy = false;
             }
             else if (downloader->HasCompleted()) {
                 this->SetDetailedProgress("Finished downloading");
-                GetLog()->info("Finished downloading " + downloader->GetUrl());
+                UPDATERS_LOG()->info("Finished downloading " + downloader->GetUrl());
                 this->Extract(data);
             }
         }
@@ -109,11 +109,11 @@ namespace loader {
                     try {
                         this->WriteFile(data, target);
                         extractedFiles.push_back(target);
-                        GetLog()->info("Copied new file " + target.string());
+                        UPDATERS_LOG()->info("Copied new file " + target.string());
                     }
                     catch (const exception& e) {
                         this->SetDetailedProgress(string("Error while copying: ") + e.what());
-                        GetLog()->error("Error while copying new file " + target.string() + ": " + e.what());
+                        UPDATERS_LOG()->error("Error while copying new file " + target.string() + ": " + e.what());
                         success = false;
                     }
                 }
@@ -123,7 +123,7 @@ namespace loader {
                     memset(&archive, 0, sizeof(archive));
                     if (!mz_zip_reader_init_mem(&archive, data.data(), data.size(), 0)) {
                         this->SetDetailedProgress("Error while extracting: Could not open the downloaded archive");
-                        GetLog()->error(this->GetDetailedProgress());
+                        UPDATERS_LOG()->error(this->GetDetailedProgress());
                         success = false;
                         return;
                     }
@@ -135,7 +135,7 @@ namespace loader {
 
                         if (!mz_zip_reader_file_stat(&archive, i, &fileStat)) {
                             this->SetDetailedProgress("Error while extracting: Could not read at index " + to_string(i));
-                            GetLog()->error(this->detailedProgress);
+                            UPDATERS_LOG()->error(this->detailedProgress);
                             success = false;
                             break;
                         }
@@ -148,7 +148,7 @@ namespace loader {
                         char* fileData = static_cast<char*>(mz_zip_reader_extract_to_heap(&archive, i, &fileSize, 0));
                         if (fileData == NULL) {
                             this->SetDetailedProgress("Error while extracting: Could not extract at index " + to_string(i));
-                            GetLog()->error(this->detailedProgress);
+                            UPDATERS_LOG()->error(this->detailedProgress);
                             success = false;
                             break;
                         }
@@ -164,11 +164,11 @@ namespace loader {
                                 CloseHandle(hFile);
                             }
                             extractedFiles.push_back(target2);
-                            GetLog()->info("Copied new file " + target2.string());
+                            UPDATERS_LOG()->info("Copied new file " + target2.string());
                         }
                         catch (const exception& e) {
                             this->SetDetailedProgress(string("Error while extracting ") + target + ": " + e.what());
-                            GetLog()->error("Error while extracting new file " + target + ": " + e.what());
+                            UPDATERS_LOG()->error("Error while extracting new file " + target + ": " + e.what());
                             success = false;
                             break;
                         }
@@ -185,7 +185,7 @@ namespace loader {
                         fileName += ".bak";
                         if (FileExists(fileName.string())) {
                             if (!DeleteFile(fileName.c_str())) {
-                                GetLog()->error("Failed to delete back-up file " + fileName.string());
+                                UPDATERS_LOG()->error("Failed to delete back-up file " + fileName.string());
                             }
                         }
                     }
@@ -197,14 +197,14 @@ namespace loader {
                     for (auto fileName : extractedFiles) {
                         if (FileExists(fileName.string())) {
                             if (!DeleteFile(fileName.c_str())) {
-                                GetLog()->error("Failed to delete file " + fileName.string() + "; manual restore from back-up file required");
+                                UPDATERS_LOG()->error("Failed to delete file " + fileName.string() + "; manual restore from back-up file required");
                                 continue;
                             }
                         }
                         path moveFrom = fileName;
                         moveFrom += ".bak";
                         if (!MoveFile(moveFrom.c_str(), fileName.c_str())) {
-                            GetLog()->error("Failed to rename back-up file to its original " + fileName.string());
+                            UPDATERS_LOG()->error("Failed to rename back-up file to its original " + fileName.string());
                         }
                     }
                 }
@@ -219,7 +219,7 @@ namespace loader {
         void Installer::WriteFile(const vector<char>& fileData, const path& fileName) {
             // Prevent d3d9 overwrites if it's not supposed to overwrite
             if (fileName.filename() == "d3d9.dll" && this->targetFileName != "d3d9.dll") {
-                GetLog()->warn("Prevented overwriting d3d9.dll, please don't include d3d9.dll in add-on archive files if the add-on depends on that");
+                UPDATERS_LOG()->warn("Prevented overwriting d3d9.dll, please don't include d3d9.dll in add-on archive files if the add-on depends on that");
                 return;
             }
 
@@ -232,7 +232,7 @@ namespace loader {
             path moveTo = fileName;
             moveTo += ".bak";
             if (!MoveFile(fileName.c_str(), moveTo.c_str())) {
-                GetLog()->error("Failed to rename original " + fileName.string() + " to its backed up file name");
+                UPDATERS_LOG()->error("Failed to rename original " + fileName.string() + " to its backed up file name");
             }
 
             ofstream ofs(fileName, ios::binary);

@@ -223,9 +223,9 @@ namespace loader {
             ChainHook newHook = ChainHook::FindCurrentChainHook(ChainHookFunctionType::PresentFunction, vtbl.Present);
             if (newHook.GetType() != currentChainHook.GetType()) {
                 // New chain hook type
-                GetLog()->info("New chain hook type detected: {0}", newHook.GetTypeString());
-                GetLog()->info("Originating function at 0x{0:X}", reinterpret_cast<size_t>(newHook.GetOriginatingFunction()));
-                GetLog()->info("Chain function at 0x{0:X}", reinterpret_cast<size_t>(newHook.GetChainFunction()));
+                HOOKS_LOG()->info("New chain hook type detected: {0}", newHook.GetTypeString());
+                HOOKS_LOG()->info("Originating function at 0x{0:X}", reinterpret_cast<size_t>(newHook.GetOriginatingFunction()));
+                HOOKS_LOG()->info("Chain function at 0x{0:X}", reinterpret_cast<size_t>(newHook.GetChainFunction()));
                 currentChainHook = newHook;
             }
 

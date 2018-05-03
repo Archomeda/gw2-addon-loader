@@ -15,6 +15,7 @@
 #include "../Config.h"
 #include "../IconsOcticons.h"
 #include "../input.h"
+#include "../log.h"
 #include "../version.h"
 #include "../addons/addons_manager.h"
 #include "../addons/Addon.h"
@@ -376,18 +377,21 @@ namespace loader {
                             // Activate / deactivate button
                             if (addon->GetState() == AddonState::LoadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Deactivate", ImVec2(100, 0))) {
+                                    ADDONS_LOG()->info("Unloading add-on {0}", addon->GetFileName());
                                     AppConfig.SetAddonEnabled(addon, false);
                                     if (addon->SupportsHotLoading()) {
                                         addon->Unload();
                                     }
                                     else {
                                         addon->UnloadNextRestart();
+                                        ADDONS_LOG()->info("Add-on {0} will be unloaded with next restart", addon->GetFileName());
                                     }
                                 }
                             }
                             else if (addon->GetState() == AddonState::UnloadedState) {
                                 if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Activate", ImVec2(100, 0))) {
                                     AppConfig.SetAddonEnabled(addon, false);
+                                    ADDONS_LOG()->info("Loading add-on {0}", addon->GetFileName());
                                     if (addon->SupportsHotLoading()) {
                                         if (addon->Load()) {
                                             auto state = addon->GetState();
@@ -397,11 +401,13 @@ namespace loader {
                                         }
                                         else {
                                             addon->Unload();
+                                            ADDONS_LOG()->error("Add-on {0} failed to load", addon->GetFileName());
                                         }
                                     }
                                     else {
                                         if (addon->LoadNextRestart()) {
                                             AppConfig.SetAddonEnabled(addon, true);
+                                            ADDONS_LOG()->info("Add-on {0} will be loaded with next restart", addon->GetFileName());
                                         }
                                     }
                                 }

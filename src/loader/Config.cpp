@@ -21,7 +21,7 @@ namespace loader {
 
 
     void Config::Initialize() {
-        GetLog()->debug("loader::Config::Initialize()");
+        CONFIG_LOG()->info("Initializing config");
 
         // Create path
         wchar_t fileName[MAX_PATH];
@@ -36,13 +36,13 @@ namespace loader {
         // Our config file
         path configPath(configFolder);
         configPath /= this->configName;
-        GetLog()->info("Using config file {0}", configPath.u8string());
+        CONFIG_LOG()->info("Using config file {0}", configPath.u8string());
         this->configPath = configPath.u8string();
 
         // ImGUI config file
         path configImGuiPath(configFolder);
         configImGuiPath /= this->configImGuiName;
-        GetLog()->info("Using ImGUI config file {0}", configImGuiPath.u8string());
+        CONFIG_LOG()->info("Using ImGUI config file {0}", configImGuiPath.u8string());
         this->configImGuiPath = configImGuiPath.u8string();
 
         // Load settings

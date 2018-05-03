@@ -18,13 +18,14 @@ namespace loader {
 
 
         void InitializeHooks() {
-            GetLog()->debug("loader::hooks::InitializeHooks()");
+            HOOKS_LOG()->info("Initializing hooks");
+
             // It's unadvised to call LoadLibrary in DllMain, because it can cause a deadlock.
             // But eh whatever, we are just a proxy anyway, no one should call us except Guild Wars 2.
             path systemD3D9 = GetSystemFolder("d3d9");
             SystemD3D9Module = LoadLibrary(systemD3D9.c_str());
             if (!SystemD3D9Module) {
-                GetLog()->error("Failed to load the system d3d9.dll: {0}", LastErrorToString(GetLastError()));
+                HOOKS_LOG()->error("Failed to load the system d3d9.dll: {0}", LastErrorToString(GetLastError()));
                 return;
             }
 
@@ -46,12 +47,12 @@ namespace loader {
         }
 
         void UninitializeHooks() {
-            GetLog()->debug("loader::hooks::UnintializeHooks()");
+            HOOKS_LOG()->info("Uninitializing hooks");
 
             if (SystemD3D9Module)
             {
                 if (!FreeLibrary(SystemD3D9Module)) {
-                    GetLog()->error("Failed to free system d3d9 library: {0}", LastErrorToString(GetLastError()));
+                    HOOKS_LOG()->error("Failed to free system d3d9 library: {0}", LastErrorToString(GetLastError()));
                 }
                 SystemD3D9Module = nullptr;
             }
@@ -62,7 +63,7 @@ namespace loader {
 
         void* WINAPI Direct3DShaderValidatorCreate9() {
             if (!SystemD3D9Funcs.Direct3DShaderValidatorCreate9) {
-                GetLog()->error("System Direct3DShaderValidatorCreate9 cannot be found");
+                HOOKS_LOG()->error("System Direct3DShaderValidatorCreate9 cannot be found");
                 return nullptr;
             }
             return SystemD3D9Funcs.Direct3DShaderValidatorCreate9();
@@ -70,7 +71,7 @@ namespace loader {
 
         void WINAPI PSGPError() {
             if (!SystemD3D9Funcs.PSGPError) {
-                GetLog()->error("System PSGPError cannot be found");
+                HOOKS_LOG()->error("System PSGPError cannot be found");
                 return;
             }
             SystemD3D9Funcs.PSGPError();
@@ -78,7 +79,7 @@ namespace loader {
 
         void WINAPI PSGPSampleTexture() {
             if (!SystemD3D9Funcs.PSGPSampleTexture) {
-                GetLog()->error("System PSGPSampleTexture cannot be found");
+                HOOKS_LOG()->error("System PSGPSampleTexture cannot be found");
                 return;
             }
             SystemD3D9Funcs.PSGPSampleTexture();
@@ -86,7 +87,7 @@ namespace loader {
 
         int WINAPI D3DPERF_BeginEvent(D3DCOLOR col, LPCWSTR wszName) {
             if (!SystemD3D9Funcs.D3DPERF_BeginEvent) {
-                GetLog()->error("System D3DPERF_BeginEvent cannot be found");
+                HOOKS_LOG()->error("System D3DPERF_BeginEvent cannot be found");
                 return 0;
             }
             return SystemD3D9Funcs.D3DPERF_BeginEvent(col, wszName);
@@ -94,7 +95,7 @@ namespace loader {
 
         int WINAPI D3DPERF_EndEvent() {
             if (!SystemD3D9Funcs.D3DPERF_EndEvent) {
-                GetLog()->error("System D3DPERF_EndEvent cannot be found");
+                HOOKS_LOG()->error("System D3DPERF_EndEvent cannot be found");
                 return 0;
             }
             return SystemD3D9Funcs.D3DPERF_EndEvent();
@@ -102,7 +103,7 @@ namespace loader {
 
         DWORD WINAPI D3DPERF_GetStatus() {
             if (!SystemD3D9Funcs.D3DPERF_GetStatus) {
-                GetLog()->error("System D3DPERF_GetStatus cannot be found");
+                HOOKS_LOG()->error("System D3DPERF_GetStatus cannot be found");
                 return 0;
             }
             return SystemD3D9Funcs.D3DPERF_GetStatus();
@@ -110,7 +111,7 @@ namespace loader {
 
         BOOL WINAPI D3DPERF_QueryRepeatFrame() {
             if (!SystemD3D9Funcs.D3DPERF_QueryRepeatFrame) {
-                GetLog()->error("System D3DPERF_QueryRepeatFrame cannot be found");
+                HOOKS_LOG()->error("System D3DPERF_QueryRepeatFrame cannot be found");
                 return FALSE;
             }
             return SystemD3D9Funcs.D3DPERF_QueryRepeatFrame();
@@ -118,7 +119,7 @@ namespace loader {
 
         void WINAPI D3DPERF_SetMarker(D3DCOLOR col, LPCWSTR wszName) {
             if (!SystemD3D9Funcs.D3DPERF_SetMarker) {
-                GetLog()->error("System D3DPERF_SetMarker cannot be found");
+                HOOKS_LOG()->error("System D3DPERF_SetMarker cannot be found");
                 return;
             }
             SystemD3D9Funcs.D3DPERF_SetMarker(col, wszName);
@@ -126,7 +127,7 @@ namespace loader {
 
         void WINAPI D3DPERF_SetOptions(DWORD dwOptions) {
             if (!SystemD3D9Funcs.D3DPERF_SetOptions) {
-                GetLog()->error("System D3DPERF_SetOptions cannot be found");
+                HOOKS_LOG()->error("System D3DPERF_SetOptions cannot be found");
                 return;
             }
             SystemD3D9Funcs.D3DPERF_SetOptions(dwOptions);
@@ -134,7 +135,7 @@ namespace loader {
 
         void WINAPI D3DPERF_SetRegion(D3DCOLOR col, LPCWSTR wszName) {
             if (!SystemD3D9Funcs.D3DPERF_SetRegion) {
-                GetLog()->error("System D3DPERF_SetRegion cannot be found");
+                HOOKS_LOG()->error("System D3DPERF_SetRegion cannot be found");
                 return;
             }
             SystemD3D9Funcs.D3DPERF_SetRegion(col, wszName);
@@ -142,7 +143,7 @@ namespace loader {
 
         void WINAPI DebugSetLevel(LONG level) {
             if (!SystemD3D9Funcs.DebugSetLevel) {
-                GetLog()->error("System DebugSetLevel cannot be found");
+                HOOKS_LOG()->error("System DebugSetLevel cannot be found");
                 return;
             }
             SystemD3D9Funcs.DebugSetLevel(level);
@@ -150,7 +151,7 @@ namespace loader {
 
         void WINAPI DebugSetMute() {
             if (!SystemD3D9Funcs.DebugSetMute) {
-                GetLog()->error("System DebugSetMute cannot be found");
+                HOOKS_LOG()->error("System DebugSetMute cannot be found");
                 return;
             }
             SystemD3D9Funcs.DebugSetMute();
@@ -158,20 +159,20 @@ namespace loader {
 
         void WINAPI Direct3D9EnableMaximizedWindowedModeShim() {
             if (!SystemD3D9Funcs.Direct3D9EnableMaximizedWindowedModeShim) {
-                GetLog()->error("System Direct3D9EnableMaximizedWindowedModeShim cannot be found");
+                HOOKS_LOG()->error("System Direct3D9EnableMaximizedWindowedModeShim cannot be found");
                 return;
             }
             SystemD3D9Funcs.Direct3D9EnableMaximizedWindowedModeShim();
         }
 
         IDirect3D9* WINAPI Direct3DCreate9(UINT sdkVersion) {
-            GetLog()->debug("loader::hooks::Direct3DCreate9()");
+            HOOKS_LOG()->info("Direct3DCreate9 is called");
             SDKVersion = sdkVersion;
 
             // Create our stuff
-            GetLog()->info("Proxying D3D9");
+            HOOKS_LOG()->info("Proxying D3D9");
             if (!SystemD3D9Funcs.Direct3DCreate9) {
-                GetLog()->error("System Direct3DCreate cannot be found");
+                HOOKS_LOG()->error("System Direct3DCreate cannot be found");
                 return nullptr;
             }
             return new LoaderDirect3D9(SystemD3D9Funcs.Direct3DCreate9(sdkVersion));
@@ -181,13 +182,13 @@ namespace loader {
             // Guild Wars 2 doesn't use this entry point, everything that's called in this function is unfinished.
             // Refer to Direct3DCreate9.
 
-            GetLog()->debug("loader::hooks::Direct3DCreate9Ex()");
+            HOOKS_LOG()->info("Direct3DCreate9Ex is called");
             SDKVersion = sdkVersion;
 
             // Create our stuff
-            GetLog()->info("Proxying D3D9Ex");
+            HOOKS_LOG()->info("Proxying D3D9Ex");
             if (!SystemD3D9Funcs.Direct3DCreate9Ex) {
-                GetLog()->error("System Direct3DCreate9Ex cannot be found");
+                HOOKS_LOG()->error("System Direct3DCreate9Ex cannot be found");
                 return nullptr;
             }
             return new LoaderDirect3D9Ex(SystemD3D9Funcs.Direct3DCreate9Ex(sdkVersion));

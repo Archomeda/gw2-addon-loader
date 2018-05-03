@@ -15,7 +15,7 @@ namespace loader {
             HMODULE h = LoadLibrary(this->GetFilePath().c_str());
             if (h == NULL) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native add-on {0}: Library handle is empty", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize native add-on {0}: Library handle is empty", this->GetFileName());
                 return false;
             }
             this->addonHandle = h;
@@ -25,19 +25,19 @@ namespace loader {
 
             if (this->AddonInitialize == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native add-on {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Initialize " export", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize native add-on {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Initialize " export", this->GetFileName());
                 return false;
             }
             if (this->AddonRelease == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native add-on {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Release " export", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize native add-on {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Release " export", this->GetFileName());
                 return false;
             }
 
             GW2AddonAPIBase* addonBase = this->AddonInitialize(GW2ADDON_VER);
             if (addonBase == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native add-on {0}: Addon didn't return a valid GW2AddonAPIBase pointer when calling " GW2ADDON_DLL_Initialize, this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize native add-on {0}: Addon didn't return a valid GW2AddonAPIBase pointer when calling " GW2ADDON_DLL_Initialize, this->GetFileName());
                 return false;
             }
 
@@ -48,7 +48,7 @@ namespace loader {
             }
             else {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error(("Could not initialize native add-on {0}: Addon uses a version (" + to_string(addonBase->ver) + ") that is not compatible. Are both the add-on and the add-on loader updated?").c_str(), this->GetFileName());
+                ADDONS_LOG()->error(("Could not initialize native add-on {0}: Addon uses a version (" + to_string(addonBase->ver) + ") that is not compatible. Are both the add-on and the add-on loader updated?").c_str(), this->GetFileName());
                 return false;
             }
 
@@ -195,7 +195,7 @@ namespace loader {
 
                 if (result) {
                     this->ChangeState(AddonState::ErroredState);
-                    GetLog()->error("Could not load native add-on {0}: Addon returned {1}", this->GetFileName(), to_string(result));
+                    ADDONS_LOG()->error("Could not load native add-on {0}: Addon returned {1}", this->GetFileName(), to_string(result));
                     return false;
                 }
             }

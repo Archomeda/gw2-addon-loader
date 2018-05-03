@@ -1,6 +1,7 @@
 #include "log.h"
 #include <Shlwapi.h>
 #include <filesystem>
+#include <map>
 
 #define LOG_FILE "addons/loader/loader.log"
 
@@ -9,20 +10,29 @@ using namespace std::experimental::filesystem;
 
 namespace loader {
 
-    shared_ptr<spdlog::logger> logger;
+    map<string, shared_ptr<spdlog::logger>> loggers;
+    shared_ptr<spdlog::sinks::simple_file_sink_mt> logSink;
 
     const shared_ptr<spdlog::logger> GetLog() {
-        if (logger) {
-            return logger;
+        return GetLog("loader");
+    }
+
+    const shared_ptr<spdlog::logger> GetLog(const string& name) {
+        if (loggers.find(name) != loggers.end()) {
+            return loggers[name];
         }
 
-        TCHAR fileName[MAX_PATH];
-        GetModuleFileName(NULL, fileName, sizeof(fileName));
-        PathRemoveFileSpec(fileName);
-        path logFileName(fileName);
-        logFileName /= LOG_FILE;
+        if (logSink == nullptr) {
+            TCHAR fileName[MAX_PATH];
+            GetModuleFileName(NULL, fileName, sizeof(fileName));
+            PathRemoveFileSpec(fileName);
+            path logFileName(fileName);
+            logFileName /= LOG_FILE;
 
-        logger = spdlog::basic_logger_mt("loader", logFileName.string(), true);
+            logSink = make_shared<spdlog::sinks::simple_file_sink_mt>(logFileName.u8string(), true);
+        }
+
+        shared_ptr<spdlog::logger> logger = make_shared<spdlog::logger>(name, logSink);
 #ifdef _DEBUG
         logger->set_level(spdlog::level::trace);
         logger->flush_on(spdlog::level::trace);

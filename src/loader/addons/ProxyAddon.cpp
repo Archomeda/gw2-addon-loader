@@ -28,7 +28,7 @@ namespace loader {
             HMODULE h = LoadLibrary(this->GetFilePath().c_str());
             if (h == NULL) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize proxy add-on {0}: Library handle is empty", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize proxy add-on {0}: Library handle is empty", this->GetFileName());
                 return false;
             }
             
@@ -39,12 +39,12 @@ namespace loader {
 
             if (this->ProxyInitialize == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid ProxyInitialize export", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid ProxyInitialize export", this->GetFileName());
                 return false;
             }
             if (this->ProxyRelease == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid ProxyRelease export", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid ProxyRelease export", this->GetFileName());
                 return false;
             }
 
@@ -83,7 +83,7 @@ namespace loader {
             this->proxyMetadata = this->ProxyInitialize(&this->proxyApi);
             if (!this->proxyMetadata.name) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not load proxy add-on {0}", this->GetFileName());
+                ADDONS_LOG()->error("Could not load proxy add-on {0}", this->GetFileName());
                 return false;
             }
 

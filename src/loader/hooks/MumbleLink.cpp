@@ -56,6 +56,8 @@ namespace loader {
                 return;
             }
 
+            MUMBLE_LOG()->info("Starting MumbleLink loop");
+
             this->active = true;
 
             this->hMap = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(MumbleLinkMem), L"MumbleLink");
@@ -77,6 +79,8 @@ namespace loader {
             if (!this->active) {
                 return;
             }
+
+            MUMBLE_LOG()->info("Stopping MumbleLink loop");
 
             this->active = false;
             this->loopThread.join();
@@ -128,11 +132,11 @@ namespace loader {
                             GuildWars2Context* context = reinterpret_cast<GuildWars2Context*>(this->linkMemory->context);
                             if (this->mapId != context->mapId) {
                                 this->mapId = context->mapId;
-                                GetLog()->info("Map changed to {0}", this->mapId);
+                                MUMBLE_LOG()->info("Map changed to {0}", this->mapId);
                             }
                             if (this->mapType != context->mapType) {
                                 this->mapType = static_cast<MapType>(context->mapType);
-                                GetLog()->info("Map type changed to {0}", MapTypeToString(this->mapType));
+                                MUMBLE_LOG()->info("Map type changed to {0}", MapTypeToString(this->mapType));
                             }
                         }
                     }

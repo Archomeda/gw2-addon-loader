@@ -9,10 +9,10 @@ namespace loader {
 
         bool LaunchDebugger() {
 #ifdef _DEBUG
-            GetLog()->debug("Attempting to attach debugger");
+            LOADER_LOG()->debug("Attempting to attach debugger");
 
             if (IsDebuggerPresent()) {
-                GetLog()->debug("Debugger already attached");
+                LOADER_LOG()->debug("Debugger already attached");
                 return true;
             }
 
@@ -40,7 +40,7 @@ namespace loader {
             if (!CreateProcessW(NULL, &cmdLine[0], NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) return false;
 
             // Wait for the debugger to attach
-            GetLog()->debug("Waiting for debugger");
+            LOADER_LOG()->debug("Waiting for debugger");
             while (true) {
                 DWORD exitCode;
                 if (GetExitCodeProcess(pi.hProcess, &exitCode) && exitCode != STILL_ACTIVE) {
@@ -53,7 +53,7 @@ namespace loader {
             CloseHandle(pi.hThread);
             CloseHandle(pi.hProcess);
 
-            GetLog()->debug("Debugger attched? {0}", IsDebuggerPresent() ? "YES" : "NO");
+            LOADER_LOG()->debug("Debugger attched? {0}", IsDebuggerPresent() ? "YES" : "NO");
 #endif
             return true;
         }

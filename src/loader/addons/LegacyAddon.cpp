@@ -79,7 +79,7 @@ namespace loader {
                 if (filePath.has_parent_path()) {
                     path newFilePath = RedirectModuleFileName(fileName);
                     if (filePath != newFilePath) {
-                        GetLog()->info("Redirecting path to {0}", newFilePath.u8string());
+                        ADDONS_LOG()->info("Redirecting path to {0}", newFilePath.u8string());
                     }
                     filePath = newFilePath;
                 }
@@ -87,22 +87,22 @@ namespace loader {
             }
 
             HMODULE WINAPI HookLoadLibraryExA(LPCSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
-                GetLog()->info("Attempting to load {0} by using LoadLibraryExA with flags 0x{1:X}", lpFileName != nullptr ? lpFileName : "NULL", dwFlags);
+                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryExA with flags 0x{1:X}", lpFileName != nullptr ? lpFileName : "NULL", dwFlags);
                 return HookLoadLibraryEx(lpFileName, hFile, dwFlags);
             }
 
             HMODULE WINAPI HookLoadLibraryExW(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
-                GetLog()->info("Attempting to load {0} by using LoadLibraryExW with flags 0x{1:X}", lpFileName != nullptr ? u8(lpFileName) : "NULL", dwFlags);
+                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryExW with flags 0x{1:X}", lpFileName != nullptr ? u8(lpFileName) : "NULL", dwFlags);
                 return HookLoadLibraryEx(u8(lpFileName), hFile, dwFlags);
             }
 
             HMODULE WINAPI HookLoadLibraryA(LPCSTR lpFileName) {
-                GetLog()->info("Attempting to load {0} by using LoadLibraryA", lpFileName != nullptr ? lpFileName : "NULL");
+                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryA", lpFileName != nullptr ? lpFileName : "NULL");
                 return HookLoadLibraryEx(lpFileName, NULL, 0);
             }
 
             HMODULE WINAPI HookLoadLibraryW(LPCWSTR lpFileName) {
-                GetLog()->info("Attempting to load {0} by using LoadLibraryW", lpFileName != nullptr ? u8(lpFileName) : "NULL");
+                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryW", lpFileName != nullptr ? u8(lpFileName) : "NULL");
                 return HookLoadLibraryEx(u8(lpFileName), NULL, 0);
             }
 
@@ -112,7 +112,7 @@ namespace loader {
                 if (filePath.has_parent_path()) {
                     path newFilePath = RedirectModuleFileName(fileName);
                     if (filePath != newFilePath) {
-                        GetLog()->info("Redirecting path to {0}", newFilePath.u8string());
+                        ADDONS_LOG()->info("Redirecting path to {0}", newFilePath.u8string());
                     }
                     filePath = newFilePath;
                 }
@@ -125,35 +125,35 @@ namespace loader {
 
             BOOL WINAPI HookGetModuleHandleExA(DWORD dwFlags, LPCSTR lpFileName, HMODULE* phModule) {
                 if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0 || lpFileName == NULL) {
-                    GetLog()->info("Attempting to get module at 0x{0:X} by using GetModuleHandleExA with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
+                    ADDONS_LOG()->info("Attempting to get module at 0x{0:X} by using GetModuleHandleExA with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
                     return HookGetModuleHandleEx(dwFlags, reinterpret_cast<LPCVOID>(lpFileName), phModule);
                 }
                 else {
-                    GetLog()->info("Attempting to get module {0} by using GetModuleHandleExA with flags 0x{1:X}", lpFileName, dwFlags);
+                    ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleExA with flags 0x{1:X}", lpFileName, dwFlags);
                     return HookGetModuleHandleEx(dwFlags, lpFileName, phModule);
                 }
             }
 
             BOOL WINAPI HookGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpFileName, HMODULE* phModule) {
                 if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0 || lpFileName == NULL) {
-                    GetLog()->info("Attempting to get module at 0x{0:X} by using GetModuleHandleExW with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
+                    ADDONS_LOG()->info("Attempting to get module at 0x{0:X} by using GetModuleHandleExW with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
                     return HookGetModuleHandleEx(dwFlags, reinterpret_cast<LPCVOID>(lpFileName), phModule);
                 }
                 else {
-                    GetLog()->info("Attempting to get module {0} by using GetModuleHandleExW with flags 0x{1:X}", u8(lpFileName), dwFlags);
+                    ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleExW with flags 0x{1:X}", u8(lpFileName), dwFlags);
                     return HookGetModuleHandleEx(dwFlags, u8(lpFileName), phModule);
                 }
             }
 
             HMODULE WINAPI HookGetModuleHandleA(LPCSTR lpFileName) {
-                GetLog()->info("Attempting to get module {0} by using GetModuleHandleA", lpFileName != NULL ? lpFileName : "NULL");
+                ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleA", lpFileName != NULL ? lpFileName : "NULL");
                 HMODULE phModule;
                 HookGetModuleHandleEx(0, lpFileName, &phModule);
                 return phModule;
             }
 
             HMODULE WINAPI HookGetModuleHandleW(LPCWSTR lpFileName) {
-                GetLog()->info("Attempting to get module {0} by using GetModuleHandleW", lpFileName != NULL ? u8(lpFileName) : "NULL");
+                ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleW", lpFileName != NULL ? u8(lpFileName) : "NULL");
                 HMODULE phModule;
                 HookGetModuleHandleEx(0, lpFileName, &phModule);
                 return phModule;
@@ -173,7 +173,7 @@ namespace loader {
             // Case 1: Overwritten virtual table (ReShade, Gw2Hook)
             ProxyDirect3DDevice9 proxyDevice;
             this->proxyVtbl = GetD3DDevice9Vtbl(&proxyDevice);
-            GetLog()->info("Stored state of legacy add-on {0} ProxyD3DDevice9 vtbl", this->GetFileName());
+            ADDONS_LOG()->info("Stored state of legacy add-on {0} ProxyD3DDevice9 vtbl", this->GetFileName());
 
             // Case 2: Overwritten CPU instructions
             //  a) minhook (GW2Mounts)
@@ -316,7 +316,7 @@ namespace loader {
             mhStatus = MH_QueueEnableHook(&GetModuleHandleExA);
             mhStatus = MH_QueueEnableHook(&GetModuleHandleExW);
             mhStatus = MH_ApplyQueued();
-            GetLog()->info("Redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
+            ADDONS_LOG()->info("Redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
             return mhStatus == MH_OK;
         }
 
@@ -348,14 +348,14 @@ namespace loader {
             hooks::SystemGetModuleHandleW = nullptr;
             hooks::SystemGetModuleHandleExA = nullptr;
             hooks::SystemGetModuleHandleExW = nullptr;
-            GetLog()->info("Reverted redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
+            ADDONS_LOG()->info("Reverted redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
 
             // Make sure to restore the states from earlier, check ApplySafeEnv
             // This is only needed whenever the addon returns the same pointer as the proxied D3D9 device
             // (in add-on terms: the proxied D3D9 device is what the addon believes what is the system D3D9 device,
             // the add-on device is what the add-on wraps or changed the system D3D9 and returns to the game)
             if (this->AddonD3DDevice9 == this->ProxyD3DDevice9) {
-                GetLog()->info("Detected overwrites in ProxyD3DDevice9 object for legacy add-on {0}", this->GetFileName());
+                ADDONS_LOG()->info("Detected overwrites in ProxyD3DDevice9 object for legacy add-on {0}", this->GetFileName());
                     
                 // Wrap the add-on device first
                 ProxyDirect3DDevice9* newAddonDev = new ProxyDirect3DDevice9(this->ProxyD3DDevice9);
@@ -607,8 +607,8 @@ namespace loader {
                 this->CopyAndRestorePointerIfHooked(&newAddonDev->FunctionAddresses.DeletePatch, this->proxyFunctionInstructions.DeletePatch, vtbl.DeletePatch, INSTRUCTION_BACKUP_SIZE);
                 this->CopyAndRestorePointerIfHooked(&newAddonDev->FunctionAddresses.CreateQuery, this->proxyFunctionInstructions.CreateQuery, vtbl.CreateQuery, INSTRUCTION_BACKUP_SIZE);
 
-                GetLog()->info("Restored ProxyD3DDevice9 state for legacy add-on {0}", this->GetFileName());
-                GetLog()->info("Legacy add-on {0} new AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(newAddonDev));
+                ADDONS_LOG()->info("Restored ProxyD3DDevice9 state for legacy add-on {0}", this->GetFileName());
+                ADDONS_LOG()->info("Legacy add-on {0} new AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(newAddonDev));
                 this->AddonD3DDevice9 = newAddonDev;
             }
 
@@ -647,7 +647,7 @@ namespace loader {
             // Ensure a safe environment that we can restore to later on
             if (!this->ApplySafeEnv()) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not load legacy add-on {0}: Redirecting WinAPI functions failed", this->GetFileName());
+                ADDONS_LOG()->error("Could not load legacy add-on {0}: Redirecting WinAPI functions failed", this->GetFileName());
                 return false;
             }
 
@@ -659,13 +659,13 @@ namespace loader {
             }
             else {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize load add-on {0}: Library handle is empty", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize load add-on {0}: Library handle is empty", this->GetFileName());
                 return false;
             }
 
             if (this->AddonCreate == NULL) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize load add-on {0}: Add-on doesn't have a Direct3DCreate9 export", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize load add-on {0}: Add-on doesn't have a Direct3DCreate9 export", this->GetFileName());
                 FreeLibrary(this->addonHandle);
                 this->addonHandle = NULL;
                 return false;
@@ -676,21 +676,21 @@ namespace loader {
             // which in turn simulates the CreateDevice call to use an already created device.
             // This way we make sure it's not creating a duplicate device, but instead using the one we already have.
             this->AddonD3D9 = this->AddonCreate(this->D3D9SdkVersion);
-            GetLog()->info("Legacy add-on {0} AddonD3D9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3D9));
+            ADDONS_LOG()->info("Legacy add-on {0} AddonD3D9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3D9));
             Direct3DDevice9Information deviceInfo = GetGlobalDeviceInformation();
             ProxyAddon::Instance->LastProxiedDevice = nullptr; 
             HRESULT result = this->AddonD3D9->CreateDevice(deviceInfo.Adapter, deviceInfo.DeviceType, deviceInfo.hFocusWindow, deviceInfo.BehaviorFlags, &deviceInfo.PresentationParameters, &this->AddonD3DDevice9);
-            GetLog()->info("Legacy add-on {0} AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3DDevice9));
+            ADDONS_LOG()->info("Legacy add-on {0} AddonD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->AddonD3DDevice9));
             if (result != D3D_OK) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not load legacy addon {0}: Obtaining the device failed", this->GetFileName());
+                ADDONS_LOG()->error("Could not load legacy addon {0}: Obtaining the device failed", this->GetFileName());
             }
             this->ProxyD3DDevice9 = ProxyAddon::Instance->LastProxiedDevice;
-            GetLog()->info("Legacy add-on {0} ProxyD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->ProxyD3DDevice9));
+            ADDONS_LOG()->info("Legacy add-on {0} ProxyD3DDevice9: 0x{1:X}", this->GetFileName(), reinterpret_cast<size_t>(this->ProxyD3DDevice9));
 
             if (!this->RevertSafeEnv()) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not load legacy add-on {0}: Reverting WinAPI functions failed", this->GetFileName());
+                ADDONS_LOG()->error("Could not load legacy add-on {0}: Reverting WinAPI functions failed", this->GetFileName());
             }
 
             if (this->GetState() == AddonState::ErroredState) {

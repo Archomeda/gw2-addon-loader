@@ -19,6 +19,7 @@
 #include "Config.h"
 #include "input.h"
 #include "log.h"
+#include "version.h"
 
 using namespace std;
 using namespace loader;
@@ -126,19 +127,16 @@ HRESULT PreCreateDevice(hooks::LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE D
 
 void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
     // Hook MumbleLink
-    GetLog()->info("Starting MumbleLink loop");
     hooks::Gw2MumbleLink.Start();
 
     // Initialize add-ons
-    GetLog()->info("Initializing add-ons");
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
 
     // Check for updates if needed
-    GetLog()->info("Checking for updates");
     updaters::CheckUpdates();
 
     // Set up ImGui
-    GetLog()->info("Initializing ImGui");
+    LOADER_LOG()->info("Initializing ImGui");
     ImGuiIO& imio = ImGui::GetIO();
     imGuiConfigFile = AppConfig.GetImGuiConfigPath();
     imio.IniFilename = imGuiConfigFile.c_str();
@@ -196,7 +194,6 @@ void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9
     colors[ImGuiCol_DragDropTarget] = ImVec4(0.58f, 0.50f, 0.43f, 0.98f);
 
     // Load enabled add-ons
-    GetLog()->info("Loading enabled add-ons");
     addons::LoadAddons(hFocusWindow);
 }
 
@@ -227,11 +224,11 @@ void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CON
 bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH: {
-        GetLog()->info("GW2 Add-on Loader attached");
+        LOADER_LOG()->info("GW2 Add-on Loader attached, version " VERSION);
         LaunchDebugger();
 
         if (MH_Initialize() != MH_OK) {
-            GetLog()->error("Failed to initialize MinHook, aborting");
+            LOADER_LOG()->error("Failed to initialize MinHook, aborting");
             return false;
         }
 
@@ -256,18 +253,15 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     case DLL_PROCESS_DETACH: {
         MH_Uninitialize();
 
-        GetLog()->info("Stopping MumbleLink loop");
         hooks::Gw2MumbleLink.Stop();
         gui::imgui::Shutdown();
 
-        GetLog()->info("Unloading and uninitializing add-ons");
         addons::UnloadAddons();
         addons::UninitializeAddons();
 
-        GetLog()->info("Uninitializing hooks");
         hooks::UninitializeHooks();
 
-        GetLog()->info("GW2 Add-on Loader detached");
+        LOADER_LOG()->info("GW2 Add-on Loader detached");
         break;
     }
     }
