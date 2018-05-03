@@ -49,6 +49,7 @@ namespace loader {
         this->ini.SetUnicode();
         this->ini.LoadFile(this->configPath.c_str());
 
+        this->disclaimerAccepted = this->ini.GetBoolValue(L"general", L"disclaimer_accepted", false);
         this->settingsKeybind = this->ParseKeybindString(u8(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122"))); // Alt + Shift + F11
         this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", true);
         this->showHiddenAddons = this->ini.GetBoolValue(L"addons", L"show_hidden_addons", false);
@@ -88,6 +89,12 @@ namespace loader {
         return result;
     }
 
+
+    void Config::SetDisclaimerAccepted(bool disclaimerAccepted) {
+        this->disclaimerAccepted = disclaimerAccepted;
+        this->ini.SetBoolValue(L"general", L"disclaimer_accepted", disclaimerAccepted);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
 
     void Config::SetSettingsKeybind(const set<uint_fast8_t>& keys) {
         this->settingsKeybind = keys;

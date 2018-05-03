@@ -455,7 +455,10 @@ Visit the GitHub repository for more information, third party licenses, and repo
 
 
 Disclaimer:
-The author of this library is not associated with ArenaNet nor with any of its partners. Modifying Guild Wars 2 through any third party software is not supported by ArenaNet nor by any of its partners. By using this software, you agree that it is at your own risk and that you assume all responsibility. There is no warranty for using this software.)");
+The author of this library is not associated with ArenaNet nor with any of its partners. Modifying Guild Wars 2 through any third party software is not supported by ArenaNet nor by any of its partners. By using this software, you agree that it is at your own risk and that you assume all responsibility. There is no warranty for using this software.
+
+Also, the author of this library is not responsible for the potential risks by using any additional add-on in combination with this software. It's your responsibility that you use your own judgment to decide whether or not an add-on is allowed by the Guild Wars 2 Terms of Service.
+)");
             ImGui::PopTextWrapPos();
 
             ImGui::Dummy(ImVec2(0, 16));
@@ -498,7 +501,9 @@ The author of this library is not associated with ArenaNet nor with any of its p
                     AppConfig.SetOBSCompatibilityMode(this->obsCompatibilityMode);
                 }
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("When OBS compatibility mode is active, the addon loader will attempt to hide\nitself from OBS if the OBS third-party overlays capture setting is disabled.");
+                    ImGui::SetTooltip(R"(When OBS compatibility mode is active, the addon loader will
+attempt to hide native add-ons and itself from OBS if the
+OBS third-party overlays capture setting is disabled.)");
                 }
 
                 if (ImGui::Checkbox("Show hidden addons", &this->showHiddenAddons)) {

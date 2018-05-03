@@ -27,6 +27,7 @@ namespace loader {
 
         /** Global settings */
 
+        const bool GetDisclaimerAccepted() const { return this->disclaimerAccepted; }
         const std::set<uint_fast8_t> GetSettingsKeybind() const { return this->settingsKeybind; }
         bool GetOBSCompatibilityMode() const { return this->obsCompatibilityMode; }
         bool GetShowHiddenAddons() const { return this->showHiddenAddons; }
@@ -36,6 +37,7 @@ namespace loader {
         std::string GetLatestVersionInfoUrl() const { return this->latestVersionInfoUrl; }
         std::string GetLatestVersionDownloadUrl() const { return this->latestVersionDownloadUrl; }
 
+        void SetDisclaimerAccepted(bool disclaimerAccepted);
         void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
         void SetOBSCompatibilityMode(bool compatibilityMode);
         void SetShowHiddenAddons(bool showHiddenAddons);
@@ -73,6 +75,7 @@ namespace loader {
         std::string configPath;
         std::string configImGuiPath;
 
+        bool disclaimerAccepted = false;
         std::set<uint_fast8_t> settingsKeybind;
         bool obsCompatibilityMode = false;
         bool showHiddenAddons = false;

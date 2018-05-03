@@ -7,6 +7,7 @@
 #include "addons/Addon.h"
 #include "gui/gui_manager.h"
 #include "gui/imgui.h"
+#include "gui/DisclaimerWindow.h"
 #include "gui/SettingsWindow.h"
 #include "hooks/hooks_manager.h"
 #include "hooks/LoaderDirect3D9.h"
@@ -42,14 +43,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     // Pass event to ImGui
     gui::imgui::ProcessWndProc(msg, wParam, lParam);
-    const ImGuiIO io = ImGui::GetIO();
+    const ImGuiIO& io = ImGui::GetIO();
 
     // Only run these for key down/key up (incl. mouse buttons) events and when ImGui doesn't want to capture the keyboard
     if (!RepeatedPressedKeys() && !io.WantCaptureKeyboard) {
-        auto pressedKeys = GetPressedKeys();
-        auto settingsKeybind = AppConfig.GetSettingsKeybind();
+        const set<uint_fast8_t> pressedKeys = GetPressedKeys();
+        const set<uint_fast8_t> settingsKeybind = AppConfig.GetSettingsKeybind();
+        gui::Window* window = AppConfig.GetDisclaimerAccepted() ? static_cast<gui::Window*>(gui::SettingsWnd.get()) : static_cast<gui::Window*>(gui::DisclaimerWnd.get());
+
         if (pressedKeys == settingsKeybind) {
-            gui::IsWindowOpen(gui::SettingsWnd.get()) ? gui::CloseWindow(gui::SettingsWnd.get()) : gui::ShowWindow(gui::SettingsWnd.get());
+            gui::IsWindowOpen(window) ? gui::CloseWindow(window) : gui::ShowWindow(window);
             return true;
         }
 
