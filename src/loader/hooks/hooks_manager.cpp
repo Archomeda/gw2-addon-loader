@@ -1,6 +1,4 @@
 #include "hooks_manager.h"
-#include <filesystem>
-#include <d3d9-defines.h>
 #include "LoaderDirect3D9.h"
 #include "../log.h"
 #include "../utils/file.h"

@@ -1,6 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <stdint.h>
+#include "../stdafx.h"
 
 #define JMP32_SIZE 5
 

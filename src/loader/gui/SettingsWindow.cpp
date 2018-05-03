@@ -1,15 +1,5 @@
 #include "SettingsWindow.h"
-#include "../windows.h"
-#include <shellapi.h>
-#include <chrono>
-#include <filesystem>
-#include <memory>
-#include <sstream>
-#include <vector>
-#include <IconsMaterialDesign.h>
 #include "imgui.h"
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include <imgui_internal.h>
 #include "gui_manager.h"
 #include "elements/ExtraImGuiElements.h"
 #include "../Config.h"

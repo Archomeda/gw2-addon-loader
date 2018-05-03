@@ -1,4 +1,5 @@
 #pragma once
+#include "../stdafx.h"
 #include "Window.h"
 #include "../addons/addon.h"
 

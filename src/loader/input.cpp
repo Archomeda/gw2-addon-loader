@@ -1,9 +1,4 @@
 #include "input.h"
-#include "windows.h"
-#include <algorithm>
-#include <iterator>
-#include <sstream>
-#include <vector>
 
 using namespace std;
 

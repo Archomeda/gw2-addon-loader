@@ -1,5 +1,4 @@
 #include "update_manager.h"
-#include <chrono>
 #include "../Config.h"
 #include "../log.h"
 #include "../version.h"

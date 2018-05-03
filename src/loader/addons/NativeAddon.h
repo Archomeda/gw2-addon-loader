@@ -1,7 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <string>
-#include <gw2addon-native.h>
+#include "../stdafx.h"
 #include "Addon.h"
 
 namespace loader {

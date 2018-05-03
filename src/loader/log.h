@@ -1,8 +1,5 @@
 #pragma once
-#include "windows.h"
-#include <spdlog/spdlog.h>
-#include <memory>
-#include <string>
+#include "stdafx.h"
 
 #define ADDONS_LOG() loader::GetLog("addons")
 #define CONFIG_LOG() loader::GetLog("config")

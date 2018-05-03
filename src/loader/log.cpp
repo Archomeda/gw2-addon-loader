@@ -1,7 +1,4 @@
 #include "log.h"
-#include <Shlwapi.h>
-#include <filesystem>
-#include <map>
 
 #define LOG_FILE "addons/loader/loader.log"
 

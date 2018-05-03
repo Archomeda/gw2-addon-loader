@@ -1,8 +1,4 @@
 #include "Addon.h"
-#include <Strsafe.h>
-#include <filesystem>
-#include <string>
-#include <gw2addon-native.h>
 #include "addons_manager.h"
 #include "exceptions.h"
 #include "LegacyAddon.h"

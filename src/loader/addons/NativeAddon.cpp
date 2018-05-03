@@ -1,5 +1,4 @@
 #include "NativeAddon.h"
-#include <d3dx9tex.h>
 #include "addons_manager.h"
 #include "../log.h"
 #include "../updaters/GithubReleasesUpdater.h"

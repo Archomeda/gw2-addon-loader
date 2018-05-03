@@ -1,6 +1,5 @@
 #pragma once
-#include <string>
-#include <vector>
+#include "../stdafx.h"
 
 namespace loader {
     namespace utils {

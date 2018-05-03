@@ -1,7 +1,5 @@
 #pragma once
-#include <memory>
-#include <string>
-#include <imgui.h>
+#include "../stdafx.h"
 
 namespace loader {
     namespace gui {

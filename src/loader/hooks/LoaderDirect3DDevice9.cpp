@@ -1,9 +1,4 @@
 #include "LoaderDirect3DDevice9.h"
-#include <iomanip>
-#include <filesystem>
-#include <set>
-#include <sstream>
-#include <string>
 #include "ChainHook.h"
 #include "MumbleLink.h"
 #include "../Config.h"

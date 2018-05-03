@@ -1,6 +1,5 @@
 #pragma once
-#include <functional>
-#include <string>
+#include "../stdafx.h"
 #include "AddonMetric.h"
 #include "exceptions.h"
 #include "../Config.h"

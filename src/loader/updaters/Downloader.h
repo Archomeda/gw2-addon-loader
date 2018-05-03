@@ -1,10 +1,5 @@
 #pragma once
-#include <atomic>
-#include <functional>
-#include <future>
-#include <mutex>
-#include <string>
-#include <vector>
+#include "../stdafx.h"
 #include "../Event.h"
 
 namespace loader {

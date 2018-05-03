@@ -1,6 +1,4 @@
 #include "file.h"
-#include "../windows.h"
-#include <Shlwapi.h>
 #include "encoding.h"
 
 using namespace std;

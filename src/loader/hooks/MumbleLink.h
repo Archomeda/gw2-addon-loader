@@ -1,8 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <memory>
-#include <stdint.h>
-#include <thread>
+#include "../stdafx.h"
 
 namespace loader {
     namespace hooks {

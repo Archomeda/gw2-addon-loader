@@ -1,5 +1,4 @@
 #include "BitmapFontAtlas.h"
-#include <imgui_internal.h>
 
 using namespace std;
 

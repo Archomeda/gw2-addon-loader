@@ -1,6 +1,6 @@
 #pragma once
+#include "../../stdafx.h"
 #include "../../addons/Addon.h"
-#include <imgui.h>
 
 namespace loader {
     namespace gui {

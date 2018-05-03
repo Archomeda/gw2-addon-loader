@@ -1,7 +1,4 @@
 #include "GithubReleasesUpdater.h"
-#include <regex>
-#include <json.hpp>
-#include <miniz.h>
 #include "../globals.h"
 #include "../log.h"
 #include "../utils/web.h"

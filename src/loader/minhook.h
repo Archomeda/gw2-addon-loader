@@ -1,5 +1,5 @@
 #pragma once
-#include <MinHook.h>
+#include "stdafx.h"
 
 template<typename T>
 inline MH_STATUS MH_CreateHookEx(LPVOID pTarget, T* pDetour, T** ppOriginal) {

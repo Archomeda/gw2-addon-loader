@@ -1,7 +1,4 @@
 #include "debug.h"
-#include "../windows.h"
-#include <filesystem>
-#include <sstream>
 #include "../log.h"
 
 namespace loader {

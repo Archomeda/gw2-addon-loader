@@ -1,8 +1,5 @@
 #pragma once
-#include <functional>
-#include <future>
-#include <memory>
-#include <string>
+#include "../stdafx.h"
 #include "Downloader.h"
 
 namespace loader {

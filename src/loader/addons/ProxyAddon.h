@@ -1,6 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <gw2addon-legacy.h>
+#include "../stdafx.h"
 #include "Addon.h"
 #include "ProxyDirect3DDevice9.h"
 

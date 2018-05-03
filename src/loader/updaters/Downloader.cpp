@@ -1,6 +1,4 @@
 #include "Downloader.h"
-#include "../windows.h"
-#include <WinInet.h>
 #include "../utils/encoding.h"
 
 using namespace std;

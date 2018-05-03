@@ -1,8 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <filesystem>
-#include <time.h>
-#include <string>
+#include "../stdafx.h"
 
 namespace loader {
     namespace utils {

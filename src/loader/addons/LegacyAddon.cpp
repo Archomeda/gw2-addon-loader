@@ -1,6 +1,4 @@
 #include "LegacyAddon.h"
-#include <algorithm>
-#include <filesystem>
 #include "addons_manager.h"
 #include "ProxyAddon.h"
 #include "../minhook.h"

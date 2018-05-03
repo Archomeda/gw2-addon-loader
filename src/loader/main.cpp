@@ -1,7 +1,4 @@
 #include "main.h"
-#include <list>
-#include <stdint.h>
-#include <imgui.h>
 #include "minhook.h"
 #include "addons/addons_manager.h"
 #include "addons/Addon.h"

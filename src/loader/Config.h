@@ -1,10 +1,5 @@
 #pragma once
-#include <SimpleIni.h>
-#include <chrono>
-#include <map>
-#include <set>
-#include <stdint.h>
-#include <string>
+#include "stdafx.h"
 
 namespace loader {
     namespace addons {

@@ -1,6 +1,5 @@
 #pragma once
-#include <map>
-#include <memory>
+#include "../stdafx.h"
 #include "GithubReleasesUpdater.h"
 #include "Installer.h"
 #include "../addons/Addon.h"

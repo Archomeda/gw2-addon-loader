@@ -1,9 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <d3d9.h>
-#include <memory>
-#include <set>
-#include <vector>
+#include "../stdafx.h"
 #include "Addon.h"
 #include "AddonsList.h"
 #include "../hooks/LoaderDirect3DDevice9.h"

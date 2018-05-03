@@ -1,5 +1,4 @@
 #include "encoding.h"
-#include <codecvt>
 
 using namespace std;
 

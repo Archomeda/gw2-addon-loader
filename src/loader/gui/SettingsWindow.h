@@ -1,7 +1,6 @@
 #pragma once
+#include "../stdafx.h"
 #include "Window.h"
-#include <set>
-#include <vector>
 #include "../addons/Addon.h"
 
 namespace loader {

@@ -1,5 +1,5 @@
 #pragma once
-#include <d3d9.h>
+#include "../stdafx.h"
 
 namespace loader {
     namespace addons {

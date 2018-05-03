@@ -1,5 +1,4 @@
 #include "LoaderDirect3D9.h"
-#include <map>
 #include "LoaderDirect3DDevice9.h"
 
 using namespace std;

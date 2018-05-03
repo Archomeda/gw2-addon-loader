@@ -1,6 +1,4 @@
 #include "gui_manager.h"
-#include <map>
-#include <imgui.h>
 #include "Window.h"
 #include "DisclaimerWindow.h"
 #include "SettingsWindow.h"

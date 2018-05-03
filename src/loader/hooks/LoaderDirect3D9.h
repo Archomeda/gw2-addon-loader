@@ -1,7 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <d3d9.h>
-#include <gw2addon-legacy.h>
+#include "../stdafx.h"
 
 namespace loader {
     namespace hooks {

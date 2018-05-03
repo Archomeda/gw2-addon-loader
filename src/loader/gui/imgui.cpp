@@ -1,7 +1,4 @@
 #include "imgui.h"
-#include <d3dx9tex.h>
-#include <map>
-#include <imgui.h>
 #include "BitmapFontAtlas.h"
 #include "../resource.h"
 

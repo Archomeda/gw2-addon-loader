@@ -1,6 +1,5 @@
 #pragma once
-#include <stdexcept>
-#include <string>
+#include "../stdafx.h"
 #include "../utils/encoding.h"
 
 namespace loader {

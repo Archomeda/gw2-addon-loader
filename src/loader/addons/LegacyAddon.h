@@ -1,11 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <d3d9.h>
-#include <algorithm>
-#include <functional>
-#include <stdint.h>
-#include <string>
-#include <d3d9-defines.h>
+#include "../stdafx.h"
 #include "Addon.h"
 #include "ProxyDirect3DDevice9.h"
 #include "../disasm/d3d9Vtbl.h"

@@ -1,9 +1,4 @@
 #include "Config.h"
-#include "windows.h"
-#include <ShlObj.h>
-#include <Shlwapi.h>
-#include <filesystem> 
-#include <sstream>
 #include "globals.h"
 #include "log.h"
 #include "addons/Addon.h"

@@ -1,5 +1,4 @@
 #include "ProxyAddon.h"
-#include <filesystem>
 #include "addons_manager.h"
 #include "../hooks/LoaderDirect3D9.h"
 #include "../log.h"

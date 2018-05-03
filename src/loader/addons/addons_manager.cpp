@@ -1,7 +1,4 @@
 #include "addons_manager.h"
-#include <filesystem>
-#include <ShlObj.h>
-#include <Shlwapi.h>
 #include "exceptions.h"
 #include "../Config.h"
 #include "../globals.h"

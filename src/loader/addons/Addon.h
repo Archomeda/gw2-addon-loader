@@ -1,11 +1,5 @@
 #pragma once
-#include "../windows.h"
-#include <d3d9.h>
-#include <chrono>
-#include <filesystem>
-#include <functional>
-#include <memory>
-#include <string>
+#include "../stdafx.h"
 #include "AddonFunc.h"
 #include "AddonMetric.h"
 #include "../hooks/LoaderDirect3D9.h"

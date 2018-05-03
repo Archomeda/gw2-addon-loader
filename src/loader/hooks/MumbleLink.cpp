@@ -1,5 +1,4 @@
 #include "MumbleLink.h"
-#include <chrono>
 #include "../log.h"
 
 using namespace std;

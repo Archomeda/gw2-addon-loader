@@ -1,10 +1,5 @@
 #pragma once
-#include <atomic>
-#include <filesystem>
-#include <future>
-#include <memory>
-#include <mutex>
-#include <string>
+#include "../stdafx.h"
 #include "Updater.h"
 #include "../addons/Addon.h"
 

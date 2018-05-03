@@ -1,5 +1,4 @@
 #include "DisclaimerWindow.h"
-#include <imgui.h>
 #include "gui_manager.h"
 #include "SettingsWindow.h"
 #include "../Config.h"

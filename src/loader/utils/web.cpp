@@ -1,6 +1,4 @@
 #include "web.h"
-#include "../windows.h"
-#include <WinInet.h>
 #include "encoding.h"
 
 using namespace std;

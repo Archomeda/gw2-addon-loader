@@ -1,13 +1,4 @@
 #include "Installer.h"
-#include "../windows.h"
-#include <filesystem>
-#include <fstream>
-#include <functional>
-#include <iomanip>
-#include <ShlObj.h>
-#include <sstream>
-#include <vector>
-#include <miniz.h>
 #include "../globals.h"
 #include "../log.h"
 #include "../utils/encoding.h"

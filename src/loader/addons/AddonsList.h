@@ -1,7 +1,5 @@
 #pragma once
-#include <iterator>
-#include <memory>
-#include <vector>
+#include "../stdafx.h"
 #include "Addon.h"
 #include "LegacyAddon.h"
 
