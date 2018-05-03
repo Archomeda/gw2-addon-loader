@@ -73,28 +73,28 @@
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -165,11 +165,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="addons\AddonFunc.h" />
+    <ClInclude Include="addons\AddonsList.h" />
+    <ClInclude Include="addons\LegacyAddon.h" />
     <ClInclude Include="addons\NativeAddon.h" />
+    <ClInclude Include="addons\ProxyAddon.h" />
+    <ClInclude Include="addons\ProxyDirect3DDevice9.h" />
+    <ClInclude Include="disasm\opcodes.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="gui\DisclaimerWindow.h" />
     <ClInclude Include="gui\elements\AddonListItem.h" />
     <ClInclude Include="gui\elements\ExtraImGuiElements.h" />
+    <ClInclude Include="minhook.h" />
     <ClInclude Include="updaters\Downloader.h" />
     <ClInclude Include="updaters\GithubReleasesUpdater.h" />
     <ClInclude Include="gui\BitmapFontAtlas.h" />
@@ -179,13 +186,12 @@
     <ClInclude Include="addons\addons_manager.h" />
     <ClInclude Include="addons\exceptions.h" />
     <ClInclude Include="gui\gui_manager.h" />
-    <ClInclude Include="gui\MessageWindow.h" />
     <ClInclude Include="hooks\ChainHook.h" />
     <ClInclude Include="hooks\FunctionHook.h" />
     <ClInclude Include="hooks\LoaderDirect3D9.h" />
     <ClInclude Include="hooks\LoaderDirect3DDevice9.h" />
     <ClInclude Include="hooks\MumbleLink.h" />
-    <ClInclude Include="hooks\vftable.h" />
+    <ClInclude Include="disasm\d3d9Vtbl.h" />
     <ClInclude Include="IconsOcticons.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
@@ -202,12 +208,16 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="hooks\hooks_manager.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="gui\AddonInfoWindow.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="gui\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="addons\AddonsList.cpp" />
+    <ClCompile Include="addons\LegacyAddon.cpp" />
     <ClCompile Include="addons\NativeAddon.cpp" />
+    <ClCompile Include="addons\ProxyAddon.cpp" />
+    <ClCompile Include="addons\ProxyDirect3DDevice9.cpp" />
+    <ClCompile Include="gui\DisclaimerWindow.cpp" />
     <ClCompile Include="gui\elements\AddonListItem.cpp" />
     <ClCompile Include="updaters\Downloader.cpp" />
     <ClCompile Include="updaters\GithubReleasesUpdater.cpp" />
@@ -218,17 +228,15 @@
     <ClCompile Include="addons\addons_manager.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="gui\gui_manager.cpp" />
-    <ClCompile Include="gui\MessageWindow.cpp" />
     <ClCompile Include="hooks\ChainHook.cpp" />
     <ClCompile Include="hooks\FunctionHook.cpp" />
     <ClCompile Include="hooks\hooks_manager.cpp" />
     <ClCompile Include="hooks\LoaderDirect3D9.cpp" />
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp" />
     <ClCompile Include="hooks\MumbleLink.cpp" />
-    <ClCompile Include="hooks\vftable.c" />
+    <ClCompile Include="disasm\d3d9Vtbl.c" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="gui\AddonInfoWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui\Window.cpp" />
     <ClCompile Include="addons\AddonMetric.cpp" />

@@ -1,5 +1,8 @@
 #include "LoaderDirect3D9.h"
+#include <map>
 #include "LoaderDirect3DDevice9.h"
+
+using namespace std;
 
 namespace loader {
     namespace hooks {
@@ -8,6 +11,92 @@ namespace loader {
         PostCreateDevice_t* PostCreateDeviceHook = nullptr;
         PreCreateDeviceEx_t* PreCreateDeviceExHook = nullptr;
         PostCreateDeviceEx_t* PostCreateDeviceExHook = nullptr;
+
+
+        struct Direct3DDevice9Id {
+            UINT adapter;
+            D3DDEVTYPE deviceType;
+            HWND hFocusWindow;
+            DWORD behaviorFlags;
+            D3DPRESENT_PARAMETERS presentationParameters;
+        };
+        bool operator<(const D3DPRESENT_PARAMETERS& l, const D3DPRESENT_PARAMETERS& r) {
+            return
+                l.AutoDepthStencilFormat < r.AutoDepthStencilFormat ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount < r.BackBufferCount) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat < r.BackBufferFormat) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight < r.BackBufferHeight) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth < r.BackBufferWidth) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil < r.EnableAutoDepthStencil) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags < r.Flags) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags == r.Flags && l.FullScreen_RefreshRateInHz < r.FullScreen_RefreshRateInHz) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags == r.Flags && l.FullScreen_RefreshRateInHz == r.FullScreen_RefreshRateInHz &&
+                    l.hDeviceWindow < r.hDeviceWindow) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags == r.Flags && l.FullScreen_RefreshRateInHz < r.FullScreen_RefreshRateInHz &&
+                    l.hDeviceWindow == r.hDeviceWindow && l.MultiSampleQuality < r.MultiSampleQuality) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags == r.Flags && l.FullScreen_RefreshRateInHz < r.FullScreen_RefreshRateInHz &&
+                    l.hDeviceWindow == r.hDeviceWindow && l.MultiSampleQuality == r.MultiSampleQuality && l.MultiSampleType < r.MultiSampleType) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags == r.Flags && l.FullScreen_RefreshRateInHz < r.FullScreen_RefreshRateInHz &&
+                    l.hDeviceWindow == r.hDeviceWindow && l.MultiSampleQuality == r.MultiSampleQuality && l.MultiSampleType == r.MultiSampleType &&
+                    l.PresentationInterval < r.PresentationInterval) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags == r.Flags && l.FullScreen_RefreshRateInHz < r.FullScreen_RefreshRateInHz &&
+                    l.hDeviceWindow == r.hDeviceWindow && l.MultiSampleQuality == r.MultiSampleQuality && l.MultiSampleType == r.MultiSampleType &&
+                    l.PresentationInterval == r.PresentationInterval && l.SwapEffect < r.SwapEffect) ||
+                (l.AutoDepthStencilFormat == r.AutoDepthStencilFormat && l.BackBufferCount == r.BackBufferCount &&
+                    l.BackBufferFormat == r.BackBufferFormat && l.BackBufferHeight == r.BackBufferHeight && l.BackBufferWidth == r.BackBufferWidth &&
+                    l.EnableAutoDepthStencil == r.EnableAutoDepthStencil && l.Flags == r.Flags && l.FullScreen_RefreshRateInHz < r.FullScreen_RefreshRateInHz &&
+                    l.hDeviceWindow == r.hDeviceWindow && l.MultiSampleQuality == r.MultiSampleQuality && l.MultiSampleType == r.MultiSampleType &&
+                    l.PresentationInterval == r.PresentationInterval && l.SwapEffect == r.SwapEffect && l.Windowed < r.Windowed);
+        }
+        bool operator<(const Direct3DDevice9Id& l, const Direct3DDevice9Id& r) {
+            return
+                l.adapter < r.adapter ||
+                (l.adapter == r.adapter && l.behaviorFlags < r.behaviorFlags) ||
+                (l.adapter == r.adapter && l.behaviorFlags == r.behaviorFlags && l.deviceType < r.deviceType) ||
+                (l.adapter == r.adapter && l.behaviorFlags == r.behaviorFlags && l.deviceType == r.deviceType && l.hFocusWindow < r.hFocusWindow) ||
+                (l.adapter == r.adapter && l.behaviorFlags == r.behaviorFlags && l.deviceType == r.deviceType && l.hFocusWindow == r.hFocusWindow && l.presentationParameters < r.presentationParameters);
+        }
+        map<Direct3DDevice9Id, IDirect3DDevice9*> devices;
+
+        Direct3DDevice9Information globalDeviceInformation = {};
+        IDirect3DDevice9* GW2PROXY_CALL GetCreatedDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters) {
+            Direct3DDevice9Id id = {
+                Adapter,
+                DeviceType,
+                hFocusWindow,
+                BehaviorFlags,
+                *pPresentationParameters
+            };
+            try {
+                return devices.at(id);
+            }
+            catch (const out_of_range&) {
+                return nullptr;
+            }
+        }
+
+        Direct3DDevice9Information GetGlobalDeviceInformation() {
+            return globalDeviceInformation;
+        }
 
 
         HRESULT LoaderDirect3D9::QueryInterface(REFIID riid, void** ppvObj) {
@@ -19,11 +108,7 @@ namespace loader {
         }
 
         ULONG LoaderDirect3D9::Release() {
-            ULONG count = this->d3d9->Release();
-            if (count == 0) {
-                delete this;
-            }
-            return count;
+            return this->d3d9->Release();
         }
 
         HRESULT LoaderDirect3D9::RegisterSoftwareDevice(void* pInitializeFunction) {
@@ -81,7 +166,7 @@ namespace loader {
         HRESULT LoaderDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
             HRESULT hr;
             if (PreCreateDeviceHook != nullptr) {
-                hr = PreCreateDeviceHook(this->d3d9, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
+                hr = PreCreateDeviceHook(this, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
                 if (hr != D3D_OK) {
                     // Fail
                     return hr;
@@ -97,10 +182,31 @@ namespace loader {
                 }
             }
 
-            *ppReturnedDeviceInterface = new LoaderDirect3DDevice9(*ppReturnedDeviceInterface);
+            // Save reference to the created device with parameters
+            Direct3DDevice9Id id = {
+                Adapter,
+                DeviceType,
+                hFocusWindow,
+                BehaviorFlags,
+                *pPresentationParameters
+            };
+            devices[id] = *ppReturnedDeviceInterface;
+            if (globalDeviceInformation.device == nullptr) {
+                globalDeviceInformation = {
+                    Adapter,
+                    DeviceType,
+                    hFocusWindow,
+                    BehaviorFlags,
+                    *pPresentationParameters,
+                    *ppReturnedDeviceInterface
+                };
+            }
+
+            LoaderDirect3DDevice9* device = new LoaderDirect3DDevice9(*ppReturnedDeviceInterface);
+            *ppReturnedDeviceInterface = device;
 
             if (PostCreateDeviceHook != nullptr) {
-                PostCreateDeviceHook(this->d3d9, *ppReturnedDeviceInterface, hFocusWindow);
+                PostCreateDeviceHook(this, device, hFocusWindow);
             }
 
             return hr;
@@ -116,11 +222,7 @@ namespace loader {
         }
 
         ULONG LoaderDirect3D9Ex::Release() {
-            ULONG count = this->d3d9->Release();
-            if (count == 0) {
-                delete this;
-            }
-            return count;
+            return this->d3d9->Release();
         }
 
         HRESULT LoaderDirect3D9Ex::RegisterSoftwareDevice(void* pInitializeFunction) {
@@ -176,7 +278,52 @@ namespace loader {
         }
 
         HRESULT LoaderDirect3D9Ex::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
-            return this->d3d9->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
+            HRESULT hr;
+            if (PreCreateDeviceHook != nullptr) {
+                hr = PreCreateDeviceHook(dynamic_cast<LoaderDirect3D9*>(this), Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
+            }
+
+            if (!*ppReturnedDeviceInterface) {
+                // The pre hook didn't return a device interface, let's get one ourselves
+                hr = this->d3d9->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
+                if (hr != D3D_OK) {
+                    // Fail
+                    return hr;
+                }
+            }
+
+            // Save reference to the created device with parameters
+            Direct3DDevice9Id id = {
+                Adapter,
+                DeviceType,
+                hFocusWindow,
+                BehaviorFlags,
+                *pPresentationParameters
+            };
+            devices[id] = *ppReturnedDeviceInterface;
+            if (globalDeviceInformation.device == nullptr) {
+                globalDeviceInformation = {
+                    Adapter,
+                    DeviceType,
+                    hFocusWindow,
+                    BehaviorFlags,
+                    *pPresentationParameters,
+                    *ppReturnedDeviceInterface
+                };
+            }
+
+            LoaderDirect3DDevice9* device = new LoaderDirect3DDevice9(*ppReturnedDeviceInterface);
+            *ppReturnedDeviceInterface = device;
+
+            if (PostCreateDeviceHook != nullptr) {
+                PostCreateDeviceHook(dynamic_cast<LoaderDirect3D9*>(this), device, hFocusWindow);
+            }
+
+            return hr;
         }
 
         UINT LoaderDirect3D9Ex::GetAdapterModeCountEx(UINT Adapter, CONST D3DDISPLAYMODEFILTER* pFilter) {
@@ -194,7 +341,7 @@ namespace loader {
         HRESULT LoaderDirect3D9Ex::CreateDeviceEx(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface) {
             HRESULT hr;
             if (PreCreateDeviceExHook != nullptr) {
-                hr = PreCreateDeviceExHook(this->d3d9, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, pFullscreenDisplayMode, ppReturnedDeviceInterface);
+                hr = PreCreateDeviceExHook(this, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, pFullscreenDisplayMode, ppReturnedDeviceInterface);
                 if (hr != D3D_OK) {
                     // Fail
                     return hr;
@@ -210,10 +357,31 @@ namespace loader {
                 }
             }
 
-            *ppReturnedDeviceInterface = new LoaderDirect3DDevice9Ex(*ppReturnedDeviceInterface);
+            // Save reference to the created device with parameters
+            Direct3DDevice9Id id = {
+                Adapter,
+                DeviceType,
+                hFocusWindow,
+                BehaviorFlags,
+                *pPresentationParameters
+            };
+            devices[id] = *ppReturnedDeviceInterface;
+            if (globalDeviceInformation.device == nullptr) {
+                globalDeviceInformation = {
+                    Adapter,
+                    DeviceType,
+                    hFocusWindow,
+                    BehaviorFlags,
+                    *pPresentationParameters,
+                    *ppReturnedDeviceInterface
+                };
+            }
+
+            LoaderDirect3DDevice9Ex* device = new LoaderDirect3DDevice9Ex(*ppReturnedDeviceInterface);
+            *ppReturnedDeviceInterface = device;
 
             if (PostCreateDeviceExHook != nullptr) {
-                PostCreateDeviceExHook(this->d3d9, *ppReturnedDeviceInterface, hFocusWindow);
+                PostCreateDeviceExHook(this, device, hFocusWindow);
             }
 
             return hr;

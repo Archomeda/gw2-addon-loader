@@ -27,18 +27,20 @@ namespace loader {
 
         /** Global settings */
 
+        const bool GetDisclaimerAccepted() const { return this->disclaimerAccepted; }
         const std::set<uint_fast8_t> GetSettingsKeybind() const { return this->settingsKeybind; }
         bool GetOBSCompatibilityMode() const { return this->obsCompatibilityMode; }
-        bool GetShowIncompatibleAddons() const { return this->showIncompatibleAddons; }
+        bool GetShowHiddenAddons() const { return this->showHiddenAddons; }
         bool GetShowDebugFeatures() const { return this->showDebugFeatures; }
         timestamp GetLastUpdateCheck() const { return this->lastUpdateCheck; }
         std::string GetLatestVersion() const { return this->latestVersion; }
         std::string GetLatestVersionInfoUrl() const { return this->latestVersionInfoUrl; }
         std::string GetLatestVersionDownloadUrl() const { return this->latestVersionDownloadUrl; }
 
+        void SetDisclaimerAccepted(bool disclaimerAccepted);
         void SetSettingsKeybind(const std::set<uint_fast8_t>& keys);
         void SetOBSCompatibilityMode(bool compatibilityMode);
-        void SetShowIncompatibleAddons(bool showIncompatibleAddons);
+        void SetShowHiddenAddons(bool showHiddenAddons);
         void SetShowDebugFeatures(bool showDebugFeatures);
         template<class Clock>
         void SetLastUpdateCheck(std::chrono::time_point<Clock, std::chrono::seconds> lastUpdate) {
@@ -52,7 +54,7 @@ namespace loader {
         void SetLatestVersionInfoUrl(const std::string& url);
         void SetLatestVersionDownloadUrl(const std::string& url);
 
-        /** Addon settings */
+        /** Add-on settings */
 
         bool GetAddonEnabled(const addons::Addon* const addon);
         int GetAddonOrder(const addons::Addon* const addon);
@@ -73,9 +75,10 @@ namespace loader {
         std::string configPath;
         std::string configImGuiPath;
 
+        bool disclaimerAccepted = false;
         std::set<uint_fast8_t> settingsKeybind;
         bool obsCompatibilityMode = false;
-        bool showIncompatibleAddons = false;
+        bool showHiddenAddons = false;
         bool showDebugFeatures = false;
         timestamp lastUpdateCheck;
         std::string latestVersion;

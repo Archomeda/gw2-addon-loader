@@ -17,7 +17,7 @@ namespace loader {
                 this->downloadTask = async(launch::async, [=]() {
 
                     string url = this->url;
-                    HINTERNET hSession = InternetOpen(L"Guild Wars 2 Addon Loader", 0, NULL, NULL, 0);
+                    HINTERNET hSession = InternetOpen(L"Guild Wars 2 Add-on Loader", 0, NULL, NULL, 0);
                     if (hSession == NULL) {
                         this->error = "Failed to open session";
                         this->busy = false;

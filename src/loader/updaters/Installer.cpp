@@ -219,7 +219,7 @@ namespace loader {
         void Installer::WriteFile(const vector<char>& fileData, const path& fileName) {
             // Prevent d3d9 overwrites if it's not supposed to overwrite
             if (fileName.filename() == "d3d9.dll" && this->targetFileName != "d3d9.dll") {
-                GetLog()->warn("Prevented overwriting d3d9.dll, please don't include d3d9.dll in addon archive files if the addon depends on that");
+                GetLog()->warn("Prevented overwriting d3d9.dll, please don't include d3d9.dll in add-on archive files if the add-on depends on that");
                 return;
             }
 

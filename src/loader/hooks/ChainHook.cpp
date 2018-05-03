@@ -1,9 +1,11 @@
 #include "ChainHook.h"
 #include <filesystem>
 #include <string>
+#include "../disasm/opcodes.h"
 
 using namespace std;
 using namespace std::experimental::filesystem;
+using namespace loader::disasm;
 
 namespace loader {
     namespace hooks {
@@ -28,8 +30,8 @@ namespace loader {
 
             if (*pFunction == 0xE9) {
                 // JMP
-                int32_t jmpOffset = *reinterpret_cast<int32_t*>(&pFunction[1]);
-                void* pJmpFunction = pFunction + 5 + jmpOffset;
+                JMP_REL jmpRel = *reinterpret_cast<JMP_REL*>(pFunction);
+                void* pJmpFunction = pFunction + sizeof(JMP_REL) + jmpRel.operand;
 
                 HMODULE hModule = NULL;
                 if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR>(pJmpFunction), &hModule) == 0) {
@@ -81,10 +83,10 @@ namespace loader {
                     if (*currentAddress == 0xFF && *(currentAddress + 1) == 0x15) {
                         // CALL instruction with ptr to absolute address
                         // This ptr is absolute on x86, and relative on x64
+                        CALL_ABS callAbs = *reinterpret_cast<CALL_ABS*>(currentAddress);
+                        uintptr_t ptr = callAbs.operand;
 #ifdef _WIN64
-                        uintptr_t ptr = reinterpret_cast<uintptr_t>(currentAddress) + CALLN32_SIZE + *(reinterpret_cast<int32_t*>(currentAddress + 2));
-#else
-                        uintptr_t ptr = *reinterpret_cast<uintptr_t*>(currentAddress + 2);
+                        ptr += reinterpret_cast<uintptr_t>(currentAddress) + sizeof(CALL_ABS);
 #endif
                         uintptr_t address = reinterpret_cast<uintptr_t>(*reinterpret_cast<void**>(ptr));
                         if (address == reinterpret_cast<uintptr_t>(this->origFunction)) {

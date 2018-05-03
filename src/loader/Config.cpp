@@ -49,9 +49,10 @@ namespace loader {
         this->ini.SetUnicode();
         this->ini.LoadFile(this->configPath.c_str());
 
+        this->disclaimerAccepted = this->ini.GetBoolValue(L"general", L"disclaimer_accepted", false);
         this->settingsKeybind = this->ParseKeybindString(u8(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122"))); // Alt + Shift + F11
         this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", true);
-        this->showIncompatibleAddons = this->ini.GetBoolValue(L"addons", L"show_incompatible_addons", false);
+        this->showHiddenAddons = this->ini.GetBoolValue(L"addons", L"show_hidden_addons", false);
         this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
         this->lastUpdateCheck = timestamp(chrono::seconds(this->ini.GetLongValue(L"general", L"last_update_check", 0)));
         this->latestVersion = u8(this->ini.GetValue(L"general", L"latest_version", L""));
@@ -89,6 +90,12 @@ namespace loader {
     }
 
 
+    void Config::SetDisclaimerAccepted(bool disclaimerAccepted) {
+        this->disclaimerAccepted = disclaimerAccepted;
+        this->ini.SetBoolValue(L"general", L"disclaimer_accepted", disclaimerAccepted);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
     void Config::SetSettingsKeybind(const set<uint_fast8_t>& keys) {
         this->settingsKeybind = keys;
         wstring keybind = u16(this->ToKeybindString(keys));
@@ -102,9 +109,9 @@ namespace loader {
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetShowIncompatibleAddons(bool showIncompatibleAddons) {
-        this->showIncompatibleAddons = showIncompatibleAddons;
-        this->ini.SetBoolValue(L"addons", L"show_incompatible_addons", showIncompatibleAddons);
+    void Config::SetShowHiddenAddons(bool showHiddenAddons) {
+        this->showHiddenAddons = showHiddenAddons;
+        this->ini.SetBoolValue(L"addons", L"show_hidden_addons", showHiddenAddons);
         this->ini.SaveFile(this->configPath.c_str());
     }
 

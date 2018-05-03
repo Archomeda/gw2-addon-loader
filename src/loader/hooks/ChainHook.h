@@ -3,8 +3,6 @@
 #include <map>
 #include <string>
 
-#define CALLN32_SIZE 6
-
 namespace loader {
     namespace hooks {
 

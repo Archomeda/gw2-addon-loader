@@ -17,12 +17,16 @@ namespace loader {
         extern std::vector<float> DurationHistoryD3D9Processing;
         extern std::vector<float> DurationHistoryLoaderDrawFrame;
 
+        extern IDirect3DDevice9* LegacyAddonChainDevice;
+
         class LoaderDirect3DDevice9 : public IDirect3DDevice9
         {
         public:
             LoaderDirect3DDevice9(IDirect3DDevice9* dev) : dev(dev) { }
             LoaderDirect3DDevice9() { }
 
+            IDirect3DDevice9* GetSystemDevice() { return this->dev; }
+           
             /*** IUnknown methods ***/
             STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
             STDMETHOD_(ULONG, AddRef)();
@@ -147,7 +151,7 @@ namespace loader {
             STDMETHOD(CreateQuery)(D3DQUERYTYPE Type, IDirect3DQuery9** ppQuery);
 
         private:
-            IDirect3DDevice9* dev;
+            IDirect3DDevice9* dev = nullptr;
         };
 
         class LoaderDirect3DDevice9Ex : public IDirect3DDevice9Ex
@@ -156,6 +160,8 @@ namespace loader {
             LoaderDirect3DDevice9Ex(IDirect3DDevice9Ex* dev) : dev(dev) { }
             LoaderDirect3DDevice9Ex() { }
 
+            IDirect3DDevice9Ex* GetSystemDevice() { return this->dev; }
+         
             /*** IUnknown methods ***/
             STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
             STDMETHOD_(ULONG, AddRef)();
@@ -295,7 +301,7 @@ namespace loader {
             STDMETHOD(GetDisplayModeEx)(UINT iSwapChain, D3DDISPLAYMODEEX* pMode, D3DDISPLAYROTATION* pRotation);
 
         private:
-            IDirect3DDevice9Ex* dev;
+            IDirect3DDevice9Ex* dev = nullptr;
         };
 
     }

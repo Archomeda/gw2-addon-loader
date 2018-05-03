@@ -42,9 +42,6 @@
     <ClInclude Include="gui\gui_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\MessageWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="addons\exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -55,9 +52,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\AddonInfoWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\SettingsWindow.h">
@@ -82,9 +76,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hooks\vftable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hooks\FunctionHook.h">
@@ -138,6 +129,30 @@
     <ClInclude Include="gui\elements\AddonListItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="addons\LegacyAddon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\ProxyAddon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\ProxyDirect3DDevice9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="minhook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\AddonsList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm\opcodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="disasm\d3d9Vtbl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\DisclaimerWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -164,16 +179,10 @@
     <ClCompile Include="gui\gui_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\MessageWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="hooks\LoaderDirect3D9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hooks\LoaderDirect3DDevice9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\AddonInfoWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\SettingsWindow.cpp">
@@ -192,9 +201,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\BitmapFontAtlas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="hooks\vftable.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hooks\FunctionHook.cpp">
@@ -234,6 +240,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\elements\AddonListItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\LegacyAddon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\ProxyAddon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\ProxyDirect3DDevice9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addons\AddonsList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="disasm\d3d9Vtbl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\DisclaimerWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

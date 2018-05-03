@@ -42,9 +42,9 @@ GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
     static GW2AddonAPIV1 addon;
     addon.id = "taco-launcher";
     addon.name = "Tactical Overlay Launcher";
-    addon.author = "TacO by BoyC - Addon by Archomeda";
+    addon.author = "TacO by BoyC - Add-on by Archomeda";
     addon.version = "1.0";
-    addon.description = "A small launcher addon for TacO that automatically launches TacO whenever Guild Wars 2 is starting up.";
+    addon.description = "A small launcher add-on for TacO that automatically launches TacO whenever Guild Wars 2 is starting up.";
     addon.homepage = "https://github.com/Archomeda/gw2-addon-loader";
     addon.Load = &Load;
     return &addon;

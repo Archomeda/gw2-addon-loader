@@ -10,3 +10,6 @@
 [submodule "src/dependencies/IconFontCppHeaders"]
 	path = src/dependencies/IconFontCppHeaders
 	url = https://github.com/juliettef/IconFontCppHeaders.git
+[submodule "src/dependencies/minhook"]
+	path = src/dependencies/minhook
+	url = https://github.com/TsudaKageyu/minhook.git

@@ -2,10 +2,12 @@
 #include <list>
 #include <stdint.h>
 #include <imgui.h>
+#include "minhook.h"
 #include "addons/addons_manager.h"
 #include "addons/Addon.h"
 #include "gui/gui_manager.h"
 #include "gui/imgui.h"
+#include "gui/DisclaimerWindow.h"
 #include "gui/SettingsWindow.h"
 #include "hooks/hooks_manager.h"
 #include "hooks/LoaderDirect3D9.h"
@@ -41,14 +43,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     // Pass event to ImGui
     gui::imgui::ProcessWndProc(msg, wParam, lParam);
-    const ImGuiIO io = ImGui::GetIO();
+    const ImGuiIO& io = ImGui::GetIO();
 
     // Only run these for key down/key up (incl. mouse buttons) events and when ImGui doesn't want to capture the keyboard
     if (!RepeatedPressedKeys() && !io.WantCaptureKeyboard) {
-        auto pressedKeys = GetPressedKeys();
-        auto settingsKeybind = AppConfig.GetSettingsKeybind();
+        const set<uint_fast8_t> pressedKeys = GetPressedKeys();
+        const set<uint_fast8_t> settingsKeybind = AppConfig.GetSettingsKeybind();
+        gui::Window* window = AppConfig.GetDisclaimerAccepted() ? static_cast<gui::Window*>(gui::SettingsWnd.get()) : static_cast<gui::Window*>(gui::DisclaimerWnd.get());
+
         if (pressedKeys == settingsKeybind) {
-            gui::IsWindowOpen(gui::SettingsWnd.get()) ? gui::CloseWindow(gui::SettingsWnd.get()) : gui::ShowWindow(gui::SettingsWnd.get());
+            gui::IsWindowOpen(window) ? gui::CloseWindow(window) : gui::ShowWindow(window);
             return true;
         }
 
@@ -101,7 +105,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
     }
 
-    // Process WndProc to addons
+    // Process WndProc to add-ons
     if (addons::HandleWndProc(hWnd, msg, wParam, lParam)) {
         return true;
     }
@@ -110,7 +114,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 
-HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
+HRESULT PreCreateDevice(hooks::LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface) {
     // Hook WindowProc
     if (!BaseWndProc) {
         BaseWndProc = (WNDPROC)GetWindowLongPtr(hFocusWindow, GWLP_WNDPROC);
@@ -120,13 +124,13 @@ HRESULT PreCreateDevice(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, H
     return D3D_OK;
 }
 
-void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
+void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
     // Hook MumbleLink
     GetLog()->info("Starting MumbleLink loop");
     hooks::Gw2MumbleLink.Start();
 
-    // Initialize addons
-    GetLog()->info("Initializing addons");
+    // Initialize add-ons
+    GetLog()->info("Initializing add-ons");
     addons::InitializeAddons(hooks::SDKVersion, d3d9, pDeviceInterface);
 
     // Check for updates if needed
@@ -191,8 +195,8 @@ void PostCreateDevice(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND
     colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
     colors[ImGuiCol_DragDropTarget] = ImVec4(0.58f, 0.50f, 0.43f, 0.98f);
 
-    // Load enabled addons
-    GetLog()->info("Loading enabled addons");
+    // Load enabled add-ons
+    GetLog()->info("Loading enabled add-ons");
     addons::LoadAddons(hFocusWindow);
 }
 
@@ -223,8 +227,13 @@ void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CON
 bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
     case DLL_PROCESS_ATTACH: {
-        GetLog()->info("GW2 Addon Loader attached");
+        GetLog()->info("GW2 Add-on Loader attached");
         LaunchDebugger();
+
+        if (MH_Initialize() != MH_OK) {
+            GetLog()->error("Failed to initialize MinHook, aborting");
+            return false;
+        }
 
         dllModule = hModule;
         hooks::InitializeHooks();
@@ -237,7 +246,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         hooks::PrePresentHook = &PrePresent;
 
         // Make ourselves known by setting an environment variable
-        // This makes it easy for addon developers to detect early if we are loaded by GW2 or not
+        // This makes it easy for add-on developers to detect early if we are loaded by GW2 or not
         SetEnvironmentVariable(L"_IsGW2AddonLoaderActive", L"1");
 
         AppConfig.Initialize();
@@ -245,15 +254,20 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
         break;
     }
     case DLL_PROCESS_DETACH: {
+        MH_Uninitialize();
+
         GetLog()->info("Stopping MumbleLink loop");
         hooks::Gw2MumbleLink.Stop();
         gui::imgui::Shutdown();
-        GetLog()->info("Unloading and uninitializing addons");
+
+        GetLog()->info("Unloading and uninitializing add-ons");
         addons::UnloadAddons();
         addons::UninitializeAddons();
+
         GetLog()->info("Uninitializing hooks");
         hooks::UninitializeHooks();
-        GetLog()->info("GW2 Addon Loader detached");
+
+        GetLog()->info("GW2 Add-on Loader detached");
         break;
     }
     }

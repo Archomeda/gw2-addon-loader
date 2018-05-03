@@ -2,7 +2,7 @@
 #include <map>
 #include <imgui.h>
 #include "Window.h"
-#include "AddonInfoWindow.h"
+#include "DisclaimerWindow.h"
 #include "SettingsWindow.h"
 #include "../log.h"
 
@@ -13,7 +13,7 @@ namespace loader {
 
         map<Window* const, bool> openWindows;
 
-        shared_ptr<AddonInfoWindow> AddonInfoWnd = make_shared<AddonInfoWindow>();
+        shared_ptr<DisclaimerWindow> DisclaimerWnd = make_shared<DisclaimerWindow>();
         shared_ptr<SettingsWindow> SettingsWnd = make_shared<SettingsWindow>();
 
 

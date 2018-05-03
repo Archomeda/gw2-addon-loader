@@ -1,46 +1,41 @@
-# Guild Wars 2 Addon Loader
+# Guild Wars 2 Add-on Loader
+**This readme file contains general information about the development.
+For the usage information, please check the associated [GitHub pages website](https://archomeda.github.io/gw2-addon-loader/).**
+
 ***Note:** This is still in early beta. Some features may drastically change over time during their development. Be prepared to frequently reconfigure your installation. Also, expect bugs.*  
 ***Note:** It has **not** been approved for usage with Guild Wars 2 yet. Use at your own risk.*
 
-Guild Wars 2 Addon Loader is an unofficial addon for Guild Wars 2.
-It acts as a master addon that makes it easy to manage your Guild Wars 2 addons without the need to sort the files manually.
+Guild Wars 2 Add-on Loader is an unofficial add-on for Guild Wars 2.
+It acts as a master add-on that makes it easy to manage your Guild Wars 2 add-ons without the need to sort the files manually.
 
-**Note:** For now, existing Guild Wars 2 addons have to be adapted in order to make them compatible with *Guild Wars 2 Addon Loader*.
-This means that older addons will not work without a few changes by their developers.
-There are plans to look into supporting these addons, but due to the complex nature of these addons, it's quite an effort to support them.
-Improving stability, applying bugfixes and implementing other missing features have a higher priority.
 
-## Planned features
-- Investigating support for legacy addons (aka arcdps, GW2Mounts, ReShade, GW2Hook, and other d3d9 addons)
+## Compiling
+This project uses Visual Studio 2017.
+There are 4 build configuration settings:
+- Debug: Debug version of the add-on loader
+- DebugExamples: Debug version of the add-on loader and examples
+- Release: Release version of the add-on loader
+- Tools: Debug version of the tools to help the development of the add-on loader
 
-## Installation
-As long as *Guild Wars 2 Addon Loader* is in its early stages, there will be no pre-built binaries available for download.
-You'll have to compile them yourself by using Visual Studio 2017.
+All dependencies are included in the project folders.
+Please make sure to checkout all git submodules.
 
-Once you have the binaries, move the *d3d9.dll* file into *bin* or *bin64* folder inside the Guild Wars 2 installation folder.
-
-### Addons
-Any addons should be installed inside the *bin/addons* or *bin64/addons* folder inside the Guild Wars 2 installation folder.
-They will be detected on a Guild Wars 2 client restart.
-
-Addons will not be activated by default, you will have to open the addons panel (Alt + Shift + F11) and manually activate them.
-Once an addon is working properly, it will be activated automatically upon every Guild Wars 2 client restart.
-
-## Developing addons
-The header file *include/gw2addon-native.h* contains information what to export in your DLL in order to make it compatible with *Guild Wars 2 Addon Loader*.
+## Developing add-ons
+The header file *include/gw2addon-native.h* contains information what to export in your DLL in order to make it compatible.
 Keep in mind that during this development phase, this file is likely to (significantly) change over time without keeping a version history.
-By developing addons against *Guild Wars 2 Addon Loader*, you acknowledge that during this phase, you have to keep your addon up-to-date in order to prevent it from breaking in newer versions.
+By developing add-ons against the add-on loader, you acknowledge that during this phase, you have to keep your add-on up-to-date in order to prevent it from breaking in newer versions.
 
-Inside the *src* folder, there are some examples on how to create native addons.
-There are also a few pre-made addons available inside the same folder.
+Inside the *src* folder, there are some examples on how to create native add-ons.
+There are also a few pre-made add-ons available in the same folder.
 
 ## Third-party software
-*Guild Wars 2 Addon Loader* uses a number of third-party software.
-Please refer to their GitHub repository or website for more information.
+This project uses a number of third-party software.
+Please refer to their GitHub repositories or websites for more information.
 
 - [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)
 - [ImGui 1.53](https://github.com/ocornut/imgui)
 - [JSON for Modern C++ 3.1.2](https://github.com/nlohmann/json)
+- [minhook 1.3.3](https://github.com/TsudaKageyu/minhook)
 - [miniz 2.0.7](https://github.com/richgel999/miniz)
 - [simpleini 4.17](https://github.com/brofield/simpleini)
 - [spdlog 0.16.3](https://github.com/gabime/spdlog)

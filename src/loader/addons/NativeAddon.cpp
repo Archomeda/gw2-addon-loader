@@ -15,7 +15,7 @@ namespace loader {
             HMODULE h = LoadLibrary(this->GetFilePath().c_str());
             if (h == NULL) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native addon {0}: Library handle is empty", this->GetFileName());
+                GetLog()->error("Could not initialize native add-on {0}: Library handle is empty", this->GetFileName());
                 return false;
             }
             this->addonHandle = h;
@@ -25,19 +25,19 @@ namespace loader {
 
             if (this->AddonInitialize == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native addon {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Initialize " export", this->GetFileName());
+                GetLog()->error("Could not initialize native add-on {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Initialize " export", this->GetFileName());
                 return false;
             }
             if (this->AddonRelease == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native addon {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Release " export", this->GetFileName());
+                GetLog()->error("Could not initialize native add-on {0}: Addon doesn't contain a valid " GW2ADDON_DLL_Release " export", this->GetFileName());
                 return false;
             }
 
             GW2AddonAPIBase* addonBase = this->AddonInitialize(GW2ADDON_VER);
             if (addonBase == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error("Could not initialize native addon {0}: Addon didn't return a valid GW2AddonAPIBase pointer when calling " GW2ADDON_DLL_Initialize, this->GetFileName());
+                GetLog()->error("Could not initialize native add-on {0}: Addon didn't return a valid GW2AddonAPIBase pointer when calling " GW2ADDON_DLL_Initialize, this->GetFileName());
                 return false;
             }
 
@@ -48,7 +48,7 @@ namespace loader {
             }
             else {
                 this->ChangeState(AddonState::ErroredState);
-                GetLog()->error(("Could not initialize native addon {0}: Addon uses a version (" + to_string(addonBase->ver) + ") that is not compatible. Are both the addon and the addon loader updated?").c_str(), this->GetFileName());
+                GetLog()->error(("Could not initialize native add-on {0}: Addon uses a version (" + to_string(addonBase->ver) + ") that is not compatible. Are both the add-on and the add-on loader updated?").c_str(), this->GetFileName());
                 return false;
             }
 
@@ -68,7 +68,7 @@ namespace loader {
                 this->iconManaged = v1->iconSize > -1;
                 if (this->iconManaged) {
                     // Icon is just image data, we have to create the texture
-                    D3DXCreateTextureFromFileInMemory(this->D3DDevice9, v1->icon, v1->iconSize, &this->icon);
+                    D3DXCreateTextureFromFileInMemory(this->D3DDevice9->GetSystemDevice(), v1->icon, v1->iconSize, &this->icon);
                     this->iconManaged = true;
                 }
                 else {
@@ -186,17 +186,16 @@ namespace loader {
             if (this->GetState() != AddonState::UnloadedState) {
                 return false;
             }
-
             this->ChangeState(AddonState::LoadingState);
 
             if (this->AddonLoad != nullptr) {
                 this->GetMetricLoad().StartMeasurement();
-                GW2ADDON_RESULT result = this->AddonLoad(this->FocusWindow, this->D3DDevice9);
+                GW2ADDON_RESULT result = this->AddonLoad(this->FocusWindow, this->D3DDevice9->GetSystemDevice());
                 this->GetMetricLoad().EndMeasurement();
 
                 if (result) {
                     this->ChangeState(AddonState::ErroredState);
-                    GetLog()->error("Could not load native addon {0}: Addon returned {1}", this->GetFileName(), to_string(result));
+                    GetLog()->error("Could not load native add-on {0}: Addon returned {1}", this->GetFileName(), to_string(result));
                     return false;
                 }
             }
@@ -211,8 +210,10 @@ namespace loader {
                 return false;
             }
             this->ChangeState(AddonState::UnloadingState);
+
             bool result = Addon::Unload();
             this->AddonRelease();
+
             this->ChangeState(AddonState::UnloadedState);
             return result;
         }

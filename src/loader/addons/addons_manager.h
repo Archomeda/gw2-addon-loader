@@ -5,13 +5,15 @@
 #include <set>
 #include <vector>
 #include "Addon.h"
+#include "AddonsList.h"
+#include "../hooks/LoaderDirect3DDevice9.h"
 
 namespace loader {
     namespace addons {
 
-        extern std::vector<std::shared_ptr<Addon>> AddonsList;
+        extern AddonsList Addons;
         
-        // These are pointers to the addons with enabled hooks.
+        // These are pointers to the add-ons with enabled hooks.
         // With this we can improve the performance because these addon functions are called repeatedly every frame.
         // Especially in the debug build this can cause major performance issues if we would just iterate naively.
         struct AddonHooks {
@@ -54,11 +56,12 @@ namespace loader {
 
         void RefreshAddonList();
 
-        void MoveAddonUp(const Addon* const addon);
-        void MoveAddonDown(const Addon* const addon);
+        void SwapAddonOrder(const Addon* const a, const Addon* const b);
+        void SaveAddonOrder();
         void ReorderAddonHooks();
+        void ResetLegacyAddonChain();
 
-        void InitializeAddons(UINT sdkVersion, IDirect3D9* d3d9, IDirect3DDevice9* device);
+        void InitializeAddons(UINT sdkVersion, hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* device);
         void UninitializeAddons();
         void LoadAddons(HWND hFocusWindow);
         void UnloadAddons();

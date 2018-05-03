@@ -6,10 +6,10 @@ namespace loader {
     namespace gui {
 
         class Window;
-        class AddonInfoWindow;
+        class DisclaimerWindow;
         class SettingsWindow;
 
-        extern std::shared_ptr<AddonInfoWindow> AddonInfoWnd;
+        extern std::shared_ptr<DisclaimerWindow> DisclaimerWnd;
         extern std::shared_ptr<SettingsWindow> SettingsWnd;
 
 

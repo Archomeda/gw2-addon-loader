@@ -1,5 +1,5 @@
 /**
-This tool will merge multiple .fnt BMF files into one .atl ATL file, which serves as an atlas for our Addon Loader font.
+This tool will merge multiple .fnt BMF files into one .atl ATL file, which serves as an atlas for our Add-on Loader font.
 The ATL file is a combination of an RGBA PNG file with some additional information before the image data as header.
 
 It assumes the input texture files are RGBA. Anything else than that causes undefined behavior.

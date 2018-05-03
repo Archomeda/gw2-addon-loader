@@ -1,19 +1,36 @@
 #pragma once
 #include "../windows.h"
 #include <d3d9.h>
+#include <gw2addon-legacy.h>
 
 namespace loader {
     namespace hooks {
 
-        typedef HRESULT(PreCreateDevice_t)(IDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface);
-        typedef void(PostCreateDevice_t)(IDirect3D9* d3d9, IDirect3DDevice9* pDeviceInterface, HWND hFocusWindow);
-        typedef HRESULT(PreCreateDeviceEx_t)(IDirect3D9Ex* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface);
-        typedef void(PostCreateDeviceEx_t)(IDirect3D9Ex* d3d9, IDirect3DDevice9Ex* pDeviceInterface, HWND hFocusWindow);
+        class LoaderDirect3D9;
+        class LoaderDirect3D9Ex;
+        class LoaderDirect3DDevice9;
+        class LoaderDirect3DDevice9Ex;
+
+        typedef HRESULT(PreCreateDevice_t)(LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice9** ppReturnedDeviceInterface);
+        typedef void(PostCreateDevice_t)(LoaderDirect3D9* d3d9, LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow);
+        typedef HRESULT(PreCreateDeviceEx_t)(LoaderDirect3D9Ex* d3d9, UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface);
+        typedef void(PostCreateDeviceEx_t)(LoaderDirect3D9Ex* d3d9, LoaderDirect3DDevice9Ex* pDeviceInterface, HWND hFocusWindow);
 
         extern PreCreateDevice_t* PreCreateDeviceHook;
         extern PostCreateDevice_t* PostCreateDeviceHook;
         extern PreCreateDeviceEx_t* PreCreateDeviceExHook;
         extern PostCreateDeviceEx_t* PostCreateDeviceExHook;
+
+        IDirect3DDevice9* GW2PROXY_CALL GetCreatedDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters);
+        struct Direct3DDevice9Information {
+            UINT Adapter;
+            D3DDEVTYPE DeviceType;
+            HWND hFocusWindow;
+            DWORD BehaviorFlags;
+            D3DPRESENT_PARAMETERS PresentationParameters;
+            IDirect3DDevice9* device;
+        };
+        Direct3DDevice9Information GetGlobalDeviceInformation();
 
 
         class LoaderDirect3D9 : public IDirect3D9
@@ -21,6 +38,8 @@ namespace loader {
         public:
             LoaderDirect3D9(IDirect3D9* d3d9) : d3d9(d3d9) { }
             LoaderDirect3D9() { }
+
+            IDirect3D9* GetSystem() { return this->d3d9; }
 
             /*** IUnknown methods ***/
             STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
@@ -53,6 +72,8 @@ namespace loader {
             LoaderDirect3D9Ex(IDirect3D9Ex* d3d9) : d3d9(d3d9) { }
             LoaderDirect3D9Ex() { }
 
+            IDirect3D9Ex* GetSystem() { return this->d3d9; }
+           
             /*** IUnknown methods ***/
             STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
             STDMETHOD_(ULONG, AddRef)();

@@ -81,7 +81,7 @@ GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
     addon.name = "Fix Mouse Movement";
     addon.author = "Archomeda";
     addon.version = "1.0";
-    addon.description = "A small addon that fixes the mouse cursor movement while moving the camera by holding down the left or right mouse button.\nNormally the cursor still moves in the background, even though it's hidden. This causes the game to accept e.g. scroll wheel input in various GUI panels instead of using it for zooming. This addon fixes that.";
+    addon.description = "A small add-on that fixes the mouse cursor movement while moving the camera by holding down the left or right mouse button.\nNormally the cursor still moves in the background, even though it's hidden. This causes the game to accept e.g. scroll wheel input in various GUI panels instead of using it for zooming. This addon fixes that.";
     addon.homepage = "https://github.com/Archomeda/gw2-addon-loader";
     addon.HandleWndProc = &WndProc;
     return &addon;
