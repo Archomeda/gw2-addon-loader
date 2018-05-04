@@ -46,7 +46,7 @@ namespace loader {
 
         this->disclaimerAccepted = this->ini.GetBoolValue(L"general", L"disclaimer_accepted", false);
         this->settingsKeybind = this->ParseKeybindString(u8(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122"))); // Alt + Shift + F11
-        this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", true);
+        this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", false);
         this->showHiddenAddons = this->ini.GetBoolValue(L"addons", L"show_hidden_addons", false);
         this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
         this->lastUpdateCheck = timestamp(chrono::seconds(this->ini.GetLongValue(L"general", L"last_update_check", 0)));
