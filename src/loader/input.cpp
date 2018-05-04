@@ -12,7 +12,7 @@ namespace loader {
         "Shift", "Ctr", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
         "Space", "Page Up", "Page Down", "End", "Home", "Left", "Up", "Right", "Down", "Select", "", "", "Print Screen", "Insert", "Delete", "Help",
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "",
-        "", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "", "M", "N", "O",
+        "", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
         "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Left Win", "Right Win", "", "", "Sleep",
         "NUM 0", "NUM 1", "NUM 2", "NUM 3", "NUM 4", "NUM 5", "NUM 6", "NUM 7", "NUM 8", "NUM 9", "NUM *", "NUM +", "", "NUM -", "NUM .", "NUM /",
         "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16",
@@ -163,20 +163,20 @@ namespace loader {
             auto str = vkStrings[k];
             if (!str[0]) {
                 if (doneFirst) {
-                    ss << L" + ";
+                    ss << " + ";
                 }
 
                 // Empty key, try getting the actual translation from Windows
                 UINT code = MapVirtualKey(k, MAPVK_VK_TO_VSC);
                 if (code) {
-                    wchar_t chr[8];
-                    GetKeyNameText(code << 16, chr, 8);
+                    char chr[8];
+                    GetKeyNameTextA(code << 16, chr, 8);
                     ss << chr;
                 }
             }
             else {
                 if (doneFirst) {
-                    ss << L" + ";
+                    ss << " + ";
                 }
                 ss << str;
             }

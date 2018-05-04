@@ -466,31 +466,10 @@ Also, the author of this library is not responsible for the potential risks by u
         void SettingsWindow::RenderTabSettings() {
             ImGui::BeginChild("##Settings", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
             {
-                const set<uint_fast8_t> pressedKeys = GetPressedKeyboardKeys();
-                const string keysStr = GetReadableKeyString(this->windowKeybindEditActive ? pressedKeys : this->windowKeybind);
-                char keysBuff[64];
-                keysStr._Copy_s(keysBuff, sizeof(keysBuff), keysStr.length());
-                keysBuff[keysStr.length()] = 0;
                 ImGui::TextUnformatted("Add-on Loader Window keybind");
                 ImGui::SameLine();
-                ImGui::InputTextEx("##LoaderKeybind", keysBuff, sizeof(keysBuff), ImVec2(200, 0), ImGuiInputTextFlags_ReadOnly);
-                if (ImGui::IsItemActive()) {
-                    this->windowKeybindEditActive = true;
-                    if (DoKeysContainNonModifiers(pressedKeys)) {
-                        // Apply keybind
-                        ImGui::ClearActiveID();
-                        this->windowKeybind = pressedKeys;
-                        AppConfig.SetSettingsKeybind(pressedKeys);
-                        this->windowKeybindEditActive = false;
-                    }
-                }
-                else if (this->windowKeybindEditActive) {
-                    // Reset keybind
-                    this->windowKeybind = AppConfig.GetSettingsKeybind();
-                    this->windowKeybindEditActive = false;
-                }
-                else if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Click to activate the field and press a new keybind. Use Escape to cancel.");
+                if (elements::KeybindBox("##LoaderKeybind", this->windowKeybind, &this->windowKeybindEditActive, ImVec2(200, 0))) {
+                    AppConfig.SetSettingsKeybind(this->windowKeybind);
                 }
 
                 if (ImGui::Checkbox("Enable OBS compatibility mode", &this->obsCompatibilityMode)) {
