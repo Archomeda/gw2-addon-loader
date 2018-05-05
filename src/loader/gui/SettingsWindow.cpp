@@ -46,7 +46,7 @@ namespace loader {
                 }
                 this->PopTabStyle(i);
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Addons");
+                    ImGui::SetTooltip("Add-ons");
                 }
 
                 if (AppConfig.GetShowDebugFeatures()) {
