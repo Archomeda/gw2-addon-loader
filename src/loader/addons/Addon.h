@@ -102,6 +102,7 @@ namespace loader {
             AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforeGui;
             AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforePostProcessing;
             AddonFunc<void, IDirect3DDevice9*> DrawFrame;
+            AddonFunc<void, const char*> ApiKeyChange;
             AddonFunc<void, IDirect3DDevice9*> AdvPreBeginScene;
             AddonFunc<void, IDirect3DDevice9*> AdvPostBeginScene;
             AddonFunc<void, IDirect3DDevice9*> AdvPreEndScene;

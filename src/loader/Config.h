@@ -27,6 +27,7 @@ namespace loader {
         bool GetOBSCompatibilityMode() const { return this->obsCompatibilityMode; }
         bool GetShowHiddenAddons() const { return this->showHiddenAddons; }
         bool GetShowDebugFeatures() const { return this->showDebugFeatures; }
+        std::string GetApiKey() const { return this->apiKey; }
         timestamp GetLastUpdateCheck() const { return this->lastUpdateCheck; }
         std::string GetLatestVersion() const { return this->latestVersion; }
         std::string GetLatestVersionInfoUrl() const { return this->latestVersionInfoUrl; }
@@ -37,6 +38,7 @@ namespace loader {
         void SetOBSCompatibilityMode(bool compatibilityMode);
         void SetShowHiddenAddons(bool showHiddenAddons);
         void SetShowDebugFeatures(bool showDebugFeatures);
+        void SetApiKey(const std::string& apiKey);
         template<class Clock>
         void SetLastUpdateCheck(std::chrono::time_point<Clock, std::chrono::seconds> lastUpdate) {
             using namespace std::chrono;
@@ -75,6 +77,7 @@ namespace loader {
         bool obsCompatibilityMode = false;
         bool showHiddenAddons = false;
         bool showDebugFeatures = false;
+        std::string apiKey;
         timestamp lastUpdateCheck;
         std::string latestVersion;
         std::string latestVersionInfoUrl;

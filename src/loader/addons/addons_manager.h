@@ -17,6 +17,7 @@ namespace loader {
             std::vector<Addon*> DrawFrameBeforePostProcessing;
             std::vector<Addon*> DrawFrameBeforeGui;
             std::vector<Addon*> DrawFrame;
+            std::vector<Addon*> ApiKeyChange;
             std::vector<Addon*> AdvPreBeginScene;
             std::vector<Addon*> AdvPostBeginScene;
             std::vector<Addon*> AdvPreEndScene;
@@ -69,6 +70,7 @@ namespace loader {
         void DrawFrameBeforePostProcessing(IDirect3DDevice9* device);
         void DrawFrameBeforeGui(IDirect3DDevice9* device);
         void DrawFrame(IDirect3DDevice9* device);
+        void ApiKeyChange(const char* key);
         void AdvPreBeginScene(IDirect3DDevice9* device);
         void AdvPostBeginScene(IDirect3DDevice9* device);
         void AdvPreEndScene(IDirect3DDevice9* device);

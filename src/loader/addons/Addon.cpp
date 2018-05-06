@@ -82,6 +82,7 @@ namespace loader {
             if (this->DrawFrameBeforeGui) this->AddHook(ActiveAddonHooks.DrawFrameBeforeGui);
             if (this->DrawFrameBeforePostProcessing) this->AddHook(ActiveAddonHooks.DrawFrameBeforePostProcessing);
             if (this->DrawFrame) this->AddHook(ActiveAddonHooks.DrawFrame);
+            if (this->ApiKeyChange) this->AddHook(ActiveAddonHooks.ApiKeyChange);
             if (this->AdvPreBeginScene) this->AddHook(ActiveAddonHooks.AdvPreBeginScene);
             if (this->AdvPostBeginScene) this->AddHook(ActiveAddonHooks.AdvPostBeginScene);
             if (this->AdvPreEndScene) this->AddHook(ActiveAddonHooks.AdvPreEndScene);
@@ -112,6 +113,11 @@ namespace loader {
             if (this->AdvPostSetRenderState) this->AddHook(ActiveAddonHooks.AdvPostSetRenderState);
             if (this->AdvPreDrawIndexedPrimitive) this->AddHook(ActiveAddonHooks.AdvPreDrawIndexedPrimitive);
             if (this->AdvPostDrawIndexedPrimitive) this->AddHook(ActiveAddonHooks.AdvPostDrawIndexedPrimitive);
+
+            // Let the add-on know about our shared API key
+            if (this->ApiKeyChange) {
+                this->ApiKeyChange(!AppConfig.GetApiKey().empty() ? AppConfig.GetApiKey().c_str() : nullptr);
+            }
             
             return true;
         }

@@ -45,6 +45,7 @@ namespace loader {
             bool windowKeybindEditActive = false;
             std::set<uint_fast8_t> windowKeybind;
             bool showDebugFeatures;
+            char apiKey[73] = {};
         };
 
     }

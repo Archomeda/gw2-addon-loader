@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "log.h"
 #include "addons/Addon.h"
+#include "addons/addons_manager.h"
 #include "utils/encoding.h"
 #include "utils/file.h"
 
@@ -49,6 +50,7 @@ namespace loader {
         this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", false);
         this->showHiddenAddons = this->ini.GetBoolValue(L"addons", L"show_hidden_addons", false);
         this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
+        this->apiKey = u8(this->ini.GetValue(L"general", L"api_key", L""));
         this->lastUpdateCheck = timestamp(chrono::seconds(this->ini.GetLongValue(L"general", L"last_update_check", 0)));
         this->latestVersion = u8(this->ini.GetValue(L"general", L"latest_version", L""));
         this->latestVersionInfoUrl = u8(this->ini.GetValue(L"general", L"latest_version_info_url", L""));
@@ -114,6 +116,15 @@ namespace loader {
         this->showDebugFeatures = showDebugFeatures;
         this->ini.SetBoolValue(L"general", L"show_debug_features", showDebugFeatures);
         this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetApiKey(const string& apiKey) {
+        this->apiKey = apiKey;
+        this->ini.SetValue(L"general", L"api_key", u16(apiKey).c_str());
+        this->ini.SaveFile(this->configPath.c_str());
+
+        // Update the add-ons
+        addons::ApiKeyChange(!apiKey.empty() ? apiKey.c_str() : nullptr);
     }
 
     void Config::SetLatestVersion(const string& version) {

@@ -287,6 +287,19 @@ namespace loader {
             }
         }
 
+        void ApiKeyChange(const char* key) {
+            for (auto& addon : ActiveAddonHooks.ApiKeyChange) {
+                try {
+                    addon->ApiKeyChange(key);
+                }
+                catch (const exceptions::AddonException& ex) {
+                    ADDONS_LOG()->error("Failed to call ApiKeyChange in add-on {0}: {1}", addon->GetFileName(), ex.what());
+                    ADDONS_LOG()->error("Add-on will be disabled on next restart");
+                    AppConfig.SetAddonEnabled(addon, false);
+                }
+            }
+        }
+
         void AdvPreBeginScene(IDirect3DDevice9* device) {
             for (auto& addon : ActiveAddonHooks.AdvPreBeginScene) {
                 try {

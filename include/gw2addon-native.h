@@ -68,6 +68,13 @@ Can be used as an alternative to or together with keybinds.
 */
 typedef void(GW2ADDON_CALL GW2AddonOpenSettings_t)();
 
+/**
+Gets called whenever the shared API key changes, and immediately after loading.
+Parameter key is a null-terminated C-string. The pointer can be NULL if no API key is set.
+Copy the key to a local variable, because it will be cleaned up after this call.
+*/
+typedef void(GW2ADDON_CALL GW2AddonApiKeyChange_t)(const char* key);
+
 
 /****************************
   Advanced functions follow
@@ -414,6 +421,8 @@ typedef struct {
     GW2AddonAdvPostSetRenderState_t* AdvPostSetRenderState;
     GW2AddonAdvPreDrawIndexedPrimitive_t* AdvPreDrawIndexedPrimitive;
     GW2AddonAdvPostDrawIndexedPrimitive_t* AdvPostDrawIndexedPrimitive;
+
+    GW2AddonApiKeyChange_t* ApiKeyChange;
 } GW2AddonAPIV1;
 
 /**

@@ -34,6 +34,7 @@ namespace loader {
                 this->obsCompatibilityMode = AppConfig.GetOBSCompatibilityMode();
                 this->showHiddenAddons = AppConfig.GetShowHiddenAddons();
                 this->showDebugFeatures = AppConfig.GetShowDebugFeatures();
+                strcpy_s(this->apiKey, sizeof(this->apiKey), AppConfig.GetApiKey().c_str());
                 this->initializedState = true;
             }
 
@@ -487,6 +488,19 @@ OBS third-party overlays capture setting is disabled.)");
 
                 if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
                     AppConfig.SetShowDebugFeatures(this->showDebugFeatures);
+                }
+
+                ImGui::TextUnformatted("Shared API key");
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip(R"(You can create an API key at account.arena.net.
+The API key will be automatically shared to all active add-ons.)");
+                }
+                ImGui::SameLine();
+                if (ImGui::InputTextEx("##ApiKey", this->apiKey, sizeof(this->apiKey), ImVec2(500, 0), ImGuiInputTextFlags_CallbackCharFilter, [](ImGuiTextEditCallbackData *data) {
+                    ImWchar c = data->EventChar;
+                    return c >= 0x30 && c <= 0x39 || c >= 0x41 && c <= 0x46 || c == 0x2D ? 0 : 1;
+                })) {
+                    AppConfig.SetApiKey(this->apiKey);
                 }
             }
             ImGui::EndChild();

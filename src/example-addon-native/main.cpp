@@ -9,6 +9,7 @@ Make sure to read the comments there as well.
 // We include some general things here to support our example.
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <codecvt>
 #include <d3d9.h>
 #include <d3dx9core.h>
 #include <string>
@@ -22,6 +23,7 @@ using namespace std;
 // Just a few states
 HMODULE dllModule;
 bool loader = false;
+string apiKey;
 HWND focusWindow;
 IDirect3DDevice9* device;
 int frame = 0;
@@ -31,7 +33,12 @@ GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev);
 void GW2ADDON_CALL Draw(IDirect3DDevice9* pDev);
 void GW2ADDON_CALL DrawBeforePostProcessing(IDirect3DDevice9* pDev);
 void GW2ADDON_CALL DrawBeforeGui(IDirect3DDevice9* pDev);
+void GW2ADDON_CALL ApiKeyChange(const char* key);
 
+// A helper to convert a string to a wstring
+wstring u16(const string& str) {
+    return wstring_convert<codecvt_utf8<wchar_t>>().from_bytes(str);
+}
 
 //***************************************
 // The actual implementation starts here
@@ -52,6 +59,7 @@ GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
     addon.DrawFrameBeforePostProcessing = &DrawBeforePostProcessing;
     addon.DrawFrameBeforeGui = &DrawBeforeGui;
     addon.DrawFrame = &Draw;
+    addon.ApiKeyChange = &ApiKeyChange;
 
     HRSRC hIconResInfo = FindResource(dllModule, MAKEINTRESOURCE(IDB_PNGICON), L"PNG");
     HGLOBAL hIconRes = hIconResInfo ? LoadResource(dllModule, hIconResInfo) : NULL;
@@ -94,7 +102,7 @@ void GW2ADDON_CALL Draw(IDirect3DDevice9* pDev) {
     rect.right = rect.left + 400;
     rect.bottom = rect.top + 16;
     D3DXCreateFont(pDev, 14, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Consolas", &font);
-    wstring text = L"Example add-on - frame " + to_wstring(frame) + L" (loader = " + (loader ? L"true" : L"false") + L")";
+    wstring text = L"Example add-on - frame " + to_wstring(frame) + L" (loader = " + (loader ? L"true" : L"false") + L", apiKey = " + u16(apiKey) + L")";
     font->DrawText(0, text.c_str(), static_cast<INT>(text.length()), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 0));
     font->Release();
 }
@@ -135,6 +143,22 @@ void GW2ADDON_CALL DrawBeforeGui(IDirect3DDevice9* pDev) {
     wstring text = L"I am drawn behind the GUI";
     font->DrawText(0, text.c_str(), static_cast<INT>(text.length()), &rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 255, 255));
     font->Release();
+}
+
+void GW2ADDON_CALL ApiKeyChange(const char* key) {
+    // This is where we get the shared API key.
+    // You can do whatever you want with the key, but you have to check its validity yourself.
+    
+    if (key == nullptr) {
+        apiKey = "";
+        return;
+    }
+    
+    // Copy it because the parameter key will be cleaned up after this function.
+    // 73 should be the max length of an API key + the null terminator.
+    char k[73];
+    strcpy_s(k, sizeof(k), key);
+    apiKey = string(k);
 }
 
 /**

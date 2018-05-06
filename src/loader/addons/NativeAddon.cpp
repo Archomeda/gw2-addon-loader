@@ -90,6 +90,7 @@ namespace loader {
             this->DrawFrameBeforePostProcessing.Func = v1->DrawFrameBeforePostProcessing;
             this->DrawFrameBeforeGui.Func = v1->DrawFrameBeforeGui;
             this->DrawFrame.Func = v1->DrawFrame;
+            this->ApiKeyChange.Func = v1->ApiKeyChange;
             this->AdvPreBeginScene.Func = v1->AdvPreBeginScene;
             this->AdvPostBeginScene.Func = v1->AdvPostBeginScene;
             this->AdvPreEndScene.Func = v1->AdvPreEndScene;
@@ -194,13 +195,19 @@ namespace loader {
 
                 if (result) {
                     this->ChangeState(AddonState::ErroredState);
-                    ADDONS_LOG()->error("Could not load native add-on {0}: Addon returned {1}", this->GetFileName(), to_string(result));
+                    ADDONS_LOG()->error("Could not load native add-on {0}: Add-on returned {1}", this->GetFileName(), to_string(result));
                     return false;
                 }
             }
 
             bool result = Addon::Load();
             this->ChangeState(AddonState::LoadedState);
+
+            // Let the add-on know about our shared API key
+            if (this->ApiKeyChange) {
+                this->ApiKeyChange(!AppConfig.GetApiKey().empty() ? AppConfig.GetApiKey().c_str() : nullptr);
+            }
+
             return result;
         }
 
