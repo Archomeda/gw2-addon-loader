@@ -119,7 +119,7 @@ namespace loader {
 
 
         void SettingsWindow::BeginStyle() {
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(680, 380));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(600, 300));
         }
 
         void SettingsWindow::EndStyle() {
@@ -407,8 +407,8 @@ namespace loader {
 
                         // Settings button
                         if (addon->IsLoaded() && addon->SupportsSettings()) {
-                            ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 256 - (2 * style.ItemSpacing.x) - 8); // -8 for the resize grip
-                            if (ImGui::Button(ICON_MD_SETTINGS " Settings", ImVec2(80, 0))) {
+                            ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 192 - style.ItemSpacing.x - 8); // -8 for the resize grip
+                            if (ImGui::Button(ICON_MD_SETTINGS " Settings", ImVec2(96, 0))) {
                                 // Close ourselves and show the addon settings
                                 this->Close();
                                 addon->OpenSettings();
@@ -467,6 +467,7 @@ Also, the author of this library is not responsible for the potential risks by u
         void SettingsWindow::RenderTabSettings() {
             ImGui::BeginChild("##Settings", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
             {
+                ImGui::AlignTextToFramePadding(); 
                 ImGui::TextUnformatted("Add-on Loader Window keybind");
                 ImGui::SameLine();
                 if (elements::KeybindBox("##LoaderKeybind", this->windowKeybind, &this->windowKeybindEditActive, ImVec2(200, 0))) {
@@ -490,13 +491,14 @@ OBS third-party overlays capture setting is disabled.)");
                     AppConfig.SetShowDebugFeatures(this->showDebugFeatures);
                 }
 
+                ImGui::AlignTextToFramePadding(); 
                 ImGui::TextUnformatted("Shared API key");
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip(R"(You can create an API key at account.arena.net.
 The API key will be automatically shared to all active add-ons.)");
                 }
                 ImGui::SameLine();
-                if (ImGui::InputTextEx("##ApiKey", this->apiKey, sizeof(this->apiKey), ImVec2(500, 0), ImGuiInputTextFlags_CallbackCharFilter, [](ImGuiTextEditCallbackData *data) {
+                if (ImGui::InputTextEx("##ApiKey", this->apiKey, sizeof(this->apiKey), ImVec2(438, 0), ImGuiInputTextFlags_CallbackCharFilter, [](ImGuiTextEditCallbackData *data) {
                     ImWchar c = data->EventChar;
                     return c >= 0x30 && c <= 0x39 || c >= 0x41 && c <= 0x46 || c == 0x2D ? 0 : 1;
                 })) {
