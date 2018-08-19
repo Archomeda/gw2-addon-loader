@@ -29,6 +29,8 @@ namespace loader {
             const std::vector<float> GetMovingHistory() const { return this->movingHistory; }
             uint64_t GetCalls() const { return this->calls; }
 
+            const std::string FormatTimeMetric(float microseconds) const;
+
         private:
             AddonMetricType metricType;
 

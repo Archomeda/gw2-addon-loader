@@ -156,20 +156,20 @@ namespace loader {
             ImGui::TextUnformatted(label);
             ImGui::NextColumn();
             if (measure.GetLast() >= 500) {
-                ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), "%.0f µs", measure.GetLast());
+                ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), measure.FormatTimeMetric(measure.GetLast()).c_str());
             }
             else {
-                ImGui::Text("%.0f µs", measure.GetLast());
+                ImGui::TextUnformatted(measure.FormatTimeMetric(measure.GetLast()).c_str());
             }
             ImGui::NextColumn();
             if (measure.GetMovingAverage() >= 500) {
-                ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), "%.0f µs", measure.GetMovingAverage());
+                ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), measure.FormatTimeMetric(measure.GetMovingAverage()).c_str());
             }
             else {
-                ImGui::Text("%.0f µs", measure.GetMovingAverage());
+                ImGui::TextUnformatted(measure.FormatTimeMetric(measure.GetMovingAverage()).c_str());
             }
             ImGui::NextColumn();
-            ImGui::Text("%.0f µs", measure.GetOverallMaximum());
+            ImGui::TextUnformatted(measure.FormatTimeMetric(measure.GetOverallMaximum()).c_str());
             ImGui::NextColumn();
             if (calls) {
                 ImGui::Text("%llu", measure.GetCalls());
@@ -534,13 +534,13 @@ The API key will be automatically shared to all active add-ons.)");
             ImGui::Combo("##RenderType", &this->selectedStatsType, types.c_str());
 
             if (this->selectedStatsType == 0) {
-                ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryD3D9Processing[0], static_cast<int>(hooks::DurationHistoryD3D9Processing.size()), 0, "Frame render time (ms)", 0, 100, ImVec2(0, 200));
+                ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryD3D9Processing[0], static_cast<int>(hooks::DurationHistoryD3D9Processing.size()), 0, "Frame render time (ms)", 0, 67, ImVec2(0, 120));
 
                 ImDrawList* draw = ImGui::GetWindowDrawList();
                 ImGuiStyle& style = ImGui::GetStyle();
                 ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
-                float yFps30 = plotRect.Max.y - (plotRect.GetSize().y / 3.0f);
-                float yFps60 = plotRect.Max.y - (plotRect.GetSize().y / 6.0f);
+                float yFps30 = plotRect.Max.y - (plotRect.GetSize().y / 2.0f);
+                float yFps60 = plotRect.Max.y - (plotRect.GetSize().y / 4.0f);
                 draw->AddLine(ImVec2(plotRect.Min.x, yFps30), ImVec2(plotRect.Max.x, yFps30), IM_COL32(192, 144, 96, 255));
                 draw->AddText(ImVec2(plotRect.Min.x + 2, yFps30 + 1), IM_COL32(192, 144, 96, 255), "30fps");
                 draw->AddLine(ImVec2(plotRect.Min.x, yFps60), ImVec2(plotRect.Max.x, yFps60), IM_COL32(96, 192, 96, 255));
@@ -648,7 +648,8 @@ The API key will be automatically shared to all active add-ons.)");
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Load");
                     ImGui::NextColumn();
-                    ImGui::Text("%.0f µs", selectedAddon->GetMetricLoad().GetLast());
+                    const auto& metric = selectedAddon->GetMetricLoad();
+                    ImGui::TextUnformatted(metric.FormatTimeMetric(metric.GetLast()).c_str());
                     ImGui::NextColumn();
                     ImGui::NextColumn();
                     ImGui::NextColumn();

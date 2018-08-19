@@ -765,8 +765,11 @@ namespace loader {
             }
             this->ChangeState(AddonState::LoadingState);
 
+            this->GetMetricLoad().StartMeasurement();
+
             // Ensure a safe environment that we can restore to later on
             if (!this->ApplySafeEnv()) {
+                this->GetMetricLoad().EndMeasurement();
                 this->ChangeState(AddonState::ErroredState);
                 ADDONS_LOG()->error("Could not load legacy add-on {0}: Redirecting WinAPI functions failed", this->GetFileName());
                 return false;
@@ -779,12 +782,14 @@ namespace loader {
                 this->AddonCreate = reinterpret_cast<Direct3DCreate9_t*>(GetProcAddress(h, "Direct3DCreate9"));
             }
             else {
+                this->GetMetricLoad().EndMeasurement();
                 this->ChangeState(AddonState::ErroredState);
                 ADDONS_LOG()->error("Could not initialize load add-on {0}: Library handle is empty", this->GetFileName());
                 return false;
             }
 
             if (this->AddonCreate == NULL) {
+                this->GetMetricLoad().EndMeasurement();
                 this->ChangeState(AddonState::ErroredState);
                 ADDONS_LOG()->error("Could not initialize load add-on {0}: Add-on doesn't have a Direct3DCreate9 export", this->GetFileName());
                 FreeLibrary(this->addonHandle);
@@ -815,11 +820,13 @@ namespace loader {
             }
 
             if (this->GetState() == AddonState::ErroredState) {
+                this->GetMetricLoad().EndMeasurement();
                 return false;
             }
 
             ResetLegacyAddonChain();
 
+            this->GetMetricLoad().EndMeasurement();
             this->ChangeState(AddonState::LoadedState);
             return true;
         }

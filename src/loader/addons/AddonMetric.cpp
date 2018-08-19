@@ -39,5 +39,22 @@ namespace loader {
             }
         }
 
+        const string AddonMetric::FormatTimeMetric(float microseconds) const {
+            stringstream ss;
+            ss.imbue(locale(""));
+            if (microseconds < 1000) {
+                ss << fixed << setprecision(0) << microseconds << " µs";
+                return ss.str();
+            }
+            float milliseconds = microseconds / 1000;
+            if (milliseconds < 1000) {
+                ss << fixed << setprecision(2) << milliseconds << " ms";
+                return ss.str();
+            }
+            float seconds = milliseconds / 1000;
+            ss << fixed << setprecision(2) << seconds << " s";
+            return ss.str();
+        }
+
     }
 }
