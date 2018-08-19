@@ -256,11 +256,6 @@ namespace loader {
             bool result = Addon::Load();
             this->ChangeState(AddonState::LoadedState);
 
-            // Let the add-on know about our shared API key
-            if (this->ApiKeyChange) {
-                this->ApiKeyChange(!AppConfig.GetApiKey().empty() ? AppConfig.GetApiKey().c_str() : nullptr);
-            }
-
             return result;
         }
 
