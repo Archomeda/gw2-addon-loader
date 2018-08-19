@@ -40,7 +40,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     ProcessInputMessage(msg, wParam, lParam);
 
     // Pass event to ImGui
-    gui::imgui::ProcessWndProc(msg, wParam, lParam);
+    bool processed = gui::imgui::ProcessWndProc(msg, wParam, lParam);
     const ImGuiIO& io = ImGui::GetIO();
 
     // Only run these for key down/key up (incl. mouse buttons) events and when ImGui doesn't want to capture the keyboard
@@ -60,6 +60,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             return true;
         }
 #endif
+    }
+
+    if (processed) {
+        return true;
     }
 
     // Prevent game from receiving input if ImGui requests capture
@@ -96,13 +100,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         break;
     }
 
-    // Make sure to show a decent cursor when ImGui has mouse focus
-    if ((msg == WM_SETCURSOR || msg == WM_MOUSEMOVE) && io.WantCaptureMouse) {
-        if (gui::imgui::UpdateMouseCursor()) {
-            return true;
-        }
-    }
-
     // Process WndProc to add-ons
     if (addons::HandleWndProc(hWnd, msg, wParam, lParam)) {
         return true;
@@ -134,11 +131,10 @@ void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9
 
     // Set up ImGui
     LOADER_LOG()->info("Initializing ImGui");
+    gui::imgui::Initialize(dllModule, hFocusWindow, pDeviceInterface);
     ImGuiIO& imio = ImGui::GetIO();
     imGuiConfigFile = AppConfig.GetImGuiConfigPath();
     imio.IniFilename = imGuiConfigFile.c_str();
-
-    gui::imgui::Initialize(dllModule, hFocusWindow, pDeviceInterface);
 
     ImGuiStyle* style = &ImGui::GetStyle();
     style->WindowRounding = 2;
@@ -179,9 +175,6 @@ void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9
     colors[ImGuiCol_ResizeGrip] = ImVec4(0.29f, 0.23f, 0.18f, 0.98f);
     colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.58f, 0.50f, 0.43f, 0.98f);
     colors[ImGuiCol_ResizeGripActive] = ImVec4(0.44f, 0.36f, 0.30f, 0.98f);
-    colors[ImGuiCol_CloseButton] = ImVec4(0.29f, 0.23f, 0.18f, 0.98f);
-    colors[ImGuiCol_CloseButtonHovered] = ImVec4(0.58f, 0.50f, 0.43f, 0.98f);
-    colors[ImGuiCol_CloseButtonActive] = ImVec4(0.44f, 0.36f, 0.30f, 0.98f);
     colors[ImGuiCol_PlotLines] = ImVec4(1.00f, 1.00f, 0.94f, 1.00f);
     colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.84f, 0.77f, 0.71f, 0.98f);
     colors[ImGuiCol_PlotHistogram] = ImVec4(1.00f, 1.00f, 0.94f, 1.00f);
@@ -210,11 +203,11 @@ void PrePresent(IDirect3DDevice9* pDeviceInterface, CONST RECT* pSourceRect, CON
     gui::Render();
 #ifdef _DEBUG
     if (imGuiDemoOpen) {
-        ImGui::ShowTestWindow();
+        ImGui::ShowDemoWindow();
     }
 #endif
 
-    ImGui::Render();
+    gui::imgui::Render();
 }
 
 

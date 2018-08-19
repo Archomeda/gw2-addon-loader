@@ -13,7 +13,9 @@ namespace loader {
             bool Initialize(HMODULE hModule, HWND hWnd, IDirect3DDevice9* device);
             void Shutdown();
             void NewFrame();
+            void Render();
             bool UpdateMouseCursor();
+            void UpdateMousePos();
             bool CreateDeviceObjects();
             void InvalidateDeviceObjects();
 

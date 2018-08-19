@@ -20,6 +20,7 @@ namespace loader {
             static IDirect3DTexture9* imGuiFontTexture;
             static int imGuiVertexBufferSize = 5000;
             static int imGuiIndexBufferSize = 10000;
+            static ImGuiMouseCursor lastMouseCursor = ImGuiMouseCursor_::ImGuiMouseCursor_COUNT;
 
             static map<uint32_t, int> bitmapFontGlyphMapMain;
 
@@ -55,11 +56,6 @@ namespace loader {
             }
 
             void InitFonts() {
-                ImGuiIO& io = ImGui::GetIO();
-
-                // Use our custom atlas that takes a prerendered bitmap font
-                io.Fonts = &bitmapFontAtlas;
-
                 UINT atlasSize;
                 void* atlas = LoadEmbeddedResource(imGuiModule, MAKEINTRESOURCE(IDR_FONTATLAS), L"ATL", &atlasSize);
                 vector<ImFont*> fonts = bitmapFontAtlas.SetBitmapFontFromMemory(static_cast<unsigned char*>(atlas), static_cast<int>(atlasSize));
@@ -68,8 +64,6 @@ namespace loader {
             }
 
             bool CreateFonts() {
-                ImGuiIO& io = ImGui::GetIO();
-
                 bitmapFontAtlas.Build();
                 if (D3DXCreateTextureFromFileInMemory(imGuiDevice, bitmapFontAtlas.TextureFile, bitmapFontAtlas.TextureFileSize, &imGuiFontTexture) != D3D_OK) {
                     return false;
@@ -79,7 +73,7 @@ namespace loader {
             }
 
 
-            void ImGuiRenderDrawLists(ImDrawData* drawData) {
+            void ImGuiRenderDrawData(ImDrawData* drawData) {
                 // Avoid rendering when minimized
                 ImGuiIO& io = ImGui::GetIO();
                 if (io.DisplaySize.x <= 0 || io.DisplaySize.y < 0) {
@@ -102,7 +96,7 @@ namespace loader {
                         imGuiIndexBuffer->Release();
                         imGuiIndexBuffer = nullptr;
                     }
-                    imGuiIndexBufferSize = drawData->TotalIdxCount + 5000;
+                    imGuiIndexBufferSize = drawData->TotalIdxCount + 10000;
                     if (imGuiDevice->CreateIndexBuffer(imGuiIndexBufferSize * sizeof(ImDrawIdx), D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, sizeof(ImDrawIdx) == 2 ? D3DFMT_INDEX16 : D3DFMT_INDEX32, D3DPOOL_DEFAULT, &imGuiIndexBuffer, NULL) < 0) {
                         return;
                     }
@@ -114,7 +108,16 @@ namespace loader {
                     return;
                 }
 
-                // Copy and convert all vertices into a single contiguous buffer
+                // Back up the DX9 transform (DX9 documentation suggests that it is included in the StateBlock but it doesn't appear to)
+                D3DMATRIX lastWorld, lastView, lastProjection;
+                imGuiDevice->GetTransform(D3DTS_WORLD, &lastWorld);
+                imGuiDevice->GetTransform(D3DTS_VIEW, &lastView);
+                imGuiDevice->GetTransform(D3DTS_PROJECTION, &lastProjection);
+
+                // Copy and convert all vertices into a single contiguous buffer, convert colors to DX9 default format.
+                // FIXME-OPT: This is a waste of resource, the ideal is to use imconfig.h and
+                //  1) to avoid repacking colors:   #define IMGUI_USE_BGRA_PACKED_COLOR
+                //  2) to avoid repacking vertices: #define IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT struct ImDrawVert { ImVec2 pos; float z; ImU32 col; ImVec2 uv; }
                 ImGuiVertex* vertexDest;
                 ImDrawIdx* indexDest;
                 if (imGuiVertexBuffer->Lock(0, static_cast<UINT>(drawData->TotalVtxCount * sizeof(ImGuiVertex)), reinterpret_cast<void**>(&vertexDest), D3DLOCK_DISCARD) < 0) {
@@ -167,6 +170,7 @@ namespace loader {
                 imGuiDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
                 imGuiDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
                 imGuiDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, true);
+                imGuiDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
                 imGuiDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
                 imGuiDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
                 imGuiDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
@@ -177,12 +181,13 @@ namespace loader {
                 imGuiDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
                 // Set up orthographic projection matrix
+                // Our visible imgui space lies from draw_data->DisplayPps (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right).
                 // Being agnostic of whether <d3dx9.h> or <DirectXMath.h> can be used, we aren't relying on D3DXMatrixIdentity()/D3DXMatrixOrthoOffCenterLH() or DirectX::XMMatrixIdentity()/DirectX::XMMatrixOrthographicOffCenterLH()
                 {
-                    const float L = 0.5f;
-                    const float R = io.DisplaySize.x + 0.5f;
-                    const float T = 0.5f;
-                    const float B = io.DisplaySize.y + 0.5f;
+                    const float L = drawData->DisplayPos.x + 0.5f;
+                    const float R = drawData->DisplayPos.x + drawData->DisplaySize.x + 0.5f;
+                    const float T = drawData->DisplayPos.y + 0.5f;
+                    const float B = drawData->DisplayPos.y + drawData->DisplaySize.y + 0.5f;
                     D3DMATRIX identityMatrix = { { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 } };
                     D3DMATRIX projectionMatrix = {
                         2.0f / (R - L), 0.0f, 0.0f, 0.0f,
@@ -198,6 +203,7 @@ namespace loader {
                 // Render command lists
                 int vertexOffset = 0;
                 int indexOffset = 0;
+                ImVec2 pos = drawData->DisplayPos;
                 for (int n = 0; n < drawData->CmdListsCount; ++n) {
                     const ImDrawList* cmdList = drawData->CmdLists[n];
                     for (int i = 0; i < cmdList->CmdBuffer.Size; ++i) {
@@ -206,8 +212,9 @@ namespace loader {
                             cmd->UserCallback(cmdList, cmd);
                         }
                         else {
-                            const RECT r = { static_cast<LONG>(cmd->ClipRect.x), static_cast<LONG>(cmd->ClipRect.y), static_cast<LONG>(cmd->ClipRect.z), static_cast<LONG>(cmd->ClipRect.w) };
-                            imGuiDevice->SetTexture(0, static_cast<IDirect3DTexture9*>(cmd->TextureId));
+                            const RECT r = { static_cast<LONG>(cmd->ClipRect.x - pos.x), static_cast<LONG>(cmd->ClipRect.y - pos.y), static_cast<LONG>(cmd->ClipRect.z - pos.x), static_cast<LONG>(cmd->ClipRect.w - pos.y) };
+                            const LPDIRECT3DTEXTURE9 texture = static_cast<LPDIRECT3DTEXTURE9>(cmd->TextureId);
+                            imGuiDevice->SetTexture(0, texture);
                             imGuiDevice->SetScissorRect(&r);
                             imGuiDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexOffset, 0, static_cast<UINT>(cmdList->VtxBuffer.Size), indexOffset, cmd->ElemCount / 3);
                         }
@@ -215,6 +222,11 @@ namespace loader {
                     }
                     vertexOffset += cmdList->VtxBuffer.Size;
                 }
+
+                // Restore the DX9 transform
+                imGuiDevice->SetTransform(D3DTS_WORLD, &lastWorld);
+                imGuiDevice->SetTransform(D3DTS_VIEW, &lastView);
+                imGuiDevice->SetTransform(D3DTS_PROJECTION, &lastProjection);
 
                 // Restore the DX9 state
                 stateBlock->Apply();
@@ -264,13 +276,10 @@ namespace loader {
                     return false;
                 }
                 case WM_MOUSEWHEEL:
-                    io.MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? 1 : -1;
+                    io.MouseWheel += static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / static_cast<float>(WHEEL_DELTA);
                     return false;
-                case WM_MOUSEMOVE:
-                    if (msg == WM_MOUSEMOVE) {
-                        io.MousePos.x = static_cast<short>(lParam);
-                        io.MousePos.y = static_cast<short>(lParam >> 16);
-                    }
+                case WM_MOUSEHWHEEL:
+                    io.MouseWheelH = static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / static_cast<float>(WHEEL_DELTA);
                     return false;
                 case WM_KEYDOWN:
                 case WM_SYSKEYDOWN:
@@ -290,6 +299,10 @@ namespace loader {
                         io.AddInputCharacter(static_cast<unsigned short>(wParam));
                     }
                     return false;
+                case WM_SETCURSOR:
+                    return LOWORD(lParam) == HTCLIENT && UpdateMouseCursor();
+                case WM_MOUSEMOVE:
+                    return GetForegroundWindow() == imGuiWnd && UpdateMouseCursor();
                 }
 
                 return false;
@@ -308,6 +321,10 @@ namespace loader {
                     return false;
                 }
 
+                // Use our custom atlas that takes a prerendered bitmap font
+                ImGui::CreateContext(&bitmapFontAtlas);
+                InitFonts();
+
                 ImGuiIO& io = ImGui::GetIO();
                 io.KeyMap[ImGuiKey_Tab] = VK_TAB;
                 io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
@@ -318,8 +335,10 @@ namespace loader {
                 io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
                 io.KeyMap[ImGuiKey_Home] = VK_HOME;
                 io.KeyMap[ImGuiKey_End] = VK_END;
+                io.KeyMap[ImGuiKey_Insert] = VK_INSERT; 
                 io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
                 io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
+                io.KeyMap[ImGuiKey_Space] = VK_SPACE; 
                 io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
                 io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
                 io.KeyMap[ImGuiKey_A] = 'A';
@@ -329,10 +348,7 @@ namespace loader {
                 io.KeyMap[ImGuiKey_Y] = 'Y';
                 io.KeyMap[ImGuiKey_Z] = 'Z';
 
-                io.RenderDrawListsFn = &ImGuiRenderDrawLists;
                 io.ImeWindowHandle = hWnd;
-
-                InitFonts();
 
                 return true;
             }
@@ -347,7 +363,7 @@ namespace loader {
                     imGuiIndexBuffer = nullptr;
                 }
 
-                ImGui::Shutdown();
+                ImGui::DestroyContext();
                 imGuiDevice = nullptr;
                 imGuiWnd = NULL;
             }
@@ -364,7 +380,7 @@ namespace loader {
                 GetClientRect(imGuiWnd, &rect);
                 io.DisplaySize = ImVec2(static_cast<float>(rect.right - rect.left), static_cast<float>(rect.bottom - rect.top));
 
-                // Set up time step
+                // Setup time step
                 INT64 time;
                 QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&time));
                 io.DeltaTime = static_cast<float>(time - imGuiTime) / imGuiFrequency;
@@ -376,8 +392,23 @@ namespace loader {
                 io.KeyAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
                 io.KeySuper = false;
 
+                // Update OS mouse position
+                UpdateMousePos();
+
+                // Update OS mouse cursor with the cursor requested by imgui
+                ImGuiMouseCursor cursor = io.MouseDrawCursor ? ImGuiMouseCursor_::ImGuiMouseCursor_None : ImGui::GetMouseCursor();
+                if (lastMouseCursor != cursor) {
+                    lastMouseCursor = cursor;
+                    UpdateMouseCursor();
+                }
+
                 // Start the frame
                 ImGui::NewFrame();
+            }
+            
+            void Render() {
+                ImGui::Render();
+                ImGuiRenderDrawData(ImGui::GetDrawData());
             }
 
             bool UpdateMouseCursor() {
@@ -386,13 +417,13 @@ namespace loader {
                     return false;
                 }
 
-                ImGuiMouseCursor cursor = io.MouseDrawCursor ? ImGuiMouseCursor_::ImGuiMouseCursor_None : ImGui::GetMouseCursor();
-                if (cursor == ImGuiMouseCursor_::ImGuiMouseCursor_None) {
+                ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+                if (cursor == ImGuiMouseCursor_::ImGuiMouseCursor_None || io.MouseDrawCursor) {
                     // Hide OS mouse cursor if ImGui is drawing it or if it wants no cursor
                     SetCursor(NULL);
                 }
                 else {
-                    // Hardware cursor type
+                    // Show OS mouse cursor
                     LPTSTR winCursor = IDC_ARROW;
                     switch (cursor) {
                     case ImGuiMouseCursor_::ImGuiMouseCursor_Arrow:
@@ -401,7 +432,7 @@ namespace loader {
                     case ImGuiMouseCursor_::ImGuiMouseCursor_TextInput:
                         winCursor = IDC_IBEAM;
                         break;
-                    case ImGuiMouseCursor_::ImGuiMouseCursor_Move:
+                    case ImGuiMouseCursor_::ImGuiMouseCursor_ResizeAll:
                         winCursor = IDC_SIZEALL;
                         break;
                     case ImGuiMouseCursor_::ImGuiMouseCursor_ResizeEW:
@@ -416,10 +447,35 @@ namespace loader {
                     case ImGuiMouseCursor_::ImGuiMouseCursor_ResizeNWSE:
                         winCursor = IDC_SIZENWSE;
                         break;
+                    // Future ImGui update
+                    //case ImGuiMouseCursor_::ImGuiMouseCursor_Hand:
+                    //    winCursor = IDC_HAND;
+                    //    break;
                     }
                     SetCursor(LoadCursor(NULL, winCursor));
                 }
                 return true;
+            }
+
+            void UpdateMousePos() {
+                ImGuiIO& io = ImGui::GetIO();
+
+                // Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
+                if (io.WantSetMousePos)
+                {
+                    POINT pos = { (int)io.MousePos.x, (int)io.MousePos.y };
+                    ClientToScreen(imGuiWnd, &pos);
+                    SetCursorPos(pos.x, pos.y);
+                }
+
+                // Set mouse position
+                io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+                POINT pos;
+                if (GetForegroundWindow() == imGuiWnd && GetCursorPos(&pos)) {
+                    if (ScreenToClient(imGuiWnd, &pos)) {
+                        io.MousePos = ImVec2((float)pos.x, (float)pos.y);
+                    }
+                }
             }
 
             bool CreateDeviceObjects() {
