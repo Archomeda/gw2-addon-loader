@@ -85,22 +85,22 @@ namespace loader {
             }
 
             HMODULE WINAPI HookLoadLibraryExA(LPCSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
-                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryExA with flags 0x{1:X}", lpFileName != nullptr ? lpFileName : "NULL", dwFlags);
+                ADDONS_LOG()->info("Loading {0} by using LoadLibraryExA with flags 0x{1:X}", lpFileName != nullptr ? lpFileName : "NULL", dwFlags);
                 return HookLoadLibraryEx(lpFileName, hFile, dwFlags);
             }
 
             HMODULE WINAPI HookLoadLibraryExW(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
-                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryExW with flags 0x{1:X}", lpFileName != nullptr ? u8(lpFileName) : "NULL", dwFlags);
+                ADDONS_LOG()->info("Loading {0} by using LoadLibraryExW with flags 0x{1:X}", lpFileName != nullptr ? u8(lpFileName) : "NULL", dwFlags);
                 return HookLoadLibraryEx(u8(lpFileName), hFile, dwFlags);
             }
 
             HMODULE WINAPI HookLoadLibraryA(LPCSTR lpFileName) {
-                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryA", lpFileName != nullptr ? lpFileName : "NULL");
+                ADDONS_LOG()->info("Loading {0} by using LoadLibraryA", lpFileName != nullptr ? lpFileName : "NULL");
                 return HookLoadLibraryEx(lpFileName, NULL, 0);
             }
 
             HMODULE WINAPI HookLoadLibraryW(LPCWSTR lpFileName) {
-                ADDONS_LOG()->info("Attempting to load {0} by using LoadLibraryW", lpFileName != nullptr ? u8(lpFileName) : "NULL");
+                ADDONS_LOG()->info("Loading {0} by using LoadLibraryW", lpFileName != nullptr ? u8(lpFileName) : "NULL");
                 return HookLoadLibraryEx(u8(lpFileName), NULL, 0);
             }
 
@@ -123,35 +123,35 @@ namespace loader {
 
             BOOL WINAPI HookGetModuleHandleExA(DWORD dwFlags, LPCSTR lpFileName, HMODULE* phModule) {
                 if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0 || lpFileName == NULL) {
-                    ADDONS_LOG()->info("Attempting to get module at 0x{0:X} by using GetModuleHandleExA with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
+                    ADDONS_LOG()->info("Getting module at 0x{0:X} by using GetModuleHandleExA with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
                     return HookGetModuleHandleEx(dwFlags, reinterpret_cast<LPCVOID>(lpFileName), phModule);
                 }
                 else {
-                    ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleExA with flags 0x{1:X}", lpFileName, dwFlags);
+                    ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleExA with flags 0x{1:X}", lpFileName, dwFlags);
                     return HookGetModuleHandleEx(dwFlags, lpFileName, phModule);
                 }
             }
 
             BOOL WINAPI HookGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpFileName, HMODULE* phModule) {
                 if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0 || lpFileName == NULL) {
-                    ADDONS_LOG()->info("Attempting to get module at 0x{0:X} by using GetModuleHandleExW with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
+                    ADDONS_LOG()->info("Getting module at 0x{0:X} by using GetModuleHandleExW with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
                     return HookGetModuleHandleEx(dwFlags, reinterpret_cast<LPCVOID>(lpFileName), phModule);
                 }
                 else {
-                    ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleExW with flags 0x{1:X}", u8(lpFileName), dwFlags);
+                    ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleExW with flags 0x{1:X}", u8(lpFileName), dwFlags);
                     return HookGetModuleHandleEx(dwFlags, u8(lpFileName), phModule);
                 }
             }
 
             HMODULE WINAPI HookGetModuleHandleA(LPCSTR lpFileName) {
-                ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleA", lpFileName != NULL ? lpFileName : "NULL");
+                ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleA", lpFileName != NULL ? lpFileName : "NULL");
                 HMODULE phModule;
                 HookGetModuleHandleEx(0, lpFileName, &phModule);
                 return phModule;
             }
 
             HMODULE WINAPI HookGetModuleHandleW(LPCWSTR lpFileName) {
-                ADDONS_LOG()->info("Attempting to get module {0} by using GetModuleHandleW", lpFileName != NULL ? u8(lpFileName) : "NULL");
+                ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleW", lpFileName != NULL ? u8(lpFileName) : "NULL");
                 HMODULE phModule;
                 HookGetModuleHandleEx(0, lpFileName, &phModule);
                 return phModule;
@@ -171,7 +171,7 @@ namespace loader {
             // Case 1: Overwritten virtual table (ReShade, Gw2Hook)
             ProxyDirect3DDevice9 proxyDevice;
             this->proxyVtbl = GetD3DDevice9Vtbl(&proxyDevice);
-            ADDONS_LOG()->info("Stored state of legacy add-on {0} ProxyD3DDevice9 vtbl", this->GetFileName());
+            ADDONS_LOG()->info("Saved state of legacy add-on {0} ProxyD3DDevice9 vtbl", this->GetFileName());
 
             // Case 2: Overwritten CPU instructions
             //  a) minhook (GW2Mounts)
@@ -315,6 +315,14 @@ namespace loader {
             mhStatus = MH_QueueEnableHook(&GetModuleHandleExW);
             mhStatus = MH_ApplyQueued();
             ADDONS_LOG()->info("Redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
+            ADDONS_LOG()->debug(" - LoadLibraryA: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemLoadLibraryA), reinterpret_cast<size_t>(hooks::HookLoadLibraryA));
+            ADDONS_LOG()->debug(" - LoadLibraryW: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemLoadLibraryW), reinterpret_cast<size_t>(hooks::HookLoadLibraryW));
+            ADDONS_LOG()->debug(" - LoadLibraryExA: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemLoadLibraryExA), reinterpret_cast<size_t>(hooks::HookLoadLibraryExA));
+            ADDONS_LOG()->debug(" - LoadLibraryExW: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemLoadLibraryExW), reinterpret_cast<size_t>(hooks::HookLoadLibraryExW));
+            ADDONS_LOG()->debug(" - GetModuleHandleA: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemGetModuleHandleA), reinterpret_cast<size_t>(hooks::HookGetModuleHandleA));
+            ADDONS_LOG()->debug(" - GetModuleHandleW: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemGetModuleHandleW), reinterpret_cast<size_t>(hooks::HookGetModuleHandleW));
+            ADDONS_LOG()->debug(" - GetModuleHandleExA: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemGetModuleHandleExA), reinterpret_cast<size_t>(hooks::HookGetModuleHandleExA));
+            ADDONS_LOG()->debug(" - GetModuleHandleExW: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemGetModuleHandleExW), reinterpret_cast<size_t>(hooks::HookGetModuleHandleExW));
             return mhStatus == MH_OK;
         }
 
@@ -346,11 +354,11 @@ namespace loader {
             hooks::SystemGetModuleHandleW = nullptr;
             hooks::SystemGetModuleHandleExA = nullptr;
             hooks::SystemGetModuleHandleExW = nullptr;
-            ADDONS_LOG()->info("Reverted redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
+            ADDONS_LOG()->info("Reverted WinAPI functions redirects for legacy add-on {0}", this->GetFileName());
 
             // Make sure to restore the states from earlier, check ApplySafeEnv
             // This is only needed whenever the addon returns the same pointer as the proxied D3D9 device
-            // (in add-on terms: the proxied D3D9 device is what the addon believes what is the system D3D9 device,
+            // (in add-on terms: the proxied D3D9 device is what the addon believes that is the system D3D9 device,
             // the add-on device is what the add-on wraps or changed the system D3D9 and returns to the game)
             if (this->AddonD3DDevice9 == this->ProxyD3DDevice9) {
                 ADDONS_LOG()->info("Detected overwrites in ProxyD3DDevice9 object for legacy add-on {0}", this->GetFileName());
@@ -482,6 +490,121 @@ namespace loader {
                 this->CopyPointerIfNotEqual(&newAddonDev->FunctionAddresses.DrawTriPatch, vtbl.DrawTriPatch, this->proxyVtbl.DrawTriPatch);
                 this->CopyPointerIfNotEqual(&newAddonDev->FunctionAddresses.DeletePatch, vtbl.DeletePatch, this->proxyVtbl.DeletePatch);
                 this->CopyPointerIfNotEqual(&newAddonDev->FunctionAddresses.CreateQuery, vtbl.CreateQuery, this->proxyVtbl.CreateQuery);
+                ADDONS_LOG()->debug(" - QueryInterface: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.QueryInterface), reinterpret_cast<size_t>(vtbl.QueryInterface));
+                ADDONS_LOG()->debug(" - AddRef: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.AddRef), reinterpret_cast<size_t>(vtbl.AddRef));
+                ADDONS_LOG()->debug(" - Release: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.Release), reinterpret_cast<size_t>(vtbl.Release));
+                ADDONS_LOG()->debug(" - TestCooperativeLevel: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.TestCooperativeLevel), reinterpret_cast<size_t>(vtbl.TestCooperativeLevel));
+                ADDONS_LOG()->debug(" - GetAvailableTextureMem: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetAvailableTextureMem), reinterpret_cast<size_t>(vtbl.GetAvailableTextureMem));
+                ADDONS_LOG()->debug(" - EvictManagedResources: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.EvictManagedResources), reinterpret_cast<size_t>(vtbl.EvictManagedResources));
+                ADDONS_LOG()->debug(" - GetDirect3D: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetDirect3D), reinterpret_cast<size_t>(vtbl.GetDirect3D));
+                ADDONS_LOG()->debug(" - GetDeviceCaps: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetDeviceCaps), reinterpret_cast<size_t>(vtbl.GetDeviceCaps));
+                ADDONS_LOG()->debug(" - GetDisplayMode: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetDisplayMode), reinterpret_cast<size_t>(vtbl.GetDisplayMode));
+                ADDONS_LOG()->debug(" - GetCreationParameters: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetCreationParameters), reinterpret_cast<size_t>(vtbl.GetCreationParameters));
+                ADDONS_LOG()->debug(" - SetCursorProperties: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetCursorProperties), reinterpret_cast<size_t>(vtbl.SetCursorProperties));
+                ADDONS_LOG()->debug(" - SetCursorPosition: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetCursorPosition), reinterpret_cast<size_t>(vtbl.SetCursorPosition));
+                ADDONS_LOG()->debug(" - ShowCursor: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.ShowCursor), reinterpret_cast<size_t>(vtbl.ShowCursor));
+                ADDONS_LOG()->debug(" - CreateAdditionalSwapChain: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateAdditionalSwapChain), reinterpret_cast<size_t>(vtbl.CreateAdditionalSwapChain));
+                ADDONS_LOG()->debug(" - GetSwapChain: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetSwapChain), reinterpret_cast<size_t>(vtbl.GetSwapChain));
+                ADDONS_LOG()->debug(" - GetNumberOfSwapChains: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetNumberOfSwapChains), reinterpret_cast<size_t>(vtbl.GetNumberOfSwapChains));
+                ADDONS_LOG()->debug(" - Reset: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.Reset), reinterpret_cast<size_t>(vtbl.Reset));
+                ADDONS_LOG()->debug(" - Present: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.Present), reinterpret_cast<size_t>(vtbl.Present));
+                ADDONS_LOG()->debug(" - GetBackBuffer: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetBackBuffer), reinterpret_cast<size_t>(vtbl.GetBackBuffer));
+                ADDONS_LOG()->debug(" - GetRasterStatus: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetRasterStatus), reinterpret_cast<size_t>(vtbl.GetRasterStatus));
+                ADDONS_LOG()->debug(" - SetDialogBoxMode: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetDialogBoxMode), reinterpret_cast<size_t>(vtbl.SetDialogBoxMode));
+                ADDONS_LOG()->debug(" - SetGammaRamp: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetGammaRamp), reinterpret_cast<size_t>(vtbl.SetGammaRamp));
+                ADDONS_LOG()->debug(" - GetGammaRamp: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetGammaRamp), reinterpret_cast<size_t>(vtbl.GetGammaRamp));
+                ADDONS_LOG()->debug(" - CreateTexture: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateTexture), reinterpret_cast<size_t>(vtbl.CreateTexture));
+                ADDONS_LOG()->debug(" - CreateVolumeTexture: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateVolumeTexture), reinterpret_cast<size_t>(vtbl.CreateVolumeTexture));
+                ADDONS_LOG()->debug(" - CreateCubeTexture: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateCubeTexture), reinterpret_cast<size_t>(vtbl.CreateCubeTexture));
+                ADDONS_LOG()->debug(" - CreateVertexBuffer: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateVertexBuffer), reinterpret_cast<size_t>(vtbl.CreateVertexBuffer));
+                ADDONS_LOG()->debug(" - CreateIndexBuffer: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateIndexBuffer), reinterpret_cast<size_t>(vtbl.CreateIndexBuffer));
+                ADDONS_LOG()->debug(" - CreateRenderTarget: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateRenderTarget), reinterpret_cast<size_t>(vtbl.CreateRenderTarget));
+                ADDONS_LOG()->debug(" - CreateDepthStencilSurface: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateDepthStencilSurface), reinterpret_cast<size_t>(vtbl.CreateDepthStencilSurface));
+                ADDONS_LOG()->debug(" - UpdateSurface: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.UpdateSurface), reinterpret_cast<size_t>(vtbl.UpdateSurface));
+                ADDONS_LOG()->debug(" - UpdateTexture: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.UpdateTexture), reinterpret_cast<size_t>(vtbl.UpdateTexture));
+                ADDONS_LOG()->debug(" - GetRenderTargetData: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetRenderTargetData), reinterpret_cast<size_t>(vtbl.GetRenderTargetData));
+                ADDONS_LOG()->debug(" - GetFrontBufferData: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetFrontBufferData), reinterpret_cast<size_t>(vtbl.GetFrontBufferData));
+                ADDONS_LOG()->debug(" - StretchRect: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.StretchRect), reinterpret_cast<size_t>(vtbl.StretchRect));
+                ADDONS_LOG()->debug(" - ColorFill: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.ColorFill), reinterpret_cast<size_t>(vtbl.ColorFill));
+                ADDONS_LOG()->debug(" - CreateOffscreenPlainSurface: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateOffscreenPlainSurface), reinterpret_cast<size_t>(vtbl.CreateOffscreenPlainSurface));
+                ADDONS_LOG()->debug(" - SetRenderTarget: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetRenderTarget), reinterpret_cast<size_t>(vtbl.SetRenderTarget));
+                ADDONS_LOG()->debug(" - GetRenderTarget: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetRenderTarget), reinterpret_cast<size_t>(vtbl.GetRenderTarget));
+                ADDONS_LOG()->debug(" - SetDepthStencilSurface: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetDepthStencilSurface), reinterpret_cast<size_t>(vtbl.SetDepthStencilSurface));
+                ADDONS_LOG()->debug(" - GetDepthStencilSurface: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetDepthStencilSurface), reinterpret_cast<size_t>(vtbl.GetDepthStencilSurface));
+                ADDONS_LOG()->debug(" - BeginScene: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.BeginScene), reinterpret_cast<size_t>(vtbl.BeginScene));
+                ADDONS_LOG()->debug(" - EndScene: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.EndScene), reinterpret_cast<size_t>(vtbl.EndScene));
+                ADDONS_LOG()->debug(" - Clear: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.Clear), reinterpret_cast<size_t>(vtbl.Clear));
+                ADDONS_LOG()->debug(" - SetTransform: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetTransform), reinterpret_cast<size_t>(vtbl.SetTransform));
+                ADDONS_LOG()->debug(" - GetTransform: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetTransform), reinterpret_cast<size_t>(vtbl.GetTransform));
+                ADDONS_LOG()->debug(" - MultiplyTransform: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.MultiplyTransform), reinterpret_cast<size_t>(vtbl.MultiplyTransform));
+                ADDONS_LOG()->debug(" - SetViewport: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetViewport), reinterpret_cast<size_t>(vtbl.SetViewport));
+                ADDONS_LOG()->debug(" - GetViewport: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetViewport), reinterpret_cast<size_t>(vtbl.GetViewport));
+                ADDONS_LOG()->debug(" - SetMaterial: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetMaterial), reinterpret_cast<size_t>(vtbl.SetMaterial));
+                ADDONS_LOG()->debug(" - GetMaterial: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetMaterial), reinterpret_cast<size_t>(vtbl.GetMaterial));
+                ADDONS_LOG()->debug(" - SetLight: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetLight), reinterpret_cast<size_t>(vtbl.SetLight));
+                ADDONS_LOG()->debug(" - GetLight: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetLight), reinterpret_cast<size_t>(vtbl.GetLight));
+                ADDONS_LOG()->debug(" - SetClipPlane: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetClipPlane), reinterpret_cast<size_t>(vtbl.SetClipPlane));
+                ADDONS_LOG()->debug(" - GetClipPlane: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetClipPlane), reinterpret_cast<size_t>(vtbl.GetClipPlane));
+                ADDONS_LOG()->debug(" - SetRenderState: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetRenderState), reinterpret_cast<size_t>(vtbl.SetRenderState));
+                ADDONS_LOG()->debug(" - GetRenderState: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetRenderState), reinterpret_cast<size_t>(vtbl.GetRenderState));
+                ADDONS_LOG()->debug(" - CreateStateBlock: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateStateBlock), reinterpret_cast<size_t>(vtbl.CreateStateBlock));
+                ADDONS_LOG()->debug(" - BeginStateBlock: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.BeginStateBlock), reinterpret_cast<size_t>(vtbl.BeginStateBlock));
+                ADDONS_LOG()->debug(" - EndStateBlock: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.EndStateBlock), reinterpret_cast<size_t>(vtbl.EndStateBlock));
+                ADDONS_LOG()->debug(" - SetClipStatus: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetClipStatus), reinterpret_cast<size_t>(vtbl.SetClipStatus));
+                ADDONS_LOG()->debug(" - GetClipStatus: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetClipStatus), reinterpret_cast<size_t>(vtbl.GetClipStatus));
+                ADDONS_LOG()->debug(" - GetTexture: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetTexture), reinterpret_cast<size_t>(vtbl.GetTexture));
+                ADDONS_LOG()->debug(" - SetTexture: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetTexture), reinterpret_cast<size_t>(vtbl.SetTexture));
+                ADDONS_LOG()->debug(" - GetTextureStageState: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetTextureStageState), reinterpret_cast<size_t>(vtbl.GetTextureStageState));
+                ADDONS_LOG()->debug(" - SetTextureStageState: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetTextureStageState), reinterpret_cast<size_t>(vtbl.SetTextureStageState));
+                ADDONS_LOG()->debug(" - GetSamplerState: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetSamplerState), reinterpret_cast<size_t>(vtbl.GetSamplerState));
+                ADDONS_LOG()->debug(" - SetSamplerState: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetSamplerState), reinterpret_cast<size_t>(vtbl.SetSamplerState));
+                ADDONS_LOG()->debug(" - ValidateDevice: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.ValidateDevice), reinterpret_cast<size_t>(vtbl.ValidateDevice));
+                ADDONS_LOG()->debug(" - SetPaletteEntries: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetPaletteEntries), reinterpret_cast<size_t>(vtbl.SetPaletteEntries));
+                ADDONS_LOG()->debug(" - GetPaletteEntries: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetPaletteEntries), reinterpret_cast<size_t>(vtbl.GetPaletteEntries));
+                ADDONS_LOG()->debug(" - SetCurrentTexturePalette: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetCurrentTexturePalette), reinterpret_cast<size_t>(vtbl.SetCurrentTexturePalette));
+                ADDONS_LOG()->debug(" - GetCurrentTexturePalette: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetCurrentTexturePalette), reinterpret_cast<size_t>(vtbl.GetCurrentTexturePalette));
+                ADDONS_LOG()->debug(" - SetScissorRect: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetScissorRect), reinterpret_cast<size_t>(vtbl.SetScissorRect));
+                ADDONS_LOG()->debug(" - GetScissorRect: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetScissorRect), reinterpret_cast<size_t>(vtbl.GetScissorRect));
+                ADDONS_LOG()->debug(" - SetSoftwareVertexProcessing: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetSoftwareVertexProcessing), reinterpret_cast<size_t>(vtbl.SetSoftwareVertexProcessing));
+                ADDONS_LOG()->debug(" - GetSoftwareVertexProcessing: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetSoftwareVertexProcessing), reinterpret_cast<size_t>(vtbl.GetSoftwareVertexProcessing));
+                ADDONS_LOG()->debug(" - SetNPatchMode: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetNPatchMode), reinterpret_cast<size_t>(vtbl.SetNPatchMode));
+                ADDONS_LOG()->debug(" - GetNPatchMode: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetNPatchMode), reinterpret_cast<size_t>(vtbl.GetNPatchMode));
+                ADDONS_LOG()->debug(" - DrawPrimitive: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.DrawPrimitive), reinterpret_cast<size_t>(vtbl.DrawPrimitive));
+                ADDONS_LOG()->debug(" - DrawIndexedPrimitive: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.DrawIndexedPrimitive), reinterpret_cast<size_t>(vtbl.DrawIndexedPrimitive));
+                ADDONS_LOG()->debug(" - DrawPrimitiveUP: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.DrawPrimitiveUP), reinterpret_cast<size_t>(vtbl.DrawPrimitiveUP));
+                ADDONS_LOG()->debug(" - DrawIndexedPrimitiveUP: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.DrawIndexedPrimitiveUP), reinterpret_cast<size_t>(vtbl.DrawIndexedPrimitiveUP));
+                ADDONS_LOG()->debug(" - ProcessVertices: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.ProcessVertices), reinterpret_cast<size_t>(vtbl.ProcessVertices));
+                ADDONS_LOG()->debug(" - CreateVertexDeclaration: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateVertexDeclaration), reinterpret_cast<size_t>(vtbl.CreateVertexDeclaration));
+                ADDONS_LOG()->debug(" - SetVertexDeclaration: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetVertexDeclaration), reinterpret_cast<size_t>(vtbl.SetVertexDeclaration));
+                ADDONS_LOG()->debug(" - GetVertexDeclaration: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetVertexDeclaration), reinterpret_cast<size_t>(vtbl.GetVertexDeclaration));
+                ADDONS_LOG()->debug(" - SetFVF: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetFVF), reinterpret_cast<size_t>(vtbl.SetFVF));
+                ADDONS_LOG()->debug(" - GetFVF: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetFVF), reinterpret_cast<size_t>(vtbl.GetFVF));
+                ADDONS_LOG()->debug(" - CreateVertexShader: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateVertexShader), reinterpret_cast<size_t>(vtbl.CreateVertexShader));
+                ADDONS_LOG()->debug(" - SetVertexShader: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetVertexShader), reinterpret_cast<size_t>(vtbl.SetVertexShader));
+                ADDONS_LOG()->debug(" - GetVertexShader: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetVertexShader), reinterpret_cast<size_t>(vtbl.GetVertexShader));
+                ADDONS_LOG()->debug(" - SetVertexShaderConstantF: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetVertexShaderConstantF), reinterpret_cast<size_t>(vtbl.SetVertexShaderConstantF));
+                ADDONS_LOG()->debug(" - GetVertexShaderConstantF: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetVertexShaderConstantF), reinterpret_cast<size_t>(vtbl.GetVertexShaderConstantF));
+                ADDONS_LOG()->debug(" - SetVertexShaderConstantI: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetVertexShaderConstantI), reinterpret_cast<size_t>(vtbl.SetVertexShaderConstantI));
+                ADDONS_LOG()->debug(" - GetVertexShaderConstantI: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetVertexShaderConstantI), reinterpret_cast<size_t>(vtbl.GetVertexShaderConstantI));
+                ADDONS_LOG()->debug(" - SetVertexShaderConstantB: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetVertexShaderConstantB), reinterpret_cast<size_t>(vtbl.SetVertexShaderConstantB));
+                ADDONS_LOG()->debug(" - GetVertexShaderConstantB: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetVertexShaderConstantB), reinterpret_cast<size_t>(vtbl.GetVertexShaderConstantB));
+                ADDONS_LOG()->debug(" - SetStreamSource: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetStreamSource), reinterpret_cast<size_t>(vtbl.SetStreamSource));
+                ADDONS_LOG()->debug(" - GetStreamSource: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetStreamSource), reinterpret_cast<size_t>(vtbl.GetStreamSource));
+                ADDONS_LOG()->debug(" - SetIndices: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetIndices), reinterpret_cast<size_t>(vtbl.SetIndices));
+                ADDONS_LOG()->debug(" - GetIndices: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetIndices), reinterpret_cast<size_t>(vtbl.GetIndices));
+                ADDONS_LOG()->debug(" - CreatePixelShader: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreatePixelShader), reinterpret_cast<size_t>(vtbl.CreatePixelShader));
+                ADDONS_LOG()->debug(" - SetPixelShader: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetPixelShader), reinterpret_cast<size_t>(vtbl.SetPixelShader));
+                ADDONS_LOG()->debug(" - GetPixelShader: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetPixelShader), reinterpret_cast<size_t>(vtbl.GetPixelShader));
+                ADDONS_LOG()->debug(" - SetPixelShaderConstantF: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetPixelShaderConstantF), reinterpret_cast<size_t>(vtbl.SetPixelShaderConstantF));
+                ADDONS_LOG()->debug(" - GetPixelShaderConstantF: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetPixelShaderConstantF), reinterpret_cast<size_t>(vtbl.GetPixelShaderConstantF));
+                ADDONS_LOG()->debug(" - SetPixelShaderConstantI: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetPixelShaderConstantI), reinterpret_cast<size_t>(vtbl.SetPixelShaderConstantI));
+                ADDONS_LOG()->debug(" - GetPixelShaderConstantI: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetPixelShaderConstantI), reinterpret_cast<size_t>(vtbl.GetPixelShaderConstantI));
+                ADDONS_LOG()->debug(" - SetPixelShaderConstantB: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.SetPixelShaderConstantB), reinterpret_cast<size_t>(vtbl.SetPixelShaderConstantB));
+                ADDONS_LOG()->debug(" - GetPixelShaderConstantB: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.GetPixelShaderConstantB), reinterpret_cast<size_t>(vtbl.GetPixelShaderConstantB));
+                ADDONS_LOG()->debug(" - DrawRectPatch: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.DrawRectPatch), reinterpret_cast<size_t>(vtbl.DrawRectPatch));
+                ADDONS_LOG()->debug(" - DrawTriPatch: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.DrawTriPatch), reinterpret_cast<size_t>(vtbl.DrawTriPatch));
+                ADDONS_LOG()->debug(" - DeletePatch: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.DeletePatch), reinterpret_cast<size_t>(vtbl.DeletePatch));
+                ADDONS_LOG()->debug(" - CreateQuery: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(this->proxyVtbl.CreateQuery), reinterpret_cast<size_t>(vtbl.CreateQuery));
 
                 // Case 2: Overwritten CPU instructions
                 //  a) minhook (GW2Mounts)

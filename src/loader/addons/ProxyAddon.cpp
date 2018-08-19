@@ -35,15 +35,18 @@ namespace loader {
 
             this->ProxyInitialize = reinterpret_cast<ProxyInitialize_t*>(GetProcAddress(h, GW2PROXY_DLL_Initialize));
             this->ProxyRelease = reinterpret_cast<ProxyRelease_t*>(GetProcAddress(h, GW2PROXY_DLL_Release));
+            ADDONS_LOG()->debug("Proxy add-on {0}:", this->GetFileName());
+            ADDONS_LOG()->debug(" - " GW2PROXY_DLL_Initialize ": 0x{0:X}", reinterpret_cast<size_t>(this->ProxyInitialize));
+            ADDONS_LOG()->debug(" - " GW2PROXY_DLL_Release ": 0x{0:X}", reinterpret_cast<size_t>(this->ProxyRelease));
 
             if (this->ProxyInitialize == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                ADDONS_LOG()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid ProxyInitialize export", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid " GW2PROXY_DLL_Initialize " export", this->GetFileName());
                 return false;
             }
             if (this->ProxyRelease == nullptr) {
                 this->ChangeState(AddonState::ErroredState);
-                ADDONS_LOG()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid ProxyRelease export", this->GetFileName());
+                ADDONS_LOG()->error("Could not initialize proxy add-on {0}: Addon doesn't contain a valid " GW2PROXY_DLL_Release " export", this->GetFileName());
                 return false;
             }
 

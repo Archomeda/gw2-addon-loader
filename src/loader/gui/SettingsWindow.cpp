@@ -138,7 +138,7 @@ namespace loader {
             while (clipper.Step()) {
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                     const bool item_selected = (i == *current_item);
-                    auto addon = addons.at(i);
+                    auto addon = addons[i];
 
                     ImGui::PushID(i);
                     if (elements::AddonListItem(addon, item_selected, ImVec2(0, listItemHeight))) {

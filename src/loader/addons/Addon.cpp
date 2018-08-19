@@ -59,7 +59,7 @@ namespace loader {
             unique_ptr<Addon> addon = make_unique<Addon>(filePath);
             HMODULE hAddon = LoadLibraryEx(filePath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
 
-            if (GetProcAddress(hAddon, "ProxyInitialize") != nullptr) {
+            if (GetProcAddress(hAddon, GW2PROXY_DLL_Initialize) != nullptr) {
                 // Our add-on is our loader proxy
                 addon = make_unique<ProxyAddon>(filePath);
             }
@@ -190,7 +190,7 @@ namespace loader {
         void Addon::CheckUpdate(const function<UpdateCheckCallback_t>& callback) {
             shared_ptr<Updater> updater = this->GetUpdater();
             if (updater != nullptr) {
-                // Force updater to be capsured, otherwise it goes out of scope and this lambda expression will never get called
+                // Force updater to be captured, otherwise it goes out of scope and this lambda expression will never get called
                 updater->SetCheckCallback([updater, callback](const Updater* const updater, VersionInfo version) {
                     callback(updater, version);
                 });
