@@ -98,11 +98,14 @@ namespace loader {
             hooks::LoaderDirect3DDevice9* D3DDevice9 = nullptr;
             HWND FocusWindow = NULL;
 
+            AddonFunc<void, const char*> ApiKeyChange;
+
             AddonFunc<bool, HWND, UINT, WPARAM, LPARAM> HandleWndProc;
+
+            bool HasRenderingHooks() const { return this->hasRenderingHooks; }
             AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforeGui;
             AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforePostProcessing;
             AddonFunc<void, IDirect3DDevice9*> DrawFrame;
-            AddonFunc<void, const char*> ApiKeyChange;
             AddonFunc<void, IDirect3DDevice9*> AdvPreBeginScene;
             AddonFunc<void, IDirect3DDevice9*> AdvPostBeginScene;
             AddonFunc<void, IDirect3DDevice9*> AdvPreEndScene;
@@ -139,6 +142,8 @@ namespace loader {
 
             void ChangeState(AddonState state) { this->state = state; }
 
+            void UpdateHasRenderingHooks();
+
         private:
             void InitializeAddonFuncs();
 
@@ -149,6 +154,7 @@ namespace loader {
             std::experimental::filesystem::path filePath;
             std::string fileName;
 
+            bool hasRenderingHooks = false;
             AddonMetric metricLoad = AddonMetric(AddonMetricType::SingleMetric);
             AddonMetric metricOverall;
         };

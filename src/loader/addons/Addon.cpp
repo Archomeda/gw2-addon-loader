@@ -114,6 +114,8 @@ namespace loader {
             if (this->AdvPreDrawIndexedPrimitive) this->AddHook(ActiveAddonHooks.AdvPreDrawIndexedPrimitive);
             if (this->AdvPostDrawIndexedPrimitive) this->AddHook(ActiveAddonHooks.AdvPostDrawIndexedPrimitive);
 
+            this->UpdateHasRenderingHooks();
+
             // Let the add-on know about our shared API key
             if (this->ApiKeyChange) {
                 this->ApiKeyChange(!AppConfig.GetApiKey().empty() ? AppConfig.GetApiKey().c_str() : nullptr);
@@ -327,5 +329,26 @@ namespace loader {
             addons.erase(remove(addons.begin(), addons.end(), this), addons.end());
         }
 
+
+        void Addon::UpdateHasRenderingHooks() {
+            this->hasRenderingHooks = this->DrawFrameBeforeGui ||
+                this->DrawFrameBeforePostProcessing ||
+                this->DrawFrame ||
+                this->AdvPreBeginScene || this->AdvPostBeginScene ||
+                this->AdvPreEndScene || this->AdvPostEndScene ||
+                this->AdvPreClear || this->AdvPostClear ||
+                this->AdvPreReset || this->AdvPostReset ||
+                this->AdvPreCreateTexture || this->AdvPostCreateTexture ||
+                this->AdvPreCreateVertexShader || this->AdvPostCreateVertexShader ||
+                this->AdvPreCreatePixelShader || this->AdvPostCreatePixelShader ||
+                this->AdvPreCreateRenderTarget || this->AdvPostCreateRenderTarget ||
+                this->AdvPreSetTexture || this->AdvPostSetTexture ||
+                this->AdvPreSetVertexShader || this->AdvPostSetVertexShader ||
+                this->AdvPreSetPixelShader || this->AdvPostSetVertexShader ||
+                this->AdvPreSetPixelShader || this->AdvPostSetPixelShader ||
+                this->AdvPreSetRenderTarget || this->AdvPostSetRenderTarget ||
+                this->AdvPreSetRenderState || this->AdvPostSetRenderState ||
+                this->AdvPreDrawIndexedPrimitive || this->AdvPostDrawIndexedPrimitive;
+        }
     }
 }
