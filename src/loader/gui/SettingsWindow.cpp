@@ -228,7 +228,7 @@ namespace loader {
                     ImGui::Dummy(buttonSize);
                 }
                 ImGui::SameLine();
-                if (this->selectedAddon < static_cast<int>(addonsList.size() - 1) && Addons.CanSwap(addon, addonsList[this->selectedAddon + 1])) {
+                if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size() - 1) && Addons.CanSwap(addon, addonsList[this->selectedAddon + 1])) {
                     if (ImGui::Button(ICON_MD_ARROW_DOWNWARD, buttonSize)) {
                         SwapAddonOrder(addon, addonsList[this->selectedAddon + 1]);
                         this->SelectAddon(addon);
