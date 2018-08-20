@@ -7,8 +7,15 @@ namespace loader {
     namespace addons {
 
         class AddonsList {
-            class iterator : std::iterator<std::input_iterator_tag, std::shared_ptr<Addon>> {
+            class iterator {
             public:
+                // Iterator traits
+                using value_type = std::shared_ptr<Addon>;
+                using iterator_category = std::input_iterator_tag;
+                using difference_type = value_type;
+                using pointer = const value_type*;
+                using reference = const value_type&;
+
                 typedef std::vector<std::shared_ptr<LegacyAddon>>::iterator legacy_iterator;
                 typedef std::vector<std::shared_ptr<Addon>>::iterator addon_iterator;
 

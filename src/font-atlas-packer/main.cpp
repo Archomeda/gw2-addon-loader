@@ -14,6 +14,9 @@ USAGE:
 If -m is not given, the next font will be a new font entry in the atlas.
 */
 
+// Won't compile with C++17 otherwise, I'm not bothered to write my own converter
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -209,7 +212,7 @@ int main(int argc, char* argv[]) {
 
     // Combine fonts
     vector<vector<BitmapFontFile>> srcFonts;
-    vector<BitmapFontFile>* lastMerge;
+    vector<BitmapFontFile>* lastMerge = nullptr;
     for (size_t i = 0; i < srcFiles.size(); ++i) {
         if (!srcMerged[i]) {
             srcFonts.push_back(vector<BitmapFontFile>());

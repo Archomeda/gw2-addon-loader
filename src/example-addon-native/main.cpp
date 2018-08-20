@@ -6,6 +6,9 @@ They can be found in the include/gw2addon-native.h header file in the root folde
 Make sure to read the comments there as well.
 */
 
+// Won't compile with C++17 otherwise, I'm not bothered to write my own converter
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 // We include some general things here to support our example.
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
