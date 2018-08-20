@@ -8,7 +8,7 @@ using namespace std::experimental::filesystem;
 namespace loader {
 
     map<string, shared_ptr<spdlog::logger>> loggers;
-    shared_ptr<spdlog::sinks::simple_file_sink_mt> logSink;
+    shared_ptr<spdlog::sinks::basic_file_sink_mt> logSink;
 
     const shared_ptr<spdlog::logger> GetLog() {
         return GetLog("loader");
@@ -26,7 +26,7 @@ namespace loader {
             path logFileName(fileName);
             logFileName /= LOG_FILE;
 
-            logSink = make_shared<spdlog::sinks::simple_file_sink_mt>(logFileName.u8string(), true);
+            logSink = make_shared<spdlog::sinks::basic_file_sink_mt>(logFileName.u8string(), true);
         }
 
         shared_ptr<spdlog::logger> logger = make_shared<spdlog::logger>(name, logSink);

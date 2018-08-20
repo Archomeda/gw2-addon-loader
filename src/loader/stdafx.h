@@ -71,7 +71,7 @@
 #include <MinHook.h>
 #include <miniz.h>
 #include <SimpleIni.h>
-#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 // Project
 #include <d3d9-defines.h>

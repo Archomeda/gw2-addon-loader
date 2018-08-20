@@ -33,15 +33,6 @@
     <ClInclude Include="imgui\stb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="simpleini\SimpleIni.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spdlog\include\spdlog\spdlog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IconFontCppHeaders\IconsMaterialDesign.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="miniz\miniz.h">
       <Filter>Header Files</Filter>
     </ClInclude>

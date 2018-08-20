@@ -37,8 +37,8 @@ Please refer to their GitHub repositories or websites for more information.
 - [JSON for Modern C++ 3.1.2](https://github.com/nlohmann/json)
 - [minhook 1.3.3](https://github.com/TsudaKageyu/minhook)
 - [miniz 2.0.7](https://github.com/richgel999/miniz)
-- [simpleini 4.17](https://github.com/brofield/simpleini)
-- [spdlog 0.16.3](https://github.com/gabime/spdlog)
+- [simpleini](https://github.com/brofield/simpleini)
+- [spdlog 1.1.0](https://github.com/gabime/spdlog)
 - [Various stb libraries](https://github.com/nothings/stb) (font-atlas-packer-only)
 - [zlib 1.2.11](https://zlib.net/) (font-atlas-packer only)
 
