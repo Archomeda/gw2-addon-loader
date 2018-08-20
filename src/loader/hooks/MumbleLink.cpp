@@ -199,6 +199,8 @@ namespace loader::hooks {
     }
 
     void MumbleLink::Loop() {
+        SetThreadDescription(GetCurrentThread(), L"[LOADER] MumbleLink");
+     
         while (this->active) {
             unique_lock<mutex> lock(this->loopMutex);
             this->loopCv.wait(lock, [=] { return this->loopProceed; });

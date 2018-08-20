@@ -3,6 +3,7 @@
 
 #define ADDONS_LOG() loader::GetLog("addons")
 #define CONFIG_LOG() loader::GetLog("config")
+#define DIAG_LOG() loader::GetLog("diag")
 #define GUI_LOG() loader::GetLog("gui")
 #define HOOKS_LOG() loader::GetLog("hooks")
 #define LOADER_LOG() loader::GetLog()

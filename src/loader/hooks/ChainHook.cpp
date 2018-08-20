@@ -40,7 +40,6 @@ namespace loader::hooks {
                 return chainHook;
             }
 
-
             wchar_t buff[MAX_PATH];
             if (GetModuleFileName(hModule, buff, MAX_PATH) == 0) {
                 return chainHook;

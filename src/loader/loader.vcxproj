@@ -180,6 +180,8 @@
     <ClInclude Include="addons\NativeAddon.h" />
     <ClInclude Include="addons\ProxyAddon.h" />
     <ClInclude Include="addons\ProxyDirect3DDevice9.h" />
+    <ClInclude Include="diagnostics\ThreadInfo.h" />
+    <ClInclude Include="diagnostics\ThreadMonitor.h" />
     <ClInclude Include="disasm\opcodes.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="globals.h" />
@@ -228,6 +230,8 @@
     <ClCompile Include="addons\NativeAddon.cpp" />
     <ClCompile Include="addons\ProxyAddon.cpp" />
     <ClCompile Include="addons\ProxyDirect3DDevice9.cpp" />
+    <ClCompile Include="diagnostics\ThreadInfo.cpp" />
+    <ClCompile Include="diagnostics\ThreadMonitor.cpp" />
     <ClCompile Include="gui\DisclaimerWindow.cpp" />
     <ClCompile Include="gui\elements\AddonListItem.cpp" />
     <ClCompile Include="gui\elements\KeybindBox.cpp" />

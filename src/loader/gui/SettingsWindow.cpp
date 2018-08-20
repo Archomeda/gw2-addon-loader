@@ -9,6 +9,7 @@
 #include "../version.h"
 #include "../addons/addons_manager.h"
 #include "../addons/Addon.h"
+#include "../diagnostics/ThreadMonitor.h"
 #include "../hooks/LoaderDirect3DDevice9.h"
 #include "../hooks/MumbleLink.h"
 #include "../updaters/update_manager.h"
@@ -17,6 +18,7 @@
 using namespace std;
 using namespace std::experimental::filesystem;
 using namespace loader::addons;
+using namespace loader::diagnostics;
 using namespace loader::updaters;
 using namespace loader::utils;
 
@@ -547,86 +549,125 @@ The API key will be automatically shared to all active add-ons.)");
             ImGui::Spacing();
 
             const auto& link = hooks::MumbleLink::GetInstance();
-            if (link.GetBuildId() > 0) {
-                ImGui::Columns(2);
-                ImGui::SetColumnWidth(0, 150);
-                ImGui::TextUnformatted("Build ID");
+            if (ImGui::CollapsingHeader("Mumble Link")) {
+                if (link.GetBuildId() > 0) {
+                    ImGui::Columns(2);
+                    ImGui::SetColumnWidth(0, 150);
+                    ImGui::TextUnformatted("Build ID");
+                    ImGui::NextColumn();
+                    ImGui::Text("%d", link.GetBuildId());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Character Name");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted(link.GetCharacterName().c_str());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Profession");
+                    ImGui::NextColumn();
+                    ImGui::Text("%s (%d)", hooks::ProfessionToString(link.GetProfession()).c_str(), link.GetProfession());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Race");
+                    ImGui::NextColumn();
+                    ImGui::Text("%s (%d)", hooks::RaceToString(link.GetRace()).c_str(), link.GetRace());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Commander?");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted(link.IsCommander() ? "Yes" : "No");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Map ID");
+                    ImGui::NextColumn();
+                    ImGui::Text("%d", link.GetMapId());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Map Type");
+                    ImGui::NextColumn();
+                    ImGui::Text("%s (%d)", hooks::MapTypeToString(link.GetMapType()).c_str(), link.GetMapType());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Competitive Map?");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted(link.IsTypeCompetitive() ? "Yes" : "No");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Shard ID");
+                    ImGui::NextColumn();
+                    ImGui::Text("%d", link.GetShardId());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Server Address");
+                    ImGui::NextColumn();
+                    ImGui::Text("%d.%d.%d.%d", link.GetServerAddress().sin_addr.S_un.S_un_b.s_b1, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b2, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b3, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b4);
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Team Color");
+                    ImGui::NextColumn();
+                    ImGui::Text("%d", link.GetTeamColorId());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("FoV");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.4f", link.GetFov());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("UI Size");
+                    ImGui::NextColumn();
+                    ImGui::Text("%s (%d)", hooks::UiSizeToString(link.GetUiSize()).c_str(), link.GetUiSize());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Character Position");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterPosition().x, link.GetCharacterPosition().y, link.GetCharacterPosition().z);
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Character Top");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterTop().x, link.GetCharacterTop().y, link.GetCharacterTop().z);
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Character Front");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterFront().x, link.GetCharacterFront().y, link.GetCharacterFront().z);
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Camera Position");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraPosition().x, link.GetCameraPosition().y, link.GetCameraPosition().z);
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Camera Top");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraTop().x, link.GetCameraTop().y, link.GetCameraTop().z);
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Camera Front");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraFront().x, link.GetCameraFront().y, link.GetCameraFront().z);
+                    ImGui::NextColumn();
+                    ImGui::Columns(1);
+                }
+            }
+            if (ImGui::CollapsingHeader("Threads")) {
+                ImGui::Columns(7);
+                ImGui::TextUnformatted("ID");
                 ImGui::NextColumn();
-                ImGui::Text("%d", link.GetBuildId());
+                ImGui::TextUnformatted("Process");
                 ImGui::NextColumn();
-                ImGui::TextUnformatted("Character Name");
+                ImGui::TextUnformatted("Address");
                 ImGui::NextColumn();
-                ImGui::TextUnformatted(link.GetCharacterName().c_str());
+                ImGui::TextUnformatted("Description");
                 ImGui::NextColumn();
-                ImGui::TextUnformatted("Profession");
+                ImGui::TextUnformatted("Kernel Time");
                 ImGui::NextColumn();
-                ImGui::Text("%s (%d)", hooks::ProfessionToString(link.GetProfession()).c_str(), link.GetProfession());
+                ImGui::TextUnformatted("User Time");
                 ImGui::NextColumn();
-                ImGui::TextUnformatted("Race");
+                ImGui::TextUnformatted("Priority");
                 ImGui::NextColumn();
-                ImGui::Text("%s (%d)", hooks::RaceToString(link.GetRace()).c_str(), link.GetRace());
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Commander?");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted(link.IsCommander() ? "Yes" : "No");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Map ID");
-                ImGui::NextColumn();
-                ImGui::Text("%d", link.GetMapId());
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Map Type");
-                ImGui::NextColumn();
-                ImGui::Text("%s (%d)", hooks::MapTypeToString(link.GetMapType()).c_str(), link.GetMapType());
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Competitive Map?");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted(link.IsTypeCompetitive() ? "Yes" : "No");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Shard ID");
-                ImGui::NextColumn();
-                ImGui::Text("%d", link.GetShardId());
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Server Address");
-                ImGui::NextColumn();
-                ImGui::Text("%d.%d.%d.%d", link.GetServerAddress().sin_addr.S_un.S_un_b.s_b1, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b2, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b3, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b4);
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Team Color");
-                ImGui::NextColumn();
-                ImGui::Text("%d", link.GetTeamColorId());
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("FoV");
-                ImGui::NextColumn();
-                ImGui::Text("%.4f", link.GetFov());
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("UI Size");
-                ImGui::NextColumn();
-                ImGui::Text("%s (%d)", hooks::UiSizeToString(link.GetUiSize()).c_str(), link.GetUiSize());
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Character Position");
-                ImGui::NextColumn();
-                ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterPosition().x, link.GetCharacterPosition().y, link.GetCharacterPosition().z);
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Character Top");
-                ImGui::NextColumn();
-                ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterTop().x, link.GetCharacterTop().y, link.GetCharacterTop().z);
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Character Front");
-                ImGui::NextColumn();
-                ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterFront().x, link.GetCharacterFront().y, link.GetCharacterFront().z);
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Camera Position");
-                ImGui::NextColumn();
-                ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraPosition().x, link.GetCameraPosition().y, link.GetCameraPosition().z);
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Camera Top");
-                ImGui::NextColumn();
-                ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraTop().x, link.GetCameraTop().y, link.GetCameraTop().z);
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Camera Front");
-                ImGui::NextColumn();
-                ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraFront().x, link.GetCameraFront().y, link.GetCameraFront().z);
-                ImGui::NextColumn();
-                ImGui::Columns(1);
+                for (const auto& thread : ThreadMonitor::GetInstance().GetThreadInfos()) {
+                    ImGui::Text("%d", thread->threadId);
+                    ImGui::NextColumn();
+                    ImGui::Text("%s (%d)", thread->processName.c_str(), thread->processId);
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted(thread->threadName.c_str());
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted(thread->threadDescription.c_str());
+                    ImGui::NextColumn();
+                    if (thread->kernelTimePercentage >= 0.1) {
+                        ImGui::Text("%.1f%%", thread->kernelTimePercentage);
+                    }
+                    ImGui::NextColumn();
+                    if (thread->userTimePercentage >= 0.1) {
+                        ImGui::Text("%.1f%%", thread->userTimePercentage);
+                    }
+                    ImGui::NextColumn();
+                    ImGui::Text("%s %s", thread->GetProcessPriorityString().c_str(), thread->GetBasePriorityString().c_str());
+                    ImGui::NextColumn();
+                }
             }
         }
         else if (this->selectedStatsType == 1) {

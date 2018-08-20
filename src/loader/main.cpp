@@ -2,6 +2,7 @@
 #include "minhook.h"
 #include "addons/addons_manager.h"
 #include "addons/Addon.h"
+#include "diagnostics/ThreadMonitor.h"
 #include "gui/gui_manager.h"
 #include "gui/imgui.h"
 #include "gui/DisclaimerWindow.h"
@@ -120,6 +121,9 @@ HRESULT PreCreateDevice(hooks::LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE D
 }
 
 void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
+    // Start ThreadMonitor
+    diagnostics::ThreadMonitor::GetInstance().Start();
+
     // Hook MumbleLink
     hooks::MumbleLink::GetInstance().Start();
 
@@ -243,6 +247,7 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     case DLL_PROCESS_DETACH: {
         MH_Uninitialize();
 
+        diagnostics::ThreadMonitor::GetInstance().Stop();
         hooks::MumbleLink::GetInstance().Stop();
         gui::imgui::Shutdown();
 

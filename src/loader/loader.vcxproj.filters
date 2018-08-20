@@ -156,6 +156,12 @@
     <ClInclude Include="gui\elements\KeybindBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="diagnostics\ThreadMonitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="diagnostics\ThreadInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -267,6 +273,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\elements\KeybindBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="diagnostics\ThreadMonitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="diagnostics\ThreadInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
