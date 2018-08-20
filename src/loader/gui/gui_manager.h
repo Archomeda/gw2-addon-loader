@@ -1,22 +1,20 @@
 #pragma once
 #include "../stdafx.h"
 
-namespace loader {
-    namespace gui {
+namespace loader::gui {
 
-        class Window;
-        class DisclaimerWindow;
-        class SettingsWindow;
+    class Window;
+    class DisclaimerWindow;
+    class SettingsWindow;
 
-        extern std::shared_ptr<DisclaimerWindow> DisclaimerWnd;
-        extern std::shared_ptr<SettingsWindow> SettingsWnd;
+    extern std::shared_ptr<DisclaimerWindow> DisclaimerWnd;
+    extern std::shared_ptr<SettingsWindow> SettingsWnd;
 
 
-        void ShowWindow(Window* const window);
-        void CloseWindow(Window* const window);
-        bool IsWindowOpen(Window* const window);
+    void ShowWindow(Window* const window);
+    void CloseWindow(Window* const window);
+    bool IsWindowOpen(Window* const window);
 
-        void Render();
+    void Render();
 
-    }
 }

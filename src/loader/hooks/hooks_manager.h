@@ -1,13 +1,11 @@
 #pragma once
 #include "../stdafx.h"
 
-namespace loader {
-    namespace hooks {
+namespace loader::hooks {
 
-        extern UINT SDKVersion;
+    extern UINT SDKVersion;
 
-        void InitializeHooks();
-        void UninitializeHooks();
+    void InitializeHooks();
+    void UninitializeHooks();
 
-    }
 }

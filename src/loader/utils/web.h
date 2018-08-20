@@ -1,10 +1,8 @@
 #pragma once
 #include "../stdafx.h"
 
-namespace loader {
-    namespace utils {
+namespace loader::utils {
 
-        const std::vector<char> DownloadFromUrl(const std::string& url);
+    const std::vector<char> DownloadFromUrl(const std::string& url);
 
-    }
 }

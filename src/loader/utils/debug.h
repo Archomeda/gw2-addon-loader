@@ -1,10 +1,8 @@
 #pragma once
 #include "../stdafx.h"
 
-namespace loader {
-    namespace utils {
+namespace loader::utils {
 
-        bool LaunchDebugger();
+    bool LaunchDebugger();
 
-    }
 }

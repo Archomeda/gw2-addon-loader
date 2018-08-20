@@ -2,63 +2,61 @@
 #include "../stdafx.h"
 #include "Addon.h"
 
-namespace loader {
-    namespace addons {
+namespace loader::addons {
 
-        class NativeAddon : public Addon {
-        public:
-            NativeAddon() : Addon() { }
-            NativeAddon(const std::string& filePath) : Addon(filePath) { }
-            NativeAddon(const std::experimental::filesystem::path& filePath) : Addon(filePath) { }
+    class NativeAddon : public Addon {
+    public:
+        NativeAddon() : Addon() { }
+        NativeAddon(const std::string& filePath) : Addon(filePath) { }
+        NativeAddon(const std::experimental::filesystem::path& filePath) : Addon(filePath) { }
 
-            virtual bool Initialize() override;
-            virtual bool Uninitialize() override;
-            virtual bool Load() override;
-            virtual bool Unload() override;
+        virtual bool Initialize() override;
+        virtual bool Uninitialize() override;
+        virtual bool Load() override;
+        virtual bool Unload() override;
 
-            virtual bool SupportsLoading() const override { return this->AddonInitialize != nullptr; }
-            virtual bool SupportsHotLoading() const override { return true; }
-            virtual bool SupportsSettings() const override { return this->AddonOpenSettings != nullptr; }
-            virtual bool SupportsUpdating() const override { return this->updateMethod != AddonUpdateMethod::NoUpdateMethod; }
-            virtual AddonUpdateMethod GetUpdateMethod() const { return this->updateMethod; }
+        virtual bool SupportsLoading() const override { return this->AddonInitialize != nullptr; }
+        virtual bool SupportsHotLoading() const override { return true; }
+        virtual bool SupportsSettings() const override { return this->AddonOpenSettings != nullptr; }
+        virtual bool SupportsUpdating() const override { return this->updateMethod != AddonUpdateMethod::NoUpdateMethod; }
+        virtual AddonUpdateMethod GetUpdateMethod() const { return this->updateMethod; }
 
-            virtual AddonType GetType() const override { return AddonType::AddonTypeNative; }
+        virtual AddonType GetType() const override { return AddonType::AddonTypeNative; }
 
-            virtual const std::string GetID() const override { return this->id; }
-            virtual const std::string GetName() const override { return this->name; }
-            virtual const std::string GetAuthor() const override { return this->author; }
-            virtual const std::string GetDescription() const override { return this->description; }
-            virtual const std::string GetVersion() const override { return this->version; }
-            virtual const std::string GetHomepage() const override { return this->homepage; }
-            virtual IDirect3DTexture9* GetIcon() const override { return this->icon; }
+        virtual const std::string GetID() const override { return this->id; }
+        virtual const std::string GetName() const override { return this->name; }
+        virtual const std::string GetAuthor() const override { return this->author; }
+        virtual const std::string GetDescription() const override { return this->description; }
+        virtual const std::string GetVersion() const override { return this->version; }
+        virtual const std::string GetHomepage() const override { return this->homepage; }
+        virtual IDirect3DTexture9* GetIcon() const override { return this->icon; }
 
-            virtual void OpenSettings() override;
-            
-        protected:
-            virtual std::unique_ptr<updaters::Updater> GetUpdater() override;
+        virtual void OpenSettings() override;
 
-        private:
-            bool InitializeV1(GW2AddonAPIBase* base);
+    protected:
+        virtual std::unique_ptr<updaters::Updater> GetUpdater() override;
 
-            HMODULE addonHandle = NULL;
+    private:
+        bool InitializeV1(GW2AddonAPIBase* base);
 
-            std::string id;
-            std::string name;
-            std::string author;
-            std::string description;
-            std::string version;
-            std::string homepage;
-            IDirect3DTexture9* icon = nullptr;
-            bool iconManaged = false;
+        HMODULE addonHandle = NULL;
 
-            AddonUpdateMethod updateMethod = AddonUpdateMethod::NoUpdateMethod;
-            std::string githubRepo;
+        std::string id;
+        std::string name;
+        std::string author;
+        std::string description;
+        std::string version;
+        std::string homepage;
+        IDirect3DTexture9* icon = nullptr;
+        bool iconManaged = false;
 
-            GW2AddonInitialize_t* AddonInitialize = nullptr;
-            GW2AddonRelease_t* AddonRelease = nullptr;
-            GW2AddonLoad_t* AddonLoad = nullptr;
-            GW2AddonOpenSettings_t* AddonOpenSettings = nullptr;
-        };
+        AddonUpdateMethod updateMethod = AddonUpdateMethod::NoUpdateMethod;
+        std::string githubRepo;
 
-    }
+        GW2AddonInitialize_t* AddonInitialize = nullptr;
+        GW2AddonRelease_t* AddonRelease = nullptr;
+        GW2AddonLoad_t* AddonLoad = nullptr;
+        GW2AddonOpenSettings_t* AddonOpenSettings = nullptr;
+    };
+
 }

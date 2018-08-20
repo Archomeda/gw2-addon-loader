@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 namespace loader {
+
     namespace addons {
         class Addon;
     }
@@ -93,4 +94,5 @@ namespace loader {
     };
 
     extern Config AppConfig;
+
 }

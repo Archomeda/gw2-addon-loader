@@ -1,48 +1,46 @@
 #pragma once
 #include "../stdafx.h"
 
-namespace loader {
-    namespace addons {
+namespace loader::addons {
 
-        enum AddonMetricType {
-            FrameBasedMetric,
-            SingleMetric
-        };
+    enum AddonMetricType {
+        FrameBasedMetric,
+        SingleMetric
+    };
 
-        class AddonMetric {
-        public:
-            static const int Frames = 4 * 60;
+    class AddonMetric {
+    public:
+        static const int Frames = 4 * 60;
 
-            AddonMetric(AddonMetricType metricType = AddonMetricType::FrameBasedMetric);
+        AddonMetric(AddonMetricType metricType = AddonMetricType::FrameBasedMetric);
 
-            AddonMetricType GetMetricType() const { return this->metricType; }
-            void SetMetricType(AddonMetricType metricType) { this->metricType = metricType; }
+        AddonMetricType GetMetricType() const { return this->metricType; }
+        void SetMetricType(AddonMetricType metricType) { this->metricType = metricType; }
 
-            void StartFrame();
-            void EndFrame();
-            void StartMeasurement();
-            void EndMeasurement();
+        void StartFrame();
+        void EndFrame();
+        void StartMeasurement();
+        void EndMeasurement();
 
-            float GetLast() const { return this->movingHistory.at(this->movingHistory.size() - 1); }
-            float GetOverallMaximum() const { return this->overallMaximum; }
-            float GetMovingAverage() const { return this->movingAverage; }
-            const std::vector<float> GetMovingHistory() const { return this->movingHistory; }
-            uint64_t GetCalls() const { return this->calls; }
+        float GetLast() const { return this->movingHistory.at(this->movingHistory.size() - 1); }
+        float GetOverallMaximum() const { return this->overallMaximum; }
+        float GetMovingAverage() const { return this->movingAverage; }
+        const std::vector<float> GetMovingHistory() const { return this->movingHistory; }
+        uint64_t GetCalls() const { return this->calls; }
 
-            const std::string FormatTimeMetric(float microseconds) const;
+        const std::string FormatTimeMetric(float microseconds) const;
 
-        private:
-            AddonMetricType metricType;
+    private:
+        AddonMetricType metricType;
 
-            std::chrono::steady_clock::time_point measureStart;
-            float currentMeasure = 0;
+        std::chrono::steady_clock::time_point measureStart;
+        float currentMeasure = 0;
 
-            float overallMaximum = 0;
-            float movingAverage = 0;
-            std::vector<float> movingHistory;
+        float overallMaximum = 0;
+        float movingAverage = 0;
+        std::vector<float> movingHistory;
 
-            uint64_t calls = 0;
-        };
+        uint64_t calls = 0;
+    };
 
-    }
 }

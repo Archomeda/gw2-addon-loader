@@ -3,15 +3,13 @@
 #include "Window.h"
 #include "../addons/addon.h"
 
-namespace loader {
-    namespace gui {
+namespace loader::gui {
 
-        class DisclaimerWindow : public Window {
-        public:
-            DisclaimerWindow();
+    class DisclaimerWindow : public Window {
+    public:
+        DisclaimerWindow();
 
-            void Render() override;
-        };
+        void Render() override;
+    };
 
-    }
 }

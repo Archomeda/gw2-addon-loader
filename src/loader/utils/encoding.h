@@ -1,11 +1,9 @@
 #pragma once
 #include "../stdafx.h"
 
-namespace loader {
-    namespace utils {
+namespace loader::utils {
 
-        std::string u8(const std::wstring& wstr);
-        std::wstring u16(const std::string& str);
+    std::string u8(const std::wstring& wstr);
+    std::wstring u16(const std::string& str);
 
-    }
 }
