@@ -58,6 +58,7 @@
 #include <windows.h>
 #include <d3d9.h>
 #include <d3dx9tex.h>
+#include <DbgHelp.h>
 #include <shellapi.h>
 #include <ShlObj.h>
 #include <Shlwapi.h>

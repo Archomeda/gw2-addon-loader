@@ -305,7 +305,7 @@ namespace loader::diagnostics {
                 }
             }
 
-            this_thread::sleep_for(chrono::milliseconds(500));
+            this_thread::sleep_for(chrono::seconds(1));
         }
     }
 
@@ -313,6 +313,8 @@ namespace loader::diagnostics {
         SYSTEM_PROCESS* systemProcess = reinterpret_cast<SYSTEM_PROCESS*>(process);
         set<DWORD> threadIds;
 
+        bool hasSymbols = false;
+        HANDLE processHandle = NULL;
         ProcessPriority processPriority = static_cast<ProcessPriority>(systemProcess->BasePriority);
        
         // The first SYSTEM_THREAD structure comes immediately after the SYSTEM_PROCESS structure
@@ -330,15 +332,37 @@ namespace loader::diagnostics {
                 threadInfo->threadId = threadId;
                 threadInfo->processName = u8(wstring(systemProcess->ImageName.Buffer, systemProcess->ImageName.Length / sizeof(WCHAR)));
 
+                if (processHandle == NULL) {
+                    processHandle = OpenProcess(PROCESS_QUERY_INFORMATION, false, threadInfo->processId);
+                    hasSymbols = processHandle != NULL && SymInitialize(processHandle, NULL, true);
+                }
+
                 HMODULE hModule = NULL;
                 if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR>(thread->Win32StartAddress), &hModule)) {
                     wchar_t buff[MAX_PATH];
                     if (GetModuleFileName(hModule, buff, MAX_PATH)) {
+                        DWORD_PTR address = reinterpret_cast<DWORD_PTR>(thread->Win32StartAddress);
+                        DWORD relAddress = static_cast<DWORD>(address - reinterpret_cast<DWORD_PTR>(hModule));
+
                         path modulePath(buff);
                         stringstream ss;
-                        ss << modulePath.filename().u8string()
-                            << "+0x" << setfill('0') << setw(8) << hex
-                            << (static_cast<DWORD>(reinterpret_cast<DWORD_PTR>(thread->Win32StartAddress)) - static_cast<DWORD>(reinterpret_cast<DWORD_PTR>(hModule)));
+                        ss << modulePath.filename().u8string();
+
+                        if (hasSymbols) {
+                            DWORD64 displacement = 0;
+                            char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
+                            SYMBOL_INFO* symbol = reinterpret_cast<SYMBOL_INFO*>(buffer);
+                            symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+                            symbol->MaxNameLen = MAX_SYM_NAME;
+                            if (SymFromAddr(processHandle, address, &displacement, symbol)) {
+                                ss << "!" << string(symbol->Name, symbol->NameLen);
+                                relAddress = static_cast<DWORD>(address - symbol->Address);
+                            }
+                        }
+                        
+                        if (relAddress > 0) {
+                            ss << "+0x" << setfill('0') << setw(8) << hex << relAddress;
+                        }
                         threadInfo->threadName = ss.str();
                     }
                 }
@@ -372,6 +396,13 @@ namespace loader::diagnostics {
 
             threadIds.insert(threadInfo->threadId);
             ++thread;
+        }
+
+        if (hasSymbols) {
+            SymCleanup(processHandle);
+        }
+        if (processHandle != NULL) {
+            CloseHandle(processHandle);
         }
 
         return threadIds;

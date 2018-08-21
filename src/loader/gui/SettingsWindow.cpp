@@ -635,21 +635,18 @@ The API key will be automatically shared to all active add-ons.)");
                 }
             }
             if (ImGui::CollapsingHeader("Threads")) {
-                ImGui::BeginColumns("##Threads", 7, 0);
+                ImGui::BeginColumns("##Threads", 6, 0);
                 {
                     elements::SetColumnWidth(0, 50);
                     elements::SetColumnWidth(1, 90);
-                    elements::SetColumnWidth(2, 90);
-                    elements::SetColumnWidth(3, 110);
+                    elements::SetColumnWidth(2, 120);
+                    elements::SetColumnWidth(3, 50);
                     elements::SetColumnWidth(4, 50);
-                    elements::SetColumnWidth(5, 50);
                     ImGui::TextUnformatted("ID");
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Process");
                     ImGui::NextColumn();
-                    ImGui::TextUnformatted("Address");
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Description");
+                    ImGui::TextUnformatted("Name");
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Kernel");
                     ImGui::NextColumn();
@@ -662,9 +659,7 @@ The API key will be automatically shared to all active add-ons.)");
                         ImGui::NextColumn();
                         ImGui::Text("%s (%d)", thread->processName.c_str(), thread->processId);
                         ImGui::NextColumn();
-                        ImGui::TextUnformatted(thread->threadName.c_str());
-                        ImGui::NextColumn();
-                        ImGui::TextUnformatted(thread->threadDescription.c_str());
+                        ImGui::TextUnformatted(!thread->threadDescription.empty() ? thread->threadDescription.c_str() : thread->threadName.c_str());
                         ImGui::NextColumn();
                         if (thread->kernelTimePercentage >= 0.1) {
                             ImGui::Text("%.1f%%", thread->kernelTimePercentage);
