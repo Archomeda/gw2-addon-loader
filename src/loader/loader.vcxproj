@@ -187,6 +187,7 @@
     <ClInclude Include="globals.h" />
     <ClInclude Include="gui\DisclaimerWindow.h" />
     <ClInclude Include="gui\elements\AddonListItem.h" />
+    <ClInclude Include="gui\elements\Columns.h" />
     <ClInclude Include="gui\elements\ExtraImGuiElements.h" />
     <ClInclude Include="gui\elements\KeybindBox.h" />
     <ClInclude Include="minhook.h" />
@@ -234,6 +235,7 @@
     <ClCompile Include="diagnostics\ThreadMonitor.cpp" />
     <ClCompile Include="gui\DisclaimerWindow.cpp" />
     <ClCompile Include="gui\elements\AddonListItem.cpp" />
+    <ClCompile Include="gui\elements\Columns.cpp" />
     <ClCompile Include="gui\elements\KeybindBox.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

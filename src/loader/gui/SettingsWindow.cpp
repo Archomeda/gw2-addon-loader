@@ -551,123 +551,135 @@ The API key will be automatically shared to all active add-ons.)");
             const auto& link = hooks::MumbleLink::GetInstance();
             if (ImGui::CollapsingHeader("Mumble Link")) {
                 if (link.GetBuildId() > 0) {
-                    ImGui::Columns(2);
-                    ImGui::SetColumnWidth(0, 150);
-                    ImGui::TextUnformatted("Build ID");
-                    ImGui::NextColumn();
-                    ImGui::Text("%d", link.GetBuildId());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Character Name");
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted(link.GetCharacterName().c_str());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Profession");
-                    ImGui::NextColumn();
-                    ImGui::Text("%s (%d)", hooks::ProfessionToString(link.GetProfession()).c_str(), link.GetProfession());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Race");
-                    ImGui::NextColumn();
-                    ImGui::Text("%s (%d)", hooks::RaceToString(link.GetRace()).c_str(), link.GetRace());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Commander?");
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted(link.IsCommander() ? "Yes" : "No");
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Map ID");
-                    ImGui::NextColumn();
-                    ImGui::Text("%d", link.GetMapId());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Map Type");
-                    ImGui::NextColumn();
-                    ImGui::Text("%s (%d)", hooks::MapTypeToString(link.GetMapType()).c_str(), link.GetMapType());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Competitive Map?");
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted(link.IsTypeCompetitive() ? "Yes" : "No");
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Shard ID");
-                    ImGui::NextColumn();
-                    ImGui::Text("%d", link.GetShardId());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Server Address");
-                    ImGui::NextColumn();
-                    ImGui::Text("%d.%d.%d.%d", link.GetServerAddress().sin_addr.S_un.S_un_b.s_b1, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b2, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b3, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b4);
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Team Color");
-                    ImGui::NextColumn();
-                    ImGui::Text("%d", link.GetTeamColorId());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("FoV");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.4f", link.GetFov());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("UI Size");
-                    ImGui::NextColumn();
-                    ImGui::Text("%s (%d)", hooks::UiSizeToString(link.GetUiSize()).c_str(), link.GetUiSize());
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Character Position");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterPosition().x, link.GetCharacterPosition().y, link.GetCharacterPosition().z);
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Character Top");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterTop().x, link.GetCharacterTop().y, link.GetCharacterTop().z);
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Character Front");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterFront().x, link.GetCharacterFront().y, link.GetCharacterFront().z);
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Camera Position");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraPosition().x, link.GetCameraPosition().y, link.GetCameraPosition().z);
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Camera Top");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraTop().x, link.GetCameraTop().y, link.GetCameraTop().z);
-                    ImGui::NextColumn();
-                    ImGui::TextUnformatted("Camera Front");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraFront().x, link.GetCameraFront().y, link.GetCameraFront().z);
-                    ImGui::NextColumn();
-                    ImGui::Columns(1);
+                    ImGui::BeginColumns("##MumbleLink", 2, ImGuiColumnsFlags_::ImGuiColumnsFlags_NoBorder | ImGuiColumnsFlags_::ImGuiColumnsFlags_NoResize);
+                    {
+                        elements::SetColumnWidth(0, 150);
+                        ImGui::TextUnformatted("Build ID");
+                        ImGui::NextColumn();
+                        ImGui::Text("%d", link.GetBuildId());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Character Name");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted(link.GetCharacterName().c_str());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Profession");
+                        ImGui::NextColumn();
+                        ImGui::Text("%s (%d)", hooks::ProfessionToString(link.GetProfession()).c_str(), link.GetProfession());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Race");
+                        ImGui::NextColumn();
+                        ImGui::Text("%s (%d)", hooks::RaceToString(link.GetRace()).c_str(), link.GetRace());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Commander?");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted(link.IsCommander() ? "Yes" : "No");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Map ID");
+                        ImGui::NextColumn();
+                        ImGui::Text("%d", link.GetMapId());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Map Type");
+                        ImGui::NextColumn();
+                        ImGui::Text("%s (%d)", hooks::MapTypeToString(link.GetMapType()).c_str(), link.GetMapType());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Competitive Map?");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted(link.IsTypeCompetitive() ? "Yes" : "No");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Shard ID");
+                        ImGui::NextColumn();
+                        ImGui::Text("%d", link.GetShardId());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Server Address");
+                        ImGui::NextColumn();
+                        ImGui::Text("%d.%d.%d.%d", link.GetServerAddress().sin_addr.S_un.S_un_b.s_b1, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b2, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b3, link.GetServerAddress().sin_addr.S_un.S_un_b.s_b4);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Team Color");
+                        ImGui::NextColumn();
+                        ImGui::Text("%d", link.GetTeamColorId());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("FoV");
+                        ImGui::NextColumn();
+                        ImGui::Text("%.4f", link.GetFov());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("UI Size");
+                        ImGui::NextColumn();
+                        ImGui::Text("%s (%d)", hooks::UiSizeToString(link.GetUiSize()).c_str(), link.GetUiSize());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Character Position");
+                        ImGui::NextColumn();
+                        ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterPosition().x, link.GetCharacterPosition().y, link.GetCharacterPosition().z);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Character Top");
+                        ImGui::NextColumn();
+                        ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterTop().x, link.GetCharacterTop().y, link.GetCharacterTop().z);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Character Front");
+                        ImGui::NextColumn();
+                        ImGui::Text("%.4f, %.4f, %.4f", link.GetCharacterFront().x, link.GetCharacterFront().y, link.GetCharacterFront().z);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Camera Position");
+                        ImGui::NextColumn();
+                        ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraPosition().x, link.GetCameraPosition().y, link.GetCameraPosition().z);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Camera Top");
+                        ImGui::NextColumn();
+                        ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraTop().x, link.GetCameraTop().y, link.GetCameraTop().z);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Camera Front");
+                        ImGui::NextColumn();
+                        ImGui::Text("%.4f, %.4f, %.4f", link.GetCameraFront().x, link.GetCameraFront().y, link.GetCameraFront().z);
+                        ImGui::NextColumn();
+                    }
+                    ImGui::EndColumns();
                 }
             }
             if (ImGui::CollapsingHeader("Threads")) {
-                ImGui::Columns(7);
-                ImGui::TextUnformatted("ID");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Process");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Address");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Description");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Kernel Time");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("User Time");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Priority");
-                ImGui::NextColumn();
-                for (const auto& thread : ThreadMonitor::GetInstance().GetThreadInfos()) {
-                    ImGui::Text("%d", thread->threadId);
+                ImGui::BeginColumns("##Threads", 7, 0);
+                {
+                    elements::SetColumnWidth(0, 50);
+                    elements::SetColumnWidth(1, 90);
+                    elements::SetColumnWidth(2, 90);
+                    elements::SetColumnWidth(3, 110);
+                    elements::SetColumnWidth(4, 50);
+                    elements::SetColumnWidth(5, 50);
+                    elements::SetColumnWidth(6, 80);
+                    ImGui::TextUnformatted("ID");
                     ImGui::NextColumn();
-                    ImGui::Text("%s (%d)", thread->processName.c_str(), thread->processId);
+                    ImGui::TextUnformatted("Process");
                     ImGui::NextColumn();
-                    ImGui::TextUnformatted(thread->threadName.c_str());
+                    ImGui::TextUnformatted("Address");
                     ImGui::NextColumn();
-                    ImGui::TextUnformatted(thread->threadDescription.c_str());
+                    ImGui::TextUnformatted("Description");
                     ImGui::NextColumn();
-                    if (thread->kernelTimePercentage >= 0.1) {
-                        ImGui::Text("%.1f%%", thread->kernelTimePercentage);
+                    ImGui::TextUnformatted("Kernel");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("User");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("Priority");
+                    ImGui::NextColumn();
+                    for (const auto& thread : ThreadMonitor::GetInstance().GetThreadInfos()) {
+                        ImGui::Text("%d", thread->threadId);
+                        ImGui::NextColumn();
+                        ImGui::Text("%s (%d)", thread->processName.c_str(), thread->processId);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted(thread->threadName.c_str());
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted(thread->threadDescription.c_str());
+                        ImGui::NextColumn();
+                        if (thread->kernelTimePercentage >= 0.1) {
+                            ImGui::Text("%.1f%%", thread->kernelTimePercentage);
+                        }
+                        ImGui::NextColumn();
+                        if (thread->userTimePercentage >= 0.1) {
+                            ImGui::Text("%.1f%%", thread->userTimePercentage);
+                        }
+                        ImGui::NextColumn();
+                        ImGui::Text("%s - %s", thread->GetProcessPriorityString().c_str(), thread->GetBasePriorityString().c_str());
+                        ImGui::NextColumn();
                     }
-                    ImGui::NextColumn();
-                    if (thread->userTimePercentage >= 0.1) {
-                        ImGui::Text("%.1f%%", thread->userTimePercentage);
-                    }
-                    ImGui::NextColumn();
-                    ImGui::Text("%s %s", thread->GetProcessPriorityString().c_str(), thread->GetBasePriorityString().c_str());
-                    ImGui::NextColumn();
                 }
+                ImGui::EndColumns();
             }
         }
         else if (this->selectedStatsType == 1) {
@@ -675,35 +687,13 @@ The API key will be automatically shared to all active add-ons.)");
         }
         else if (selectedAddon) {
             if (ImGui::CollapsingHeader("General")) {
-                ImGui::Columns(5);
-                ImGui::SetColumnWidth(0, 180);
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Current");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Exp. moving avg");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Overall max");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Calls");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Load");
-                ImGui::NextColumn();
-                const auto& metric = selectedAddon->GetMetricLoad();
-                ImGui::TextUnformatted(metric.FormatTimeMetric(metric.GetLast()).c_str());
-                ImGui::NextColumn();
-                ImGui::NextColumn();
-                ImGui::NextColumn();
-                ImGui::NextColumn();
-                if (selectedAddon->HandleWndProc) this->ImGuiAddonStatLine("WndProc", selectedAddon->HandleWndProc.GetMetric());
-
-                ImGui::Columns(1);
-            }
-            if (selectedAddon->HasRenderingHooks()) {
-                if (ImGui::CollapsingHeader("Rendering")) {
-                    const auto history = selectedAddon->GetMetricOverall().GetMovingHistory();
-                    ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Add-on frame time (µs)", 0, 10000, ImVec2(0, 100));
-                    ImGui::Columns(5);
-                    ImGui::SetColumnWidth(0, 180);
+                ImGui::BeginColumns("##AddonGeneral", 5, 0);
+                {
+                    elements::SetColumnWidth(0, 150);
+                    elements::SetColumnWidth(1, 110);
+                    elements::SetColumnWidth(2, 110);
+                    elements::SetColumnWidth(3, 110);
+                    elements::SetColumnWidth(4, 110);
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Current");
                     ImGui::NextColumn();
@@ -713,43 +703,75 @@ The API key will be automatically shared to all active add-ons.)");
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Calls");
                     ImGui::NextColumn();
+                    ImGui::TextUnformatted("Load");
+                    ImGui::NextColumn();
+                    const auto& metric = selectedAddon->GetMetricLoad();
+                    ImGui::TextUnformatted(metric.FormatTimeMetric(metric.GetLast()).c_str());
+                    ImGui::NextColumn();
+                    ImGui::NextColumn();
+                    ImGui::NextColumn();
+                    ImGui::NextColumn();
+                    if (selectedAddon->HandleWndProc) this->ImGuiAddonStatLine("WndProc", selectedAddon->HandleWndProc.GetMetric());
+                }
+                ImGui::EndColumns();
+            }
+            if (selectedAddon->HasRenderingHooks()) {
+                if (ImGui::CollapsingHeader("Rendering")) {
+                    const auto history = selectedAddon->GetMetricOverall().GetMovingHistory();
+                    ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Add-on frame time (µs)", 0, 10000, ImVec2(0, 100));
+                    ImGui::BeginColumns("##AddonRenderingTime", 5, 0);
+                    {
+                        elements::SetColumnWidth(0, 150);
+                        elements::SetColumnWidth(1, 110);
+                        elements::SetColumnWidth(2, 110);
+                        elements::SetColumnWidth(3, 110);
+                        elements::SetColumnWidth(4, 110);
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Current");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Exp. moving avg");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Overall max");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("Calls");
+                        ImGui::NextColumn();
 
-                    this->ImGuiAddonStatLine("Total", selectedAddon->GetMetricOverall(), false);
-                    if (selectedAddon->DrawFrameBeforePostProcessing) this->ImGuiAddonStatLine("DrawBeforePostProcessing", selectedAddon->DrawFrameBeforePostProcessing.GetMetric());
-                    if (selectedAddon->DrawFrameBeforeGui) this->ImGuiAddonStatLine("DrawBeforeGui", selectedAddon->DrawFrameBeforeGui.GetMetric());
-                    if (selectedAddon->DrawFrame) this->ImGuiAddonStatLine("Draw", selectedAddon->DrawFrame.GetMetric());
-                    if (selectedAddon->AdvPreBeginScene) this->ImGuiAddonStatLine("AdvPreBeginScene", selectedAddon->AdvPreBeginScene.GetMetric());
-                    if (selectedAddon->AdvPostBeginScene) this->ImGuiAddonStatLine("AdvPostBeginScene", selectedAddon->AdvPostBeginScene.GetMetric());
-                    if (selectedAddon->AdvPreEndScene) this->ImGuiAddonStatLine("AdvPreEndScene", selectedAddon->AdvPreEndScene.GetMetric());
-                    if (selectedAddon->AdvPostEndScene) this->ImGuiAddonStatLine("AdvPostEndScene", selectedAddon->AdvPostEndScene.GetMetric());
-                    if (selectedAddon->AdvPreClear) this->ImGuiAddonStatLine("AdvPreClear", selectedAddon->AdvPreClear.GetMetric());
-                    if (selectedAddon->AdvPostClear) this->ImGuiAddonStatLine("AdvPostClear", selectedAddon->AdvPostClear.GetMetric());
-                    if (selectedAddon->AdvPreReset) this->ImGuiAddonStatLine("AdvPreReset", selectedAddon->AdvPreReset.GetMetric());
-                    if (selectedAddon->AdvPostReset) this->ImGuiAddonStatLine("AdvPostReset", selectedAddon->AdvPostReset.GetMetric());
-                    if (selectedAddon->AdvPrePresent) this->ImGuiAddonStatLine("AdvPrePresent", selectedAddon->AdvPrePresent.GetMetric());
-                    if (selectedAddon->AdvPostPresent) this->ImGuiAddonStatLine("AdvPostPresent", selectedAddon->AdvPostPresent.GetMetric());
-                    if (selectedAddon->AdvPreCreateTexture) this->ImGuiAddonStatLine("AdvPreCreateTexture", selectedAddon->AdvPreCreateTexture.GetMetric());
-                    if (selectedAddon->AdvPostCreateTexture) this->ImGuiAddonStatLine("AdvPostCreateTexture", selectedAddon->AdvPostCreateTexture.GetMetric());
-                    if (selectedAddon->AdvPreCreateVertexShader) this->ImGuiAddonStatLine("AdvPreCreateVertexShader", selectedAddon->AdvPreCreateVertexShader.GetMetric());
-                    if (selectedAddon->AdvPostCreateVertexShader) this->ImGuiAddonStatLine("AdvPostCreateVertexShader", selectedAddon->AdvPostCreateVertexShader.GetMetric());
-                    if (selectedAddon->AdvPreCreatePixelShader) this->ImGuiAddonStatLine("AdvPreCreatePixelShader", selectedAddon->AdvPreCreatePixelShader.GetMetric());
-                    if (selectedAddon->AdvPostCreatePixelShader) this->ImGuiAddonStatLine("AdvPostCreatePixelShader", selectedAddon->AdvPostCreatePixelShader.GetMetric());
-                    if (selectedAddon->AdvPreCreateRenderTarget) this->ImGuiAddonStatLine("AdvPreCreateRenderTarget", selectedAddon->AdvPreCreateRenderTarget.GetMetric());
-                    if (selectedAddon->AdvPostCreateRenderTarget) this->ImGuiAddonStatLine("AdvPostCreateRenderTarget", selectedAddon->AdvPostCreateRenderTarget.GetMetric());
-                    if (selectedAddon->AdvPreSetTexture) this->ImGuiAddonStatLine("AdvPreSetTexture", selectedAddon->AdvPreSetTexture.GetMetric());
-                    if (selectedAddon->AdvPostSetTexture) this->ImGuiAddonStatLine("AdvPostSetTexture", selectedAddon->AdvPostSetTexture.GetMetric());
-                    if (selectedAddon->AdvPreSetVertexShader) this->ImGuiAddonStatLine("AdvPreSetVertexShader", selectedAddon->AdvPreSetVertexShader.GetMetric());
-                    if (selectedAddon->AdvPostSetVertexShader) this->ImGuiAddonStatLine("AdvPostSetVertexShader", selectedAddon->AdvPostSetVertexShader.GetMetric());
-                    if (selectedAddon->AdvPreSetPixelShader) this->ImGuiAddonStatLine("AdvPreSetPixelShader", selectedAddon->AdvPreSetPixelShader.GetMetric());
-                    if (selectedAddon->AdvPostSetPixelShader) this->ImGuiAddonStatLine("AdvPostSetPixelShader", selectedAddon->AdvPostSetPixelShader.GetMetric());
-                    if (selectedAddon->AdvPreSetRenderTarget) this->ImGuiAddonStatLine("AdvPreSetRenderTarget", selectedAddon->AdvPreSetRenderTarget.GetMetric());
-                    if (selectedAddon->AdvPostSetRenderTarget) this->ImGuiAddonStatLine("AdvPostSetRenderTarget", selectedAddon->AdvPostSetRenderTarget.GetMetric());
-                    if (selectedAddon->AdvPreSetRenderState) this->ImGuiAddonStatLine("AdvPreSetRenderState", selectedAddon->AdvPreSetRenderState.GetMetric());
-                    if (selectedAddon->AdvPostSetRenderState) this->ImGuiAddonStatLine("AdvPostSetRenderState", selectedAddon->AdvPostSetRenderState.GetMetric());
-                    if (selectedAddon->AdvPreDrawIndexedPrimitive) this->ImGuiAddonStatLine("AdvPreDrawIndexedPrimitive", selectedAddon->AdvPreDrawIndexedPrimitive.GetMetric());
-                    if (selectedAddon->AdvPostDrawIndexedPrimitive) this->ImGuiAddonStatLine("AdvPostDrawIndexedPrimitive", selectedAddon->AdvPostDrawIndexedPrimitive.GetMetric());
-
-                    ImGui::Columns(1);
+                        this->ImGuiAddonStatLine("Total", selectedAddon->GetMetricOverall(), false);
+                        if (selectedAddon->DrawFrameBeforePostProcessing) this->ImGuiAddonStatLine("DrawBeforePostProcessing", selectedAddon->DrawFrameBeforePostProcessing.GetMetric());
+                        if (selectedAddon->DrawFrameBeforeGui) this->ImGuiAddonStatLine("DrawBeforeGui", selectedAddon->DrawFrameBeforeGui.GetMetric());
+                        if (selectedAddon->DrawFrame) this->ImGuiAddonStatLine("Draw", selectedAddon->DrawFrame.GetMetric());
+                        if (selectedAddon->AdvPreBeginScene) this->ImGuiAddonStatLine("AdvPreBeginScene", selectedAddon->AdvPreBeginScene.GetMetric());
+                        if (selectedAddon->AdvPostBeginScene) this->ImGuiAddonStatLine("AdvPostBeginScene", selectedAddon->AdvPostBeginScene.GetMetric());
+                        if (selectedAddon->AdvPreEndScene) this->ImGuiAddonStatLine("AdvPreEndScene", selectedAddon->AdvPreEndScene.GetMetric());
+                        if (selectedAddon->AdvPostEndScene) this->ImGuiAddonStatLine("AdvPostEndScene", selectedAddon->AdvPostEndScene.GetMetric());
+                        if (selectedAddon->AdvPreClear) this->ImGuiAddonStatLine("AdvPreClear", selectedAddon->AdvPreClear.GetMetric());
+                        if (selectedAddon->AdvPostClear) this->ImGuiAddonStatLine("AdvPostClear", selectedAddon->AdvPostClear.GetMetric());
+                        if (selectedAddon->AdvPreReset) this->ImGuiAddonStatLine("AdvPreReset", selectedAddon->AdvPreReset.GetMetric());
+                        if (selectedAddon->AdvPostReset) this->ImGuiAddonStatLine("AdvPostReset", selectedAddon->AdvPostReset.GetMetric());
+                        if (selectedAddon->AdvPrePresent) this->ImGuiAddonStatLine("AdvPrePresent", selectedAddon->AdvPrePresent.GetMetric());
+                        if (selectedAddon->AdvPostPresent) this->ImGuiAddonStatLine("AdvPostPresent", selectedAddon->AdvPostPresent.GetMetric());
+                        if (selectedAddon->AdvPreCreateTexture) this->ImGuiAddonStatLine("AdvPreCreateTexture", selectedAddon->AdvPreCreateTexture.GetMetric());
+                        if (selectedAddon->AdvPostCreateTexture) this->ImGuiAddonStatLine("AdvPostCreateTexture", selectedAddon->AdvPostCreateTexture.GetMetric());
+                        if (selectedAddon->AdvPreCreateVertexShader) this->ImGuiAddonStatLine("AdvPreCreateVertexShader", selectedAddon->AdvPreCreateVertexShader.GetMetric());
+                        if (selectedAddon->AdvPostCreateVertexShader) this->ImGuiAddonStatLine("AdvPostCreateVertexShader", selectedAddon->AdvPostCreateVertexShader.GetMetric());
+                        if (selectedAddon->AdvPreCreatePixelShader) this->ImGuiAddonStatLine("AdvPreCreatePixelShader", selectedAddon->AdvPreCreatePixelShader.GetMetric());
+                        if (selectedAddon->AdvPostCreatePixelShader) this->ImGuiAddonStatLine("AdvPostCreatePixelShader", selectedAddon->AdvPostCreatePixelShader.GetMetric());
+                        if (selectedAddon->AdvPreCreateRenderTarget) this->ImGuiAddonStatLine("AdvPreCreateRenderTarget", selectedAddon->AdvPreCreateRenderTarget.GetMetric());
+                        if (selectedAddon->AdvPostCreateRenderTarget) this->ImGuiAddonStatLine("AdvPostCreateRenderTarget", selectedAddon->AdvPostCreateRenderTarget.GetMetric());
+                        if (selectedAddon->AdvPreSetTexture) this->ImGuiAddonStatLine("AdvPreSetTexture", selectedAddon->AdvPreSetTexture.GetMetric());
+                        if (selectedAddon->AdvPostSetTexture) this->ImGuiAddonStatLine("AdvPostSetTexture", selectedAddon->AdvPostSetTexture.GetMetric());
+                        if (selectedAddon->AdvPreSetVertexShader) this->ImGuiAddonStatLine("AdvPreSetVertexShader", selectedAddon->AdvPreSetVertexShader.GetMetric());
+                        if (selectedAddon->AdvPostSetVertexShader) this->ImGuiAddonStatLine("AdvPostSetVertexShader", selectedAddon->AdvPostSetVertexShader.GetMetric());
+                        if (selectedAddon->AdvPreSetPixelShader) this->ImGuiAddonStatLine("AdvPreSetPixelShader", selectedAddon->AdvPreSetPixelShader.GetMetric());
+                        if (selectedAddon->AdvPostSetPixelShader) this->ImGuiAddonStatLine("AdvPostSetPixelShader", selectedAddon->AdvPostSetPixelShader.GetMetric());
+                        if (selectedAddon->AdvPreSetRenderTarget) this->ImGuiAddonStatLine("AdvPreSetRenderTarget", selectedAddon->AdvPreSetRenderTarget.GetMetric());
+                        if (selectedAddon->AdvPostSetRenderTarget) this->ImGuiAddonStatLine("AdvPostSetRenderTarget", selectedAddon->AdvPostSetRenderTarget.GetMetric());
+                        if (selectedAddon->AdvPreSetRenderState) this->ImGuiAddonStatLine("AdvPreSetRenderState", selectedAddon->AdvPreSetRenderState.GetMetric());
+                        if (selectedAddon->AdvPostSetRenderState) this->ImGuiAddonStatLine("AdvPostSetRenderState", selectedAddon->AdvPostSetRenderState.GetMetric());
+                        if (selectedAddon->AdvPreDrawIndexedPrimitive) this->ImGuiAddonStatLine("AdvPreDrawIndexedPrimitive", selectedAddon->AdvPreDrawIndexedPrimitive.GetMetric());
+                        if (selectedAddon->AdvPostDrawIndexedPrimitive) this->ImGuiAddonStatLine("AdvPostDrawIndexedPrimitive", selectedAddon->AdvPostDrawIndexedPrimitive.GetMetric());
+                    }
+                    ImGui::EndColumns();
                 }
             }
         }

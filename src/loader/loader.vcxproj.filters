@@ -162,6 +162,9 @@
     <ClInclude Include="diagnostics\ThreadInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gui\elements\Columns.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -279,6 +282,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="diagnostics\ThreadInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\elements\Columns.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
