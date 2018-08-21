@@ -14,9 +14,9 @@ namespace loader::addons {
             using difference_type = value_type;
             using pointer = const value_type*;
             using reference = const value_type&;
-
-            typedef std::vector<std::shared_ptr<LegacyAddon>>::iterator legacy_iterator;
-            typedef std::vector<std::shared_ptr<Addon>>::iterator addon_iterator;
+            
+            using legacy_iterator = std::vector<std::shared_ptr<LegacyAddon>>::iterator;
+            using addon_iterator = std::vector<std::shared_ptr<Addon>>::iterator;
 
             iterator(AddonsList* addonsList, legacy_iterator it) : addonsList(addonsList) {
                 this->legacyIt = it;
@@ -74,6 +74,8 @@ namespace loader::addons {
 
         iterator begin() { return iterator(this, this->legacyAddons.begin()); }
         iterator end() { return iterator(this, this->addons.end()); }
+        iterator erase(iterator it);
+
 
     private:
         template<typename T>

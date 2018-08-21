@@ -22,7 +22,6 @@ namespace loader::addons {
         return a->GetType() == b->GetType();
     }
 
-
     void AddonsList::Swap(const Addon* const a, const Addon* const b) {
         if (!this->CanSwap(a, b)) {
             return;
@@ -41,4 +40,20 @@ namespace loader::addons {
         sort(this->addons.begin(), this->addons.end(), func);
     }
 
+
+    AddonsList::iterator AddonsList::erase(AddonsList::iterator it) {
+        for (auto legacyIt = this->legacyAddons.begin(); legacyIt != this->legacyAddons.end(); ++legacyIt) {
+            if (*legacyIt == *it) {
+                legacyIt = this->legacyAddons.erase(legacyIt);
+                return AddonsList::iterator(this, legacyIt);
+            }
+        }
+        for (auto addonIt = this->addons.begin(); addonIt != this->addons.end(); ++addonIt) {
+            if (*addonIt == *it) {
+                addonIt = this->addons.erase(addonIt);
+                return AddonsList::iterator(this, addonIt);
+            }
+        }
+        return it;
+    }
 }

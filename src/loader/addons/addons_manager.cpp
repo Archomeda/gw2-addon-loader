@@ -13,6 +13,10 @@ namespace loader::addons {
 
     AddonsList Addons;
     AddonHooks ActiveAddonHooks = {};
+    UINT d3d9SdkVersion;
+    hooks::LoaderDirect3D9* d3d9Instance;
+    hooks::LoaderDirect3DDevice9* d3d9Device;
+
 
     bool sortAddonsRawPtrFunc(Addon* a, Addon* b) {
         if (a->IsForced()) {
@@ -39,11 +43,6 @@ namespace loader::addons {
     }
 
     void RefreshAddonList() {
-        // Clear our list
-        //TODO: Don't clear this, but instead check what's removed and what's new, because we do lose some references here otherwise
-        // Until ^ is solved, refreshing can only be done by restarting
-        //AddonsList.clear();
-
         // Create path
         path addonsFolder = GetGuildWars2Folder(ADDONS_FOLDER);
         ADDONS_LOG()->info("Refresh add-ons list in {0}", addonsFolder.u8string());
@@ -52,17 +51,50 @@ namespace loader::addons {
         }
 
         // Iterate and find DLL files
+        set<string> addedAddons;
         for (const auto& pathFile : directory_iterator(addonsFolder)) {
-            if (pathFile.path().extension() == ".dll") {
-                ADDONS_LOG()->info("Found {0}", pathFile.path().u8string());
-                auto addon = Addon::GetAddon(pathFile.path().u8string());
-                if (addon->GetType() == AddonType::AddonTypeLegacy) {
+            const auto path = pathFile.path();
+            if (path.extension() == ".dll") {
+                bool exists = false;
+                for (const auto& existingAddon : Addons) {
+                    if (existingAddon->GetFileName() == path.filename().u8string()) {
+                        exists = true;
+                        break;
+                    }
+                }
+                addedAddons.insert(path.filename().u8string());
+                if (exists) {
+                    continue;
+                }
+
+                ADDONS_LOG()->info("Found {0}", path.u8string());
+                auto addon = Addon::GetAddon(path.u8string());
+                auto addonType = addon->GetType();
+                if (d3d9SdkVersion && addonType == AddonType::AddonTypeNative) {
+                    // Only hotload native add-ons
+                    InitializeAddon(addon.get(), d3d9SdkVersion, d3d9Instance, d3d9Device);
+                    Addons.Add(move(addon));
+                }
+                else if (addonType == AddonType::AddonTypeLegacy) {
                     Addons.Add(shared_ptr<LegacyAddon>(static_cast<LegacyAddon*>(addon.release())));
                 }
                 else {
                     Addons.Add(move(addon));
                 }
             }
+        }
+
+        for (auto it = Addons.begin(); it != Addons.end(); ) {
+            auto addon = *it;
+            auto fileName = addon->GetFileName();
+            if (addedAddons.find(fileName) == addedAddons.end()) {
+                // Addon has been deleted
+                ADDONS_LOG()->info("Add-on {0} has been removed", fileName);
+                UninitializeAddon(addon.get());
+                it = Addons.erase(it);
+                continue;
+            }
+            ++it;
         }
     }
 
@@ -147,32 +179,41 @@ namespace loader::addons {
     void InitializeAddons(UINT sdkVersion, hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* device) {
         ADDONS_LOG()->info("Initializing add-ons");
 
+        d3d9SdkVersion = sdkVersion;
+        d3d9Instance = d3d9;
+        d3d9Device = device;
+
         // We force the initialization order with legacy add-ons as last to prevent problems
         // with those add-ons initializing before our proxy addon is loaded
-        auto exec = [=](shared_ptr<Addon> addon) {
-            ADDONS_LOG()->info("Initializing add-on {0}", addon->GetFileName());
-            addon->D3D9SdkVersion = sdkVersion;
-            addon->D3D9 = d3d9;
-            addon->D3DDevice9 = device;
-            addon->Initialize();
-            ADDONS_LOG()->info("Add-on {0} is {1}", addon->GetFileName(), addon->GetTypeString());
-        };
         for (auto& addon : Addons.GetAddons()) {
-            exec(addon);
+            InitializeAddon(addon.get(), sdkVersion, d3d9, device);
         }
         for (auto& addon : Addons.GetLegacyAddons()) {
-            exec(addon);
+            InitializeAddon(addon.get(), sdkVersion, d3d9, device);
         }
 
         Addons.Sort(sortAddonsFunc);
     }
 
+    void InitializeAddon(Addon* const addon, UINT sdkVersion, hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* device) {
+        ADDONS_LOG()->info("Initializing add-on {0}", addon->GetFileName());
+        addon->D3D9SdkVersion = sdkVersion;
+        addon->D3D9 = d3d9;
+        addon->D3DDevice9 = device;
+        addon->Initialize();
+        ADDONS_LOG()->info("Add-on {0} is {1}", addon->GetFileName(), addon->GetTypeString());
+    }
+
     void UninitializeAddons() {
         ADDONS_LOG()->info("Uninitializing add-ons");
         for (auto& addon : Addons) {
-            ADDONS_LOG()->info("Uninitializing add-on {0}", addon->GetFileName());
-            addon->Uninitialize();
+            UninitializeAddon(addon.get());
         }
+    }
+
+    void UninitializeAddon(Addon* const addon) {
+        ADDONS_LOG()->info("Uninitializing add-on {0}", addon->GetFileName());
+        addon->Uninitialize();
     }
 
     void LoadAddons(HWND hFocusWindow) {

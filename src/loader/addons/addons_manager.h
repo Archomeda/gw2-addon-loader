@@ -58,7 +58,9 @@ namespace loader::addons {
     void ResetLegacyAddonChain();
 
     void InitializeAddons(UINT sdkVersion, hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* device);
+    void InitializeAddon(Addon* const addon, UINT sdkVersion, hooks::LoaderDirect3D9*, hooks::LoaderDirect3DDevice9* device);
     void UninitializeAddons();
+    void UninitializeAddon(Addon* const addon);
     void LoadAddons(HWND hFocusWindow);
     void UnloadAddons();
 

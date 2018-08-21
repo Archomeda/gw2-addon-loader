@@ -214,8 +214,16 @@ namespace loader::gui {
                 addon = addonsList[this->selectedAddon];
             }
 
-            // Button group for sorting add-ons
-            ImVec2 buttonSize((200 - style.ItemSpacing.x) / 2, 0);
+            // Button group for refreshing and sorting add-ons
+            ImVec2 buttonSize((200 - (2 * style.ItemSpacing.x)) / 3, 0);
+            if (ImGui::Button(ICON_MD_REFRESH, buttonSize)) {
+                this->selectedAddon = -1;
+                RefreshAddonList();
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Refresh add-ons");
+            }
+            ImGui::SameLine();
             if (this->selectedAddon > 0 && Addons.CanSwap(addon, addonsList[this->selectedAddon - 1])) {
                 if (ImGui::Button(ICON_MD_ARROW_UPWARD, buttonSize)) {
                     SwapAddonOrder(addon, addonsList[this->selectedAddon - 1]);
