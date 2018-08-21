@@ -200,6 +200,7 @@ namespace loader::hooks {
 
     void MumbleLink::Loop() {
         SetThreadDescription(GetCurrentThread(), L"[LOADER] MumbleLink");
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
      
         while (this->active) {
             unique_lock<mutex> lock(this->loopMutex);

@@ -221,6 +221,7 @@ namespace loader::diagnostics {
 
     void ThreadMonitor::Loop() {
         SetThreadDescription(GetCurrentThread(), L"[LOADER] ThreadMonitor");
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 
         chrono::high_resolution_clock::time_point deltaTimePoint;
 
