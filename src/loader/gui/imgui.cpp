@@ -300,7 +300,7 @@ namespace loader::gui::imgui {
         case WM_SETCURSOR:
             return LOWORD(lParam) == HTCLIENT && UpdateMouseCursor();
         case WM_MOUSEMOVE:
-            return GetForegroundWindow() == imGuiWnd && UpdateMouseCursor();
+            return UpdateMouseCursor();
         }
 
         return false;
@@ -469,10 +469,8 @@ namespace loader::gui::imgui {
         // Set mouse position
         io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
         POINT pos;
-        if (GetForegroundWindow() == imGuiWnd && GetCursorPos(&pos)) {
-            if (ScreenToClient(imGuiWnd, &pos)) {
-                io.MousePos = ImVec2((float)pos.x, (float)pos.y);
-            }
+        if (GetCursorPos(&pos) && ScreenToClient(imGuiWnd, &pos)) {
+            io.MousePos = ImVec2((float)pos.x, (float)pos.y);
         }
     }
 
