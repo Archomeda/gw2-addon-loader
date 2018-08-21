@@ -35,8 +35,12 @@ namespace loader::diagnostics {
         std::map<DWORD, std::shared_ptr<ThreadInfo>> threads;
         int cpus = 1;
 
-        bool active = false;
+#pragma region Loop varables
+        std::atomic_bool active = false;
         std::thread loopThread;
+        std::mutex loopMutex;
+        std::condition_variable loopCv;
+#pragma endregion
     };
 
 }

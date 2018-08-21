@@ -223,13 +223,15 @@ namespace loader::hooks {
             currentChainHook = newHook;
         }
 
+        ChainHookType chainHookType = currentChainHook.GetType();
+
         // Hook the hook chain
-        if (currentChainHook.GetType() != ChainHookType::NoHookType) {
+        if (chainHookType != ChainHookType::NoHookType) {
             currentChainHook.HookCallback(static_cast<HRESULT(WINAPI*)(IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*)>(&PresentAddonLoader));
         }
 
         HRESULT hr;
-        if (obsCompatibilityMode && currentChainHook.GetType() == ChainHookType::OBSHook) {
+        if (obsCompatibilityMode && chainHookType == ChainHookType::OBSHook) {
             // We have an OBS chain hook, call Present directly, as we have hooked PresentAddonLoader deeper into the chain
             hr = LegacyAddonChainDevice != nullptr ?
                 LegacyAddonChainDevice->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion) :
@@ -241,7 +243,7 @@ namespace loader::hooks {
         }
 
         // Unhook the hook chain again, to prevent issues if we suddenly crash
-        if (currentChainHook.GetType() != ChainHookType::NoHookType) {
+        if (chainHookType != ChainHookType::NoHookType) {
             currentChainHook.UnhookCallback();
         }
 

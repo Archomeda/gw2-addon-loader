@@ -121,8 +121,10 @@ HRESULT PreCreateDevice(hooks::LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE D
 }
 
 void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
-    // Start ThreadMonitor
-    diagnostics::ThreadMonitor::GetInstance().Start();
+    // Start ThreadMonitor only if the debug features are enabled
+    if (AppConfig.GetShowDebugFeatures()) {
+        diagnostics::ThreadMonitor::GetInstance().Start();
+    }
 
     // Hook MumbleLink
     hooks::MumbleLink::GetInstance().Start();

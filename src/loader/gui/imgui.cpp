@@ -78,6 +78,11 @@ namespace loader::gui::imgui {
             return;
         }
 
+        // Avoid rendering when there's nothing to render
+        if (drawData->CmdListsCount == 0) {
+            return;
+        }
+
         // Create and grow buffers if needed
         if (!imGuiVertexBuffer || imGuiVertexBufferSize < drawData->TotalVtxCount) {
             if (imGuiVertexBuffer) {

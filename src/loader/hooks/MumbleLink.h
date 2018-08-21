@@ -142,12 +142,6 @@ namespace loader::hooks {
 
         void Loop();
 
-        bool active = false;
-        std::thread loopThread;
-        std::mutex loopMutex;
-        std::condition_variable loopCv;
-        bool loopProceed = false;
-
         HANDLE hMap = NULL;
         std::unique_ptr<MumbleLinkMem> linkMemory;
         unsigned int lastTick;
@@ -171,6 +165,14 @@ namespace loader::hooks {
         vector3 cameraPosition;
         vector3 cameraFront;
         vector3 cameraTop;
+
+#pragma region Loop varables
+        std::atomic_bool active = false;
+        std::thread loopThread;
+        std::mutex loopMutex;
+        std::condition_variable loopCv;
+        bool loopProceed = false;
+#pragma endregion
     };
 
 }

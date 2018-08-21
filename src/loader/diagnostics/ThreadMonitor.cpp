@@ -204,6 +204,7 @@ namespace loader::diagnostics {
         DIAG_LOG()->info("Stopping ThreadMonitor loop");
 
         this->active = false;
+        this->loopCv.notify_all();
         this->loopThread.join();
     }
 
@@ -305,7 +306,8 @@ namespace loader::diagnostics {
                 }
             }
 
-            this_thread::sleep_for(chrono::seconds(1));
+            unique_lock<mutex> lock(this->loopMutex);
+            this->loopCv.wait_for(lock, chrono::seconds(1), [=] { return !this->active; });
         }
     }
 

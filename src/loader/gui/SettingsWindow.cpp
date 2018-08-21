@@ -490,6 +490,14 @@ OBS third-party overlays capture setting is disabled.)");
 
             if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
                 AppConfig.SetShowDebugFeatures(this->showDebugFeatures);
+
+                // Based on this setting, enable or disable the ThreadMonitor
+                if (this->showDebugFeatures) {
+                    diagnostics::ThreadMonitor::GetInstance().Start();
+                }
+                else {
+                    diagnostics::ThreadMonitor::GetInstance().Stop();
+                }
             }
 
             ImGui::AlignTextToFramePadding();
