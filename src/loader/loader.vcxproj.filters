@@ -165,6 +165,12 @@
     <ClInclude Include="gui\elements\Columns.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="updaters\CustomUpdater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -285,6 +291,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\elements\Columns.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updaters\CustomUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\string.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

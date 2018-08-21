@@ -61,7 +61,7 @@ namespace loader::updaters {
                 InternetCloseHandle(hSession);
 
                 this->busy = false;
-                this->completed = this->data.size() == this->dataSize;
+                this->completed = this->data.size() == this->dataSize || (this->data.size() > 0 && this->dataSize == 0);
                 this->DownloadComplete(this, this->data, this->error);
                 this->downloadTask = {};
 

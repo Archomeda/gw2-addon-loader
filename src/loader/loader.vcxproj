@@ -192,6 +192,7 @@
     <ClInclude Include="gui\elements\KeybindBox.h" />
     <ClInclude Include="minhook.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="updaters\CustomUpdater.h" />
     <ClInclude Include="updaters\Downloader.h" />
     <ClInclude Include="updaters\GithubReleasesUpdater.h" />
     <ClInclude Include="gui\BitmapFontAtlas.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="utils\debug.h" />
     <ClInclude Include="utils\encoding.h" />
     <ClInclude Include="utils\file.h" />
+    <ClInclude Include="utils\string.h" />
     <ClInclude Include="utils\web.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="Config.h" />
@@ -243,6 +245,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="updaters\CustomUpdater.cpp" />
     <ClCompile Include="updaters\Downloader.cpp" />
     <ClCompile Include="updaters\GithubReleasesUpdater.cpp" />
     <ClCompile Include="gui\BitmapFontAtlas.cpp" />
@@ -283,6 +286,7 @@
     <ClCompile Include="utils\debug.cpp" />
     <ClCompile Include="utils\encoding.cpp" />
     <ClCompile Include="utils\file.cpp" />
+    <ClCompile Include="utils\string.cpp" />
     <ClCompile Include="utils\web.cpp" />
   </ItemGroup>
   <ItemGroup>

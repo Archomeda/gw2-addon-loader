@@ -327,7 +327,9 @@ namespace loader::gui {
 
                         ImGui::Dummy(ImVec2(0, 8));
                         ImGui::PushTextWrapPos();
-                        ImGui::TextUnformatted("An update is available for this add-on.\nDisclaimer: Be careful with updating addons automatically; the download information is provided by the add-on itself and not by the Addon Loader. Always check the release notes first. There is no guarantee that the latest version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. After the update has finished, a full Guild Wars 2 restart is required.");
+                        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(153, 238, 238, 255));
+                        ImGui::TextUnformatted("An update is available for this add-on.\n" ICON_MD_WARNING " Disclaimer: Be careful; updating add-ons automatically is based on trust. The download is provided by the add-on itself and not by the Addon Loader. Always check the release notes first. There is no guarantee that a newer version doesn't contain additional code that might harm your Guild Wars 2 account or your computer. After the update has finished, a full Guild Wars 2 restart may be required.");
+                        ImGui::PopStyleColor();
                         ImGui::PopTextWrapPos();
 
                         ImGui::Dummy(ImVec2(0, 4));

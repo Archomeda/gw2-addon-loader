@@ -52,6 +52,8 @@ namespace loader::addons {
 
         AddonUpdateMethod updateMethod = AddonUpdateMethod::NoUpdateMethod;
         std::string githubRepo;
+        GW2AddonCheckUpdate_t* AddonCheckUpdate = nullptr;
+        GW2AddonDownloadUpdate_t* AddonDownloadUpdate = nullptr;
 
         GW2AddonInitialize_t* AddonInitialize = nullptr;
         GW2AddonRelease_t* AddonRelease = nullptr;

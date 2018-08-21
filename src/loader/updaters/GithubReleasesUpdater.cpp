@@ -53,7 +53,7 @@ namespace loader::updaters {
             return versionInfo;
         }
 
-        if (versionInfo.version == "") {
+        if (versionInfo.version.empty()) {
             UPDATERS_LOG()->info("No update info found on GitHub repository {0}", this->repository);
         }
         else {

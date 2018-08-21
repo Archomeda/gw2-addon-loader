@@ -1,6 +1,7 @@
 #include "NativeAddon.h"
 #include "addons_manager.h"
 #include "../log.h"
+#include "../updaters/CustomUpdater.h"
 #include "../updaters/GithubReleasesUpdater.h"
 
 using namespace std;
@@ -92,6 +93,23 @@ namespace loader::addons {
         this->updateMethod = v1->updateInfo.method;
         ADDONS_LOG()->debug(" - update method: {0}", this->updateMethod);
         switch (this->updateMethod) {
+        case AddonUpdateMethod::CustomUpdateMethod:
+            this->AddonCheckUpdate = v1->CheckUpdate;
+            if (this->AddonCheckUpdate) {
+                ADDONS_LOG()->debug(" - CheckUpdate: 0x{0:X}", reinterpret_cast<size_t>(v1->CheckUpdate));
+            }
+            else {
+                this->updateMethod = AddonUpdateMethod::NoUpdateMethod;
+                ADDONS_LOG()->warn("No CheckUpdate function provided, add-on updater disabled");
+            }
+            //TODO: Implement support for custom downloaders
+            /*
+            this->AddonDownloadUpdate = v1->DownloadUpdate;
+            if (this->AddonDownloadUpdate) {
+                ADDONS_LOG()->debug(" - DownloadUpdate: 0x{0:X}", reinterpret_cast<size_t>(v1->DownloadUpdate));
+            }
+            */
+            break;
         case AddonUpdateMethod::GithubReleasesUpdateMethod:
             this->githubRepo = v1->updateInfo.githubRepo;
             ADDONS_LOG()->debug(" - GitHub repo - {0}", this->githubRepo);
@@ -282,6 +300,8 @@ namespace loader::addons {
 
     unique_ptr<Updater> NativeAddon::GetUpdater() {
         switch (this->GetUpdateMethod()) {
+        case AddonUpdateMethod::CustomUpdateMethod:
+            return make_unique<CustomUpdater>(this->AddonCheckUpdate);
         case AddonUpdateMethod::GithubReleasesUpdateMethod:
             return make_unique<GithubReleasesUpdater>(this->githubRepo);
         }

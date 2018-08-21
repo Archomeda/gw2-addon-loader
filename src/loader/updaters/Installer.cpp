@@ -51,7 +51,7 @@ namespace loader::updaters {
 
 
     void Installer::DownloaderProgressUpdate(const Downloader* const downloader, size_t progress, size_t total) {
-        this->progressFraction = static_cast<float>(progress) / total;
+        this->progressFraction = total > 0 ? static_cast<float>(progress) / total : 0;
         if (total > 0) {
             stringstream ss;
             ss << "Downloading... " << std::fixed << std::setprecision(1) << this->progressFraction * 100 << "%";
@@ -157,7 +157,7 @@ namespace loader::updaters {
                         UPDATERS_LOG()->info("Copied new file " + target2.string());
                     }
                     catch (const exception& e) {
-                        this->SetDetailedProgress(string("Error while extracting ") + target + ": " + e.what());
+                        this->SetDetailedProgress("Error while extracting "s + target + ": " + e.what());
                         UPDATERS_LOG()->error("Error while extracting new file " + target + ": " + e.what());
                         success = false;
                         break;
@@ -167,6 +167,11 @@ namespace loader::updaters {
                 }
 
                 mz_zip_reader_end(&archive);
+            }
+            else {
+                this->SetDetailedProgress("Error: File type not supported");
+                UPDATERS_LOG()->error("Error while copying new file: File type is not supported");
+                success = false;
             }
 
             if (success) {

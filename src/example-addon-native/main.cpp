@@ -37,6 +37,7 @@ void GW2ADDON_CALL Draw(IDirect3DDevice9* pDev);
 void GW2ADDON_CALL DrawBeforePostProcessing(IDirect3DDevice9* pDev);
 void GW2ADDON_CALL DrawBeforeGui(IDirect3DDevice9* pDev);
 void GW2ADDON_CALL ApiKeyChange(const char* key);
+GW2ADDON_RESULT GW2ADDON_CALL CheckUpdate(UpdateCheckDetails* details);
 
 // A helper to convert a string to a wstring
 wstring u16(const string& str) {
@@ -63,6 +64,8 @@ GW2AddonAPIV1* GW2ADDON_CALL GW2AddonInitialize(int loaderVersion) {
     addon.DrawFrameBeforeGui = &DrawBeforeGui;
     addon.DrawFrame = &Draw;
     addon.ApiKeyChange = &ApiKeyChange;
+    addon.updateInfo.method = AddonUpdateMethod::CustomUpdateMethod;
+    addon.CheckUpdate = &CheckUpdate;
 
     HRSRC hIconResInfo = FindResource(dllModule, MAKEINTRESOURCE(IDB_PNGICON), L"PNG");
     HGLOBAL hIconRes = hIconResInfo ? LoadResource(dllModule, hIconResInfo) : NULL;
@@ -87,6 +90,8 @@ GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
     // You can initialize whatever you want to initialize here.
     focusWindow = hFocusWindow;
     device = pDev;
+
+    // We return 0 on success.
     return 0;
 }
 
@@ -164,37 +169,56 @@ void GW2ADDON_CALL ApiKeyChange(const char* key) {
     apiKey = string(k);
 }
 
+GW2ADDON_RESULT GW2ADDON_CALL CheckUpdate(UpdateCheckDetails* details) {
+    // In case you want to have your own custom update checker,
+    // you can use this callback to determine if your add-on has an update available.
+    // Check the header file under the AddonUpdateMethod enum for other built-in options.
+
+    // The details parameter is the struct where we write our information in.
+    // Every c-string has its size defined from the add-on loader.
+    // You have to use this size to determine the maximum amount of characters you can write into the buffer.
+
+    // Of course, this example has no valid download, but this is here to illustrate how it works.
+    strcpy_s(details->version, details->versionSize, "2.0");
+    strcpy_s(details->infoUrl, details->infoUrlSize, "https://github.com/Archomeda/gw2-addon-loader");
+    strcpy_s(details->downloadUrl, details->downloadUrlSize, "https://github.com/Archomeda/gw2-addon-loader");
+
+    // We return 0 on success.
+    return 0;
+}
+
 /**
 For legacy purposes.
-If you want your add-on to be compabible with both the add-on loader and traditional d3d9 hooking,
+If you want your add-on to be compatible with both the add-on loader and traditional d3d9 hooking,
 you'll probably want to implement this as well.
 How to write support for d3d9 hooking is out of scope for this example.
 */
 bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
-    wstring var;
+    string var;
     switch (fdwReason) {
-    case DLL_PROCESS_ATTACH:
+    case DLL_PROCESS_ATTACH: {
         // This is where the add-on gets loaded by the game or the add-on loader.
         // In order to determine if the add-on loader is active, you can look for the environment variable _IsGW2AddonLoaderActive.
         // If this variable exists, you know the add-on is loaded by the add-on loader, and not through conventional d3d9 means
-        wchar_t buff[16];
-        GetEnvironmentVariable(L"_IsGW2AddonLoaderActive", buff, 16);
-        var = wstring(buff);
-        if (!var.empty()) {
-            // Loaded through GW2 Add-on Loader.
-            // The actual value will be "1", but it may change in the future.
+        char buff[16] = {};
+        if (GetEnvironmentVariableA("_IsGW2AddonLoaderActive", buff, 16)) {
+            var = string(buff);
+            if (!var.empty()) {
+                // Loaded through GW2 Add-on Loader.
+                // The actual value will be "1", but it may change in the future.
 
-            // For demo purposes, we set this variable to true and draw it on screen to show that it works.
-            loader = true;
+                // For demo purposes, we set this variable to true and draw it on screen to show that it works.
+                loader = true;
+            }
         }
-        else {
+        if (!loader) {
             // Loaded through other means.
-            loader = false;
         }
 
         dllModule = hModule;
 
         break;
+    }
     case DLL_PROCESS_DETACH:
         // This is where the add-on gets unloaded by the game.
         // Clean up all your loaded stuff if the add-on wasn't loaded through the add-on loader.
