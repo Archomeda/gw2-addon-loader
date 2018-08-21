@@ -154,7 +154,7 @@ namespace loader::hooks {
         }
         isPresentingAddonLoader = true;
 
-        bool trackStats = AppConfig.GetShowDebugFeatures();
+        bool trackStats = AppConfig.GetDiagnostics();
 
         dev->BeginScene();
         addons::DrawFrame(dev);
@@ -198,7 +198,7 @@ namespace loader::hooks {
     }
 
     HRESULT LoaderDirect3DDevice9::Present(CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) {
-        bool trackStats = AppConfig.GetShowDebugFeatures();
+        bool trackStats = AppConfig.GetDiagnostics();
         bool obsCompatibilityMode = AppConfig.GetOBSCompatibilityMode();
 
         if (trackStats) {
@@ -266,7 +266,7 @@ namespace loader::hooks {
 
     HRESULT LoaderDirect3DDevice9::GetBackBuffer(UINT iSwapChain, UINT iBackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9** ppBackBuffer) {
         // This is the very first call Guild Wars 2 does upon a new frame
-        if (AppConfig.GetShowDebugFeatures()) {
+        if (AppConfig.GetDiagnostics()) {
             d3d9ProcessingStart = chrono::steady_clock::now();
         }
         addons::OnStartFrame(this->dev);

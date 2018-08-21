@@ -49,7 +49,7 @@ namespace loader {
         this->settingsKeybind = this->ParseKeybindString(u8(this->ini.GetValue(L"addons", L"window_keybind", L"16+18+122"))); // Alt + Shift + F11
         this->obsCompatibilityMode = this->ini.GetBoolValue(L"general", L"obs_compatibility_mode", false);
         this->showHiddenAddons = this->ini.GetBoolValue(L"addons", L"show_hidden_addons", false);
-        this->showDebugFeatures = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
+        this->diagnostics = this->ini.GetBoolValue(L"general", L"show_debug_features", false);
         this->apiKey = u8(this->ini.GetValue(L"general", L"api_key", L""));
         this->lastUpdateCheck = timestamp(chrono::seconds(this->ini.GetLongValue(L"general", L"last_update_check", 0)));
         this->latestVersion = u8(this->ini.GetValue(L"general", L"latest_version", L""));
@@ -112,9 +112,9 @@ namespace loader {
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetShowDebugFeatures(bool showDebugFeatures) {
-        this->showDebugFeatures = showDebugFeatures;
-        this->ini.SetBoolValue(L"general", L"show_debug_features", showDebugFeatures);
+    void Config::SetDiagnostics(bool diagnostics) {
+        this->diagnostics = diagnostics;
+        this->ini.SetBoolValue(L"general", L"diagnostics", diagnostics);
         this->ini.SaveFile(this->configPath.c_str());
     }
 

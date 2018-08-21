@@ -34,7 +34,7 @@ namespace loader::gui {
             this->windowKeybind = AppConfig.GetSettingsKeybind();
             this->obsCompatibilityMode = AppConfig.GetOBSCompatibilityMode();
             this->showHiddenAddons = AppConfig.GetShowHiddenAddons();
-            this->showDebugFeatures = AppConfig.GetShowDebugFeatures();
+            this->diagnostics = AppConfig.GetDiagnostics();
             strcpy_s(this->apiKey, sizeof(this->apiKey), AppConfig.GetApiKey().c_str());
             this->initializedState = true;
         }
@@ -51,14 +51,14 @@ namespace loader::gui {
                 ImGui::SetTooltip("Add-ons");
             }
 
-            if (AppConfig.GetShowDebugFeatures()) {
+            if (AppConfig.GetDiagnostics()) {
                 this->PushTabStyle(++i);
                 if (ImGui::Button(ICON_MD_SHOW_CHART)) {
                     this->selectedTab = i;
                 }
                 this->PopTabStyle(i);
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Statistics");
+                    ImGui::SetTooltip("Diagnostics");
                 }
             }
             else {
@@ -103,7 +103,7 @@ namespace loader::gui {
             this->RenderTabAddons();
             break;
         case 1:
-            this->RenderTabStats();
+            this->RenderTabDiagnostics();
             break;
         case 2:
             this->RenderTabSettings();
@@ -488,11 +488,11 @@ OBS third-party overlays capture setting is disabled.)");
                 AppConfig.SetShowHiddenAddons(this->showHiddenAddons);
             }
 
-            if (ImGui::Checkbox("Show debug features", &this->showDebugFeatures)) {
-                AppConfig.SetShowDebugFeatures(this->showDebugFeatures);
+            if (ImGui::Checkbox("Enable diagnostics", &this->diagnostics)) {
+                AppConfig.SetDiagnostics(this->diagnostics);
 
                 // Based on this setting, enable or disable the ThreadMonitor
-                if (this->showDebugFeatures) {
+                if (this->diagnostics) {
                     diagnostics::ThreadMonitor::GetInstance().Start();
                 }
                 else {
@@ -523,7 +523,7 @@ The API key will be automatically shared to all active add-ons.)");
         ImGui::EndChild();
     }
 
-    void SettingsWindow::RenderTabStats() {
+    void SettingsWindow::RenderTabDiagnostics() {
         shared_ptr<Addon> selectedAddon;
         stringstream sstream;
         sstream << "Guild Wars 2" << '\0' << "Add-on Loader" << '\0';

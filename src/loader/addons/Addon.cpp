@@ -204,7 +204,7 @@ namespace loader::addons {
 
 
     void Addon::OnStartFrame(IDirect3DDevice9* device) {
-        if (AppConfig.GetShowDebugFeatures()) {
+        if (AppConfig.GetDiagnostics()) {
             this->metricOverall.StartFrame();
             this->DrawFrameBeforeGui.GetMetric().StartFrame();
             this->DrawFrameBeforePostProcessing.GetMetric().StartFrame();
@@ -243,7 +243,7 @@ namespace loader::addons {
     }
 
     void Addon::OnEndFrame(IDirect3DDevice9* device) {
-        if (AppConfig.GetShowDebugFeatures()) {
+        if (AppConfig.GetDiagnostics()) {
             this->metricOverall.EndFrame();
             this->DrawFrameBeforeGui.GetMetric().EndFrame();
             this->DrawFrameBeforePostProcessing.GetMetric().EndFrame();

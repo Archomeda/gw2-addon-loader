@@ -122,7 +122,7 @@ HRESULT PreCreateDevice(hooks::LoaderDirect3D9* d3d9, UINT Adapter, D3DDEVTYPE D
 
 void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9* pDeviceInterface, HWND hFocusWindow) {
     // Start ThreadMonitor only if the debug features are enabled
-    if (AppConfig.GetShowDebugFeatures()) {
+    if (AppConfig.GetDiagnostics()) {
         diagnostics::ThreadMonitor::GetInstance().Start();
     }
 

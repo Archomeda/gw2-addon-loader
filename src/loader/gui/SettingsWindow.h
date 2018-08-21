@@ -21,7 +21,7 @@ namespace loader::gui {
         void RenderTabAddons();
         void RenderTabInfo();
         void RenderTabSettings();
-        void RenderTabStats();
+        void RenderTabDiagnostics();
         void RenderTabUpdate();
 
         bool IsAddonLoaderUpdateAvailable();
@@ -43,7 +43,7 @@ namespace loader::gui {
         bool showHiddenAddons;
         bool windowKeybindEditActive = false;
         std::set<uint_fast8_t> windowKeybind;
-        bool showDebugFeatures;
+        bool diagnostics;
         char apiKey[73] = {};
     };
 

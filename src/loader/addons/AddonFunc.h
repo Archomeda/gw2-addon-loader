@@ -116,7 +116,7 @@ namespace loader::addons {
 
     private:
         void StartMetric() {
-            if (AppConfig.GetShowDebugFeatures()) {
+            if (AppConfig.GetDiagnostics()) {
                 if (this->globalMetric != nullptr) {
                     this->globalMetric->StartMeasurement();
                 }
@@ -125,7 +125,7 @@ namespace loader::addons {
         }
 
         void EndMetric() {
-            if (AppConfig.GetShowDebugFeatures()) {
+            if (AppConfig.GetDiagnostics()) {
                 if (this->globalMetric != nullptr) {
                     this->globalMetric->EndMeasurement();
                 }
