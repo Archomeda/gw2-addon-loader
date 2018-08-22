@@ -1,5 +1,6 @@
 #pragma once
 #include "../stdafx.h"
+#include "Downloader.h"
 #include "Updater.h"
 #include "../addons/Addon.h"
 
@@ -8,7 +9,7 @@ namespace loader::updaters {
     class Installer {
     public:
         Installer(const VersionInfo version);
-        Installer(const VersionInfo version, const addons::Addon* const addon);
+        Installer(const VersionInfo version, const std::shared_ptr<addons::Addon> addon);
 
         void StartInstall();
 
@@ -24,6 +25,8 @@ namespace loader::updaters {
         void WriteFile(const std::vector<char>& fileData, const std::experimental::filesystem::path& fileName);
 
         void SetDetailedProgress(const std::string& progress);
+
+        std::shared_ptr<addons::Addon> addon;
 
         VersionInfo version;
         std::unique_ptr<Downloader> downloader;

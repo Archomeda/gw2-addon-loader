@@ -1,4 +1,6 @@
 #include "Installer.h"
+#include "CustomDownloader.h"
+#include "HttpDownloader.h"
 #include "../globals.h"
 #include "../log.h"
 #include "../utils/encoding.h"
@@ -16,10 +18,11 @@ namespace loader::updaters {
         targetSubfolder(BIN_FOLDER),
         targetFileName("d3d9.dll") { }
 
-    Installer::Installer(const VersionInfo version, const Addon* const addon) :
+    Installer::Installer(const VersionInfo version, const shared_ptr<Addon> addon) :
         version(version),
         targetSubfolder(ADDONS_FOLDER),
-        targetFileName(addon->GetFileName()) { }
+        targetFileName(addon->GetFileName()),
+        addon(addon) { }
 
 
     void Installer::StartInstall() {
@@ -29,7 +32,7 @@ namespace loader::updaters {
 
         this->busy = true;
 
-        this->downloader = make_unique<Downloader>(this->version.downloadUrl);
+        this->downloader = this->addon->GetDownloader();
         this->downloader->ProgressUpdate += [this](const Downloader* const downloader, size_t progress, size_t total) {
             this->DownloaderProgressUpdate(downloader, progress, total);
         };
@@ -74,12 +77,12 @@ namespace loader::updaters {
     void Installer::DownloaderComplete(const Downloader* const downloader, const vector<char>& data, const string& errorMessage) {
         if (!errorMessage.empty()) {
             this->SetDetailedProgress("Error while downloading: " + errorMessage);
-            UPDATERS_LOG()->error("Error while downloading " + downloader->GetUrl() + ": " + errorMessage);
+            UPDATERS_LOG()->error("Error while downloading: " + errorMessage);
             this->busy = false;
         }
         else if (downloader->HasCompleted()) {
             this->SetDetailedProgress("Finished downloading");
-            UPDATERS_LOG()->info("Finished downloading " + downloader->GetUrl());
+            UPDATERS_LOG()->info("Finished downloading");
             this->Extract(data);
         }
     }

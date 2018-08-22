@@ -49,9 +49,8 @@ struct UpdateCheckDetails {
     int infoUrlSize;
 
     // The download URL for the new version.
-    //TODO: Possible future feature:
-    //TODO: If NULL, the add-on loader won't download it with the built-in HTTP downloader.
-    //TODO: and you will have to provide the DownloadUpdate function.
+    // If NULL, the add-on loader won't download it with the built-in HTTP downloader.
+    // and you will have to provide the DownloadUpdate function.
     char* downloadUrl;
 
     // The download URL maximum character buffer size, includes the null terminuator.
@@ -109,11 +108,23 @@ This function should return 0 on success. Any other value will be treated as an 
 typedef GW2ADDON_RESULT(GW2ADDON_CALL GW2AddonCheckUpdate_t)(UpdateCheckDetails* const details);
 
 /**
-Reserved, not yet implemented.
+A function that must be periodically called to feed the add-on loader with the data from the buffer.
+ptr is the instance pointer that is passed to AddonDownloadUpdate; bytesWritten is the amount of bytes written in the buffer in this call; totalSize is the total file size in bytes.
+Don't call this too often, but every time when your buffer is full, or when it's the last bits of data.
+Do call this at the start to show the total size at the beginning, but with bytesWritten set to 0 (optional, but helpful in the UI).
+If you do not know the total size, set it to 0.
+*/
+typedef void(GW2ADDON_CALL GW2AddonLoaderWriteBufferCallback_t)(void* ptr, size_t bytesWritten, size_t totalSize);
+
+/**
 Gets called whenever the add-on loader wants the add-on to download an update and the CheckUpdate function didn't return an update url.
 Only used for add-ons that implement custom updaters and don't use HTTP hosting for their files.
+This function is running asynchronously, wrapping it yourself is not needed.
+Write the downloaded data back into the buffer, and call writeBufferCallback every time your buffer is full, and when the download is complete.
+Don't exceed the buffer size. Writing past the allocated buffer causes undefined behavior and possibly crashes.
+This function should return 0 on success. Any other value will be treated as an error.
 */
-typedef void(GW2ADDON_CALL GW2AddonDownloadUpdate_t)(char* const data, int* const dataSize);
+typedef GW2ADDON_RESULT(GW2ADDON_CALL GW2AddonDownloadUpdate_t)(void* ptr, char* buffer, int bufferSize, GW2AddonLoaderWriteBufferCallback_t* writeBufferCallback);
 
 /**
 Gets called whenever the shared API key changes, and immediately after loading.
@@ -435,7 +446,7 @@ typedef struct {
     GW2AddonOpenSettings_t* OpenSettings;
 
     GW2AddonCheckUpdate_t* CheckUpdate; // Only used in combination with CustomUpdateMethod
-    GW2AddonDownloadUpdate_t* DownloadUpdate; // Reserved; Only used in combination with CustomUpdateMethod and when no downloadUrl is provided in the CheckUpdate returned struct
+    GW2AddonDownloadUpdate_t* DownloadUpdate; // Only used in combination with CustomUpdateMethod and when no downloadUrl is provided in the CheckUpdate returned struct
 
     GW2AddonLoad_t* Load;
     GW2AddonDrawFrameBeforePostProcessing_t* DrawFrameBeforePostProcessing;

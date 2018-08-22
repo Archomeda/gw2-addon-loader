@@ -1,8 +1,10 @@
 #include "NativeAddon.h"
 #include "addons_manager.h"
 #include "../log.h"
+#include "../updaters/CustomDownloader.h"
 #include "../updaters/CustomUpdater.h"
 #include "../updaters/GithubReleasesUpdater.h"
+#include "../updaters/HttpDownloader.h"
 
 using namespace std;
 using namespace loader::updaters;
@@ -292,20 +294,36 @@ namespace loader::addons {
     }
 
 
-    void NativeAddon::OpenSettings() {
-        if (this->AddonOpenSettings != nullptr) {
-            this->AddonOpenSettings();
-        }
-    }
-
     unique_ptr<Updater> NativeAddon::GetUpdater() {
         switch (this->GetUpdateMethod()) {
         case AddonUpdateMethod::CustomUpdateMethod:
-            return make_unique<CustomUpdater>(this->AddonCheckUpdate);
+            if (this->AddonCheckUpdate) {
+                return make_unique<CustomUpdater>(this->AddonCheckUpdate);
+            }
+            break;
         case AddonUpdateMethod::GithubReleasesUpdateMethod:
             return make_unique<GithubReleasesUpdater>(this->githubRepo);
         }
         return nullptr;
+    }
+
+    unique_ptr<Downloader> NativeAddon::GetDownloader() {
+        const auto version = this->GetLatestVersion();
+        if (version.downloadUrl.empty()) {
+            if (this->AddonDownloadUpdate) {
+                return make_unique<CustomDownloader>(this->AddonDownloadUpdate);
+            }
+        }
+        else {
+            return make_unique<HttpDownloader>(version.downloadUrl);
+        }
+        return nullptr;
+    }
+
+    void NativeAddon::OpenSettings() {
+        if (this->AddonOpenSettings != nullptr) {
+            this->AddonOpenSettings();
+        }
     }
 
 }

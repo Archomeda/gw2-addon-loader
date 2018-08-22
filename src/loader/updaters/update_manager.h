@@ -12,6 +12,6 @@ namespace loader::updaters {
 
     void CheckUpdates();
     void InstallUpdate();
-    void InstallUpdate(addons::Addon* const addon);
+    void InstallUpdate(const std::shared_ptr<addons::Addon> addon);
 
 }

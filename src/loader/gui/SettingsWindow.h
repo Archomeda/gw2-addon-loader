@@ -15,7 +15,7 @@ namespace loader::gui {
         void EndStyle() override;
 
     private:
-        bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<addons::Addon*> addons, const ImVec2& listBoxSize, float listItemHeight);
+        bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<std::shared_ptr<addons::Addon>> addons, const ImVec2& listBoxSize, float listItemHeight);
         void ImGuiAddonStatLine(const char* label, const addons::AddonMetric& measure, bool calls);
 
         void RenderTabAddons();

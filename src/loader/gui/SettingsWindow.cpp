@@ -128,7 +128,7 @@ namespace loader::gui {
     }
 
 
-    bool SettingsWindow::ImGuiAddonsList(const char* label, int* current_item, const vector<Addon*> addons, const ImVec2& listBoxSize, float listItemHeight) {
+    bool SettingsWindow::ImGuiAddonsList(const char* label, int* current_item, const vector<shared_ptr<Addon>> addons, const ImVec2& listBoxSize, float listItemHeight) {
         if (!ImGui::ListBoxHeader(label, listBoxSize)) {
             return false;
         }
@@ -142,7 +142,7 @@ namespace loader::gui {
                 auto addon = addons[i];
 
                 ImGui::PushID(i);
-                if (elements::AddonListItem(addon, item_selected, ImVec2(0, listItemHeight))) {
+                if (elements::AddonListItem(addon.get(), item_selected, ImVec2(0, listItemHeight))) {
                     *current_item = i;
                     value_changed = true;
                 }
@@ -182,15 +182,15 @@ namespace loader::gui {
     void SettingsWindow::RenderTabAddons() {
         ImGuiStyle& style = ImGui::GetStyle();
 
-        vector<Addon*> addonsList;
+        vector<shared_ptr<Addon>> addonsList;
         for (const auto& addon : Addons) {
             if (AppConfig.GetShowHiddenAddons() || !addon->IsHidden()) {
-                addonsList.push_back(addon.get());
+                addonsList.push_back(addon);
             }
         }
 
         // Get selected add-on info
-        Addon* addon = nullptr;
+        shared_ptr<Addon> addon = nullptr;
         if (this->selectedAddon >= static_cast<int>(addonsList.size())) {
             this->selectedAddon = -1;
         }
@@ -224,10 +224,10 @@ namespace loader::gui {
                 ImGui::SetTooltip("Refresh add-ons");
             }
             ImGui::SameLine();
-            if (this->selectedAddon > 0 && Addons.CanSwap(addon, addonsList[this->selectedAddon - 1])) {
+            if (this->selectedAddon > 0 && Addons.CanSwap(addon.get(), addonsList[this->selectedAddon - 1].get())) {
                 if (ImGui::Button(ICON_MD_ARROW_UPWARD, buttonSize)) {
-                    SwapAddonOrder(addon, addonsList[this->selectedAddon - 1]);
-                    this->SelectAddon(addon);
+                    SwapAddonOrder(addon.get(), addonsList[this->selectedAddon - 1].get());
+                    this->SelectAddon(addon.get());
                 }
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Move selected add-on up");
@@ -237,10 +237,10 @@ namespace loader::gui {
                 ImGui::Dummy(buttonSize);
             }
             ImGui::SameLine();
-            if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size() - 1) && Addons.CanSwap(addon, addonsList[this->selectedAddon + 1])) {
+            if (this->selectedAddon > -1 && this->selectedAddon < static_cast<int>(addonsList.size() - 1) && Addons.CanSwap(addon.get(), addonsList[this->selectedAddon + 1].get())) {
                 if (ImGui::Button(ICON_MD_ARROW_DOWNWARD, buttonSize)) {
-                    SwapAddonOrder(addon, addonsList[this->selectedAddon + 1]);
-                    this->SelectAddon(addon);
+                    SwapAddonOrder(addon.get(), addonsList[this->selectedAddon + 1].get());
+                    this->SelectAddon(addon.get());
                 }
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Move selected add-on down");
@@ -323,7 +323,7 @@ namespace loader::gui {
                     // Potential available update
                     if (addon->HasUpdate()) {
                         VersionInfo version = addon->GetLatestVersion();
-                        shared_ptr<Installer> installer = AddonUpdateInstallers[addon];
+                        shared_ptr<Installer> installer = AddonUpdateInstallers[addon.get()];
 
                         ImGui::Dummy(ImVec2(0, 8));
                         ImGui::PushTextWrapPos();
@@ -380,7 +380,7 @@ namespace loader::gui {
                         if (addon->GetState() == AddonState::LoadedState) {
                             if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Deactivate", ImVec2(100, 0))) {
                                 ADDONS_LOG()->info("Unloading add-on {0}", addon->GetFileName());
-                                AppConfig.SetAddonEnabled(addon, false);
+                                AppConfig.SetAddonEnabled(addon.get(), false);
                                 if (addon->SupportsHotLoading()) {
                                     addon->Unload();
                                 }
@@ -392,13 +392,13 @@ namespace loader::gui {
                         }
                         else if (addon->GetState() == AddonState::UnloadedState) {
                             if (ImGui::Button(ICON_MD_POWER_SETTINGS_NEW " Activate", ImVec2(100, 0))) {
-                                AppConfig.SetAddonEnabled(addon, false);
+                                AppConfig.SetAddonEnabled(addon.get(), false);
                                 ADDONS_LOG()->info("Loading add-on {0}", addon->GetFileName());
                                 if (addon->SupportsHotLoading()) {
                                     if (addon->Load()) {
                                         auto state = addon->GetState();
                                         if (state == AddonState::LoadedState) {
-                                            AppConfig.SetAddonEnabled(addon, true);
+                                            AppConfig.SetAddonEnabled(addon.get(), true);
                                         }
                                     }
                                     else {
@@ -408,7 +408,7 @@ namespace loader::gui {
                                 }
                                 else {
                                     if (addon->LoadNextRestart()) {
-                                        AppConfig.SetAddonEnabled(addon, true);
+                                        AppConfig.SetAddonEnabled(addon.get(), true);
                                         ADDONS_LOG()->info("Add-on {0} will be loaded with next restart", addon->GetFileName());
                                     }
                                 }

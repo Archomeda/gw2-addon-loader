@@ -99,9 +99,6 @@
     <ClInclude Include="updaters\update_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="updaters\Downloader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="updaters\Installer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -169,6 +166,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils\string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updaters\HttpDownloader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updaters\Downloader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updaters\CustomDownloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -242,9 +248,6 @@
     <ClCompile Include="updaters\update_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="updaters\Downloader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="updaters\Installer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -297,6 +300,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utils\string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updaters\HttpDownloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updaters\Downloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updaters\CustomDownloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
