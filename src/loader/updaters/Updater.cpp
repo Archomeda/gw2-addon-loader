@@ -3,16 +3,25 @@
 using namespace std;
 
 namespace loader::updaters {
+    Updater::~Updater() {
+        if (this->updateTask.joinable()) {
+            this->updateTask.join();
+        }
+    }
 
     void Updater::CheckForUpdateAsync() {
-        if (!this->updateTask.valid()) {
-            this->updateTask = async(launch::async, [](Updater* updater) {
+        if (!this->active) {
+            this->active = true;
+            this->updateTask = thread([](Updater* updater) {
+                SetThreadDescription(GetCurrentThread(), L"[LOADER] Add-on Update Checker");
+                SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+
                 VersionInfo version = updater->CheckLatestVersion();
                 updater->latestVersion = version;
                 if (updater->checkCallback != nullptr) {
                     updater->checkCallback(updater, version);
                 }
-                updater->updateTask = {};
+                updater->active = false;
             }, this);
         }
     }

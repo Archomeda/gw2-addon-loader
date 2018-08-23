@@ -19,7 +19,7 @@ namespace loader::addons {
         virtual bool SupportsHotLoading() const override { return true; }
         virtual bool SupportsSettings() const override { return this->AddonOpenSettings != nullptr; }
         virtual bool SupportsUpdating() const override { return this->updateMethod != AddonUpdateMethod::NoUpdateMethod; }
-        virtual AddonUpdateMethod GetUpdateMethod() const { return this->updateMethod; }
+        virtual AddonUpdateMethod GetUpdateMethod() const override { return this->updateMethod; }
 
         virtual AddonType GetType() const override { return AddonType::AddonTypeNative; }
 
@@ -31,10 +31,10 @@ namespace loader::addons {
         virtual const std::string GetHomepage() const override { return this->homepage; }
         virtual IDirect3DTexture9* GetIcon() const override { return this->icon; }
 
-        virtual void OpenSettings() override;
-
-    protected:
         virtual std::unique_ptr<updaters::Updater> GetUpdater() override;
+        virtual std::unique_ptr<updaters::Downloader> GetDownloader() override;
+
+        virtual void OpenSettings() override;
 
     private:
         bool InitializeV1(GW2AddonAPIBase* base);
@@ -52,6 +52,8 @@ namespace loader::addons {
 
         AddonUpdateMethod updateMethod = AddonUpdateMethod::NoUpdateMethod;
         std::string githubRepo;
+        GW2AddonCheckUpdate_t* AddonCheckUpdate = nullptr;
+        GW2AddonDownloadUpdate_t* AddonDownloadUpdate = nullptr;
 
         GW2AddonInitialize_t* AddonInitialize = nullptr;
         GW2AddonRelease_t* AddonRelease = nullptr;

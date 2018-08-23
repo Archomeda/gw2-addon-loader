@@ -4,6 +4,7 @@
 #include "AddonMetric.h"
 #include "../hooks/LoaderDirect3D9.h"
 #include "../hooks/LoaderDirect3DDevice9.h"
+#include "../updaters/Downloader.h"
 #include "../updaters/Updater.h"
 
 namespace loader::addons {
@@ -68,6 +69,7 @@ namespace loader::addons {
         virtual bool SupportsSettings() const { return false; }
         virtual bool SupportsHomepage() const { return !this->GetHomepage().empty(); }
         virtual bool SupportsUpdating() const { return false; }
+        virtual AddonUpdateMethod GetUpdateMethod() const { return AddonUpdateMethod::NoUpdateMethod; }
 
         virtual AddonType GetType() const { return AddonType::AddonTypeUnknown; }
         const std::string GetTypeString() const { return AddonTypeToString(this->GetType()); }
@@ -82,6 +84,9 @@ namespace loader::addons {
         virtual const std::string GetHomepage() const { return ""; }
         virtual IDirect3DTexture9* GetIcon() const { return nullptr; }
         updaters::VersionInfo GetLatestVersion() const;
+
+        virtual std::unique_ptr<updaters::Updater> GetUpdater() { return nullptr; }
+        virtual std::unique_ptr<updaters::Downloader> GetDownloader() { return nullptr; }
 
         virtual void OpenSettings() { }
         void CheckUpdate(const std::function<updaters::UpdateCheckCallback_t>& callback);
@@ -137,8 +142,6 @@ namespace loader::addons {
         AddonFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPostDrawIndexedPrimitive;
 
     protected:
-        virtual std::unique_ptr<updaters::Updater> GetUpdater() { return nullptr; }
-
         void ChangeState(AddonState state) { this->state = state; }
 
         void UpdateHasRenderingHooks();

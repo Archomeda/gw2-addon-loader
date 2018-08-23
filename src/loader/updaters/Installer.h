@@ -1,5 +1,6 @@
 #pragma once
 #include "../stdafx.h"
+#include "Downloader.h"
 #include "Updater.h"
 #include "../addons/Addon.h"
 
@@ -8,11 +9,11 @@ namespace loader::updaters {
     class Installer {
     public:
         Installer(const VersionInfo version);
-        Installer(const VersionInfo version, const addons::Addon* const addon);
+        Installer(const VersionInfo version, const std::shared_ptr<addons::Addon> addon);
 
         void StartInstall();
 
-        bool IsBusy() const { return this->busy; }
+        bool IsActive() const { return this->active; }
         bool HasCompleted() const { return this->completed; }
         float GetProgressFraction() const { return this->progressFraction; }
         const std::string GetDetailedProgress();
@@ -25,18 +26,18 @@ namespace loader::updaters {
 
         void SetDetailedProgress(const std::string& progress);
 
+        std::shared_ptr<addons::Addon> addon;
+
         VersionInfo version;
         std::unique_ptr<Downloader> downloader;
         std::string targetSubfolder;
         std::string targetFileName;
 
-        std::atomic_bool busy = false;
+        std::atomic_bool active = false;
         std::atomic_bool completed = false;
         std::atomic<float> progressFraction = 0;
         std::mutex detailedProgressMutex;
         std::string detailedProgress;
-
-        std::future<void> extractTask;
     };
 
 }

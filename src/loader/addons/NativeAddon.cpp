@@ -1,7 +1,10 @@
 #include "NativeAddon.h"
 #include "addons_manager.h"
 #include "../log.h"
+#include "../updaters/CustomDownloader.h"
+#include "../updaters/CustomUpdater.h"
 #include "../updaters/GithubReleasesUpdater.h"
+#include "../updaters/HttpDownloader.h"
 
 using namespace std;
 using namespace loader::updaters;
@@ -92,6 +95,20 @@ namespace loader::addons {
         this->updateMethod = v1->updateInfo.method;
         ADDONS_LOG()->debug(" - update method: {0}", this->updateMethod);
         switch (this->updateMethod) {
+        case AddonUpdateMethod::CustomUpdateMethod:
+            this->AddonCheckUpdate = v1->CheckUpdate;
+            if (this->AddonCheckUpdate) {
+                ADDONS_LOG()->debug(" - CheckUpdate: 0x{0:X}", reinterpret_cast<size_t>(v1->CheckUpdate));
+            }
+            else {
+                this->updateMethod = AddonUpdateMethod::NoUpdateMethod;
+                ADDONS_LOG()->warn("No CheckUpdate function provided, add-on updater disabled");
+            }
+            this->AddonDownloadUpdate = v1->DownloadUpdate;
+            if (this->AddonDownloadUpdate) {
+                ADDONS_LOG()->debug(" - DownloadUpdate: 0x{0:X}", reinterpret_cast<size_t>(v1->DownloadUpdate));
+            }
+            break;
         case AddonUpdateMethod::GithubReleasesUpdateMethod:
             this->githubRepo = v1->updateInfo.githubRepo;
             ADDONS_LOG()->debug(" - GitHub repo - {0}", this->githubRepo);
@@ -274,18 +291,36 @@ namespace loader::addons {
     }
 
 
-    void NativeAddon::OpenSettings() {
-        if (this->AddonOpenSettings != nullptr) {
-            this->AddonOpenSettings();
-        }
-    }
-
     unique_ptr<Updater> NativeAddon::GetUpdater() {
         switch (this->GetUpdateMethod()) {
+        case AddonUpdateMethod::CustomUpdateMethod:
+            if (this->AddonCheckUpdate) {
+                return make_unique<CustomUpdater>(this->AddonCheckUpdate);
+            }
+            break;
         case AddonUpdateMethod::GithubReleasesUpdateMethod:
             return make_unique<GithubReleasesUpdater>(this->githubRepo);
         }
         return nullptr;
+    }
+
+    unique_ptr<Downloader> NativeAddon::GetDownloader() {
+        const auto version = this->GetLatestVersion();
+        if (version.downloadUrl.empty()) {
+            if (this->AddonDownloadUpdate) {
+                return make_unique<CustomDownloader>(this->AddonDownloadUpdate);
+            }
+        }
+        else {
+            return make_unique<HttpDownloader>(version.downloadUrl);
+        }
+        return nullptr;
+    }
+
+    void NativeAddon::OpenSettings() {
+        if (this->AddonOpenSettings != nullptr) {
+            this->AddonOpenSettings();
+        }
     }
 
 }
