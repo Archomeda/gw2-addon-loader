@@ -44,7 +44,7 @@ static unsigned char* zlib_compress(unsigned char* data, int data_len, int* out_
 #include "stb_image_write.h"
 
 using namespace std;
-using namespace std::experimental::filesystem;
+using namespace std::filesystem;
 
 #pragma pack(push, 1)
 struct AtlasInfo {

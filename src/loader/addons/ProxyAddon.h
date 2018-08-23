@@ -13,7 +13,7 @@ namespace loader::addons {
         ProxyAddon(const std::string& filePath) : Addon(filePath) {
             ProxyAddon::Instance = this;
         }
-        ProxyAddon(const std::experimental::filesystem::path& filePath) : Addon(filePath) {
+        ProxyAddon(const std::filesystem::path& filePath) : Addon(filePath) {
             ProxyAddon::Instance = this;
         }
 

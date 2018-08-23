@@ -3,7 +3,7 @@
 #define LOG_FILE "addons/loader/loader.log"
 
 using namespace std;
-using namespace std::experimental::filesystem;
+using namespace std::filesystem;
 
 namespace loader {
 

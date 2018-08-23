@@ -8,7 +8,7 @@ namespace loader::addons {
     public:
         NativeAddon() : Addon() { }
         NativeAddon(const std::string& filePath) : Addon(filePath) { }
-        NativeAddon(const std::experimental::filesystem::path& filePath) : Addon(filePath) { }
+        NativeAddon(const std::filesystem::path& filePath) : Addon(filePath) { }
 
         virtual bool Initialize() override;
         virtual bool Uninitialize() override;

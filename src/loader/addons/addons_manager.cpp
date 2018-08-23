@@ -6,7 +6,7 @@
 #include "../utils/file.h"
 
 using namespace std;
-using namespace std::experimental::filesystem;
+using namespace std::filesystem;
 using namespace loader::utils;
 
 namespace loader::addons {

@@ -16,7 +16,7 @@
 #include "../utils/encoding.h"
 
 using namespace std;
-using namespace std::experimental::filesystem;
+using namespace std::filesystem;
 using namespace loader::addons;
 using namespace loader::diagnostics;
 using namespace loader::updaters;

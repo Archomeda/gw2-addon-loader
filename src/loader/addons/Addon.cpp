@@ -9,7 +9,7 @@
 #include "../utils/encoding.h"
 
 using namespace std;
-using namespace std::experimental::filesystem;
+using namespace std::filesystem;
 using namespace loader::updaters;
 using namespace loader::utils;
 

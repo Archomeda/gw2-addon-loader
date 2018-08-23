@@ -22,7 +22,7 @@ to be present inside the addon folder.
 #include "ProxyDirect3D9.h"
 
 using namespace std;
-using namespace std::experimental::filesystem;
+using namespace std::filesystem;
 
 
 HMODULE SystemD3D9Module;

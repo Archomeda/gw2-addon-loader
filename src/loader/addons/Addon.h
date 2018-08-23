@@ -35,18 +35,18 @@ namespace loader::addons {
             this->InitializeAddonFuncs();
         }
         Addon(const std::string& filePath) :
-            filePath(std::experimental::filesystem::u8path(filePath)),
-            fileName(std::experimental::filesystem::u8path(filePath).filename().u8string()) {
+            filePath(std::filesystem::u8path(filePath)),
+            fileName(std::filesystem::u8path(filePath).filename().u8string()) {
             this->InitializeAddonFuncs();
         }
-        Addon(const std::experimental::filesystem::path& filePath) :
+        Addon(const std::filesystem::path& filePath) :
             filePath(filePath),
             fileName(filePath.filename().u8string()) {
             this->InitializeAddonFuncs();
         }
 
         static std::unique_ptr<Addon> GetAddon(const std::string& filePath);
-        static std::unique_ptr<Addon> GetAddon(const std::experimental::filesystem::path& filePath);
+        static std::unique_ptr<Addon> GetAddon(const std::filesystem::path& filePath);
 
         virtual bool Initialize() { return false; }
         virtual bool Uninitialize() { return false; }
@@ -72,7 +72,7 @@ namespace loader::addons {
         virtual AddonType GetType() const { return AddonType::AddonTypeUnknown; }
         const std::string GetTypeString() const { return AddonTypeToString(this->GetType()); }
 
-        virtual const std::experimental::filesystem::path GetFilePath() const { return this->filePath; }
+        virtual const std::filesystem::path GetFilePath() const { return this->filePath; }
         virtual const std::string GetFileName() const { return this->GetFilePath().filename().u8string(); }
         virtual const std::string GetID() const { return this->GetFileName(); }
         virtual const std::string GetName() const { return this->GetID(); }
@@ -150,7 +150,7 @@ namespace loader::addons {
         void RemoveHook(std::vector<Addon*>& addons);
 
         AddonState state = AddonState::UnloadedState;
-        std::experimental::filesystem::path filePath;
+        std::filesystem::path filePath;
         std::string fileName;
 
         bool hasRenderingHooks = false;

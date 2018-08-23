@@ -15,7 +15,7 @@ namespace loader::addons {
     public:
         LegacyAddon() : Addon() { }
         LegacyAddon(const std::string& filePath) : Addon(filePath) { }
-        LegacyAddon(const std::experimental::filesystem::path& filePath) : Addon(filePath) { }
+        LegacyAddon(const std::filesystem::path& filePath) : Addon(filePath) { }
 
         bool ApplySafeEnv();
         bool RevertSafeEnv();

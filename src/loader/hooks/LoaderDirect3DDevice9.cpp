@@ -7,7 +7,7 @@
 #include "../disasm/d3d9Vtbl.h"
 
 using namespace std;
-using namespace std::experimental::filesystem;
+using namespace std::filesystem;
 
 namespace loader::hooks {
 
