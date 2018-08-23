@@ -27,6 +27,7 @@ using namespace loader::utils;
 
 HMODULE dllModule;
 WNDPROC BaseWndProc;
+bool isLoaded = false;
 
 // We need this here because of out-of-scope issues
 string imGuiConfigFile;
@@ -191,6 +192,8 @@ void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9
 
     // Load enabled add-ons
     addons::LoadAddons(hFocusWindow);
+
+    isLoaded = true;
 }
 
 
@@ -249,12 +252,14 @@ bool WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved) {
     case DLL_PROCESS_DETACH: {
         MH_Uninitialize();
 
-        diagnostics::ThreadMonitor::GetInstance().Stop();
-        hooks::MumbleLink::GetInstance().Stop();
-        gui::imgui::Shutdown();
+        if (isLoaded) {
+            diagnostics::ThreadMonitor::GetInstance().Stop();
+            hooks::MumbleLink::GetInstance().Stop();
+            gui::imgui::Shutdown();
 
-        addons::UnloadAddons();
-        addons::UninitializeAddons();
+            addons::UnloadAddons();
+            addons::UninitializeAddons();
+        }
 
         hooks::UninitializeHooks();
 
