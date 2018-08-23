@@ -307,7 +307,7 @@ namespace loader::diagnostics {
             }
 
             unique_lock<mutex> lock(this->loopMutex);
-            this->loopCv.wait_for(lock, chrono::seconds(1), [=] { return !this->active; });
+            this->loopCv.wait_for(lock, 1s, [=] { return !this->active; });
         }
     }
 
