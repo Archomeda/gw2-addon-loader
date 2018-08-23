@@ -11,14 +11,9 @@ namespace loader::updaters {
         auto result = this->downloadFunc(this, this->downloadBuffer, BUFFER_SIZE, &CustomDownloader::WriteBuffer);
         delete[] this->downloadBuffer;
 
-        this->FinishDownload();
-        if (!result) {
-            this->DownloadComplete(this, this->data, this->error);
-        }
-        else {
+        if (result) {
             this->error = "Failed with error " + result;
         }
-        this->CleanUpDownload();
     }
 
     void CustomDownloader::WriteBuffer(void* downloader, unsigned int bytesWritten, unsigned int totalSize) {

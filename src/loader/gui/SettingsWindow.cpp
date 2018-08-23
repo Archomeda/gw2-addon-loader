@@ -342,7 +342,7 @@ namespace loader::gui {
                             }
                         }
                         ImGui::SameLine();
-                        if (installer != nullptr && (installer->IsBusy() || installer->HasCompleted())) {
+                        if (installer != nullptr && (installer->IsActive() || installer->HasCompleted())) {
                             ImGui::ProgressBar(installer->GetProgressFraction(), ImVec2(-1, 32), installer->GetDetailedProgress().c_str());
                         }
                         else {
@@ -804,7 +804,7 @@ The API key will be automatically shared to all active add-ons.)");
                     ShellExecute(0, 0, u16(AppConfig.GetLatestVersionInfoUrl()).c_str(), 0, 0, SW_SHOW);
                 }
                 ImGui::SameLine();
-                if (LoaderUpdaterInstaller != nullptr && (LoaderUpdaterInstaller->IsBusy() || LoaderUpdaterInstaller->HasCompleted())) {
+                if (LoaderUpdaterInstaller != nullptr && (LoaderUpdaterInstaller->IsActive() || LoaderUpdaterInstaller->HasCompleted())) {
                     ImGui::ProgressBar(LoaderUpdaterInstaller->GetProgressFraction(), ImVec2(-1, 32), LoaderUpdaterInstaller->GetDetailedProgress().c_str());
                 }
                 else {

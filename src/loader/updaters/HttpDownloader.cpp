@@ -7,13 +7,13 @@ using namespace loader::utils;
 namespace loader::updaters {
 
     void HttpDownloader::DownloadUpdate() {
+        SetThreadDescription(GetCurrentThread(), L"[LOADER] Add-on Updater");
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+
         string url = this->url;
         HINTERNET hSession = InternetOpen(L"Guild Wars 2 Add-on Loader", 0, NULL, NULL, 0);
         if (hSession == NULL) {
             this->error = "Failed to open session";
-            this->FinishDownload();
-            this->DownloadComplete(this, {}, this->error);
-            this->CleanUpDownload();
             return;
         }
 
@@ -21,9 +21,6 @@ namespace loader::updaters {
         if (hOpenUrl == NULL) {
             InternetCloseHandle(hSession);
             this->error = "Failed to open URL";
-            this->FinishDownload();
-            this->DownloadComplete(this, {}, this->error);
-            this->CleanUpDownload();
             return;
         }
 
@@ -55,9 +52,5 @@ namespace loader::updaters {
         delete[] buffer;
         InternetCloseHandle(hOpenUrl);
         InternetCloseHandle(hSession);
-
-        this->FinishDownload();
-        this->DownloadComplete(this, this->data, this->error);
-        this->CleanUpDownload();
     }
 }

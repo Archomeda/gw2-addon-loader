@@ -13,7 +13,7 @@ namespace loader::updaters {
 
         void StartInstall();
 
-        bool IsBusy() const { return this->busy; }
+        bool IsActive() const { return this->active; }
         bool HasCompleted() const { return this->completed; }
         float GetProgressFraction() const { return this->progressFraction; }
         const std::string GetDetailedProgress();
@@ -33,13 +33,11 @@ namespace loader::updaters {
         std::string targetSubfolder;
         std::string targetFileName;
 
-        std::atomic_bool busy = false;
+        std::atomic_bool active = false;
         std::atomic_bool completed = false;
         std::atomic<float> progressFraction = 0;
         std::mutex detailedProgressMutex;
         std::string detailedProgress;
-
-        std::future<void> extractTask;
     };
 
 }

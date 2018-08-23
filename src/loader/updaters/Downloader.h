@@ -11,6 +11,8 @@ namespace loader::updaters {
 
     class Downloader {
     public:
+        ~Downloader();
+
         Event<const Downloader* const, std::size_t, std::size_t> ProgressUpdate;
         Event<const Downloader* const, const std::vector<char>&, const std::string&> DownloadComplete;
 
@@ -21,15 +23,13 @@ namespace loader::updaters {
         const std::vector<char> GetData();
 
         virtual bool IsValid() const = 0;
-        bool IsBusy() const { return this->busy; }
+        bool IsActive() const { return this->active; }
         bool HasCompleted() const { return this->completed; }
         bool HasError() const { return !this->error.empty(); }
         std::string GetErrorMessage() const { return this->error; }
 
     protected:
         virtual void DownloadUpdate() = 0;
-        void FinishDownload();
-        void CleanUpDownload();
         
         std::vector<char> data;
         std::mutex dataMutex;
@@ -39,8 +39,8 @@ namespace loader::updaters {
         std::string error;
 
     private:
-        std::future<void> downloadTask;
-        std::atomic_bool busy = false;
+        std::thread downloadTask;
+        std::atomic_bool active = false;
         std::atomic_bool completed = false;
     };
 

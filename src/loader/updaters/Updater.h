@@ -16,6 +16,8 @@ namespace loader::updaters {
 
     class Updater {
     public:
+        ~Updater();
+
         void SetCheckCallback(std::function<UpdateCheckCallback_t> callback) { this->checkCallback = callback; }
 
         void CheckForUpdateAsync();
@@ -26,7 +28,8 @@ namespace loader::updaters {
         virtual VersionInfo CheckLatestVersion() = 0;
 
     private:
-        std::future<void> updateTask;
+        std::atomic_bool active = false;
+        std::thread updateTask;
         VersionInfo latestVersion;
         std::function<UpdateCheckCallback_t> checkCallback;
     };
