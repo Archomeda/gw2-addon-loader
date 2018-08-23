@@ -63,10 +63,6 @@ namespace loader::updaters {
 
     void InstallUpdate(const shared_ptr<Addon> addon) {
         VersionInfo versionInfo = addon->GetLatestVersion();
-        if (versionInfo.downloadUrl.empty()) {
-            return;
-        }
-
         shared_ptr<Installer> installer = make_shared<Installer>(versionInfo, addon);
         AddonUpdateInstallers[addon.get()] = installer;
         installer->StartInstall();

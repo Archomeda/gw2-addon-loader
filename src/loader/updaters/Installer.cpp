@@ -33,6 +33,12 @@ namespace loader::updaters {
         this->busy = true;
 
         this->downloader = this->addon->GetDownloader();
+        if (!this->downloader->IsValid()) {
+            this->busy = false;
+            this->SetDetailedProgress("Invalid download");
+            return;
+        }
+
         this->downloader->ProgressUpdate += [this](const Downloader* const downloader, size_t progress, size_t total) {
             this->DownloaderProgressUpdate(downloader, progress, total);
         };

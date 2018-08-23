@@ -11,6 +11,7 @@ namespace loader::updaters {
         HINTERNET hSession = InternetOpen(L"Guild Wars 2 Add-on Loader", 0, NULL, NULL, 0);
         if (hSession == NULL) {
             this->error = "Failed to open session";
+            this->FinishDownload();
             this->DownloadComplete(this, {}, this->error);
             this->CleanUpDownload();
             return;
@@ -20,6 +21,7 @@ namespace loader::updaters {
         if (hOpenUrl == NULL) {
             InternetCloseHandle(hSession);
             this->error = "Failed to open URL";
+            this->FinishDownload();
             this->DownloadComplete(this, {}, this->error);
             this->CleanUpDownload();
             return;
@@ -54,6 +56,7 @@ namespace loader::updaters {
         InternetCloseHandle(hOpenUrl);
         InternetCloseHandle(hSession);
 
+        this->FinishDownload();
         this->DownloadComplete(this, this->data, this->error);
         this->CleanUpDownload();
     }

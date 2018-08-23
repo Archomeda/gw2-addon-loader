@@ -2,7 +2,7 @@
 
 using namespace std;
 
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 4096u
 
 namespace loader::updaters {
 
@@ -11,6 +11,7 @@ namespace loader::updaters {
         auto result = this->downloadFunc(this, this->downloadBuffer, BUFFER_SIZE, &CustomDownloader::WriteBuffer);
         delete[] this->downloadBuffer;
 
+        this->FinishDownload();
         if (!result) {
             this->DownloadComplete(this, this->data, this->error);
         }
@@ -20,7 +21,7 @@ namespace loader::updaters {
         this->CleanUpDownload();
     }
 
-    void CustomDownloader::WriteBuffer(void* downloader, size_t bytesWritten, size_t totalSize) {
+    void CustomDownloader::WriteBuffer(void* downloader, unsigned int bytesWritten, unsigned int totalSize) {
         CustomDownloader* obj = static_cast<CustomDownloader*>(downloader);
         obj->dataSize = totalSize;
         if (bytesWritten == 0) {

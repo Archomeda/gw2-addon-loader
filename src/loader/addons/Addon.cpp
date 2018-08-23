@@ -175,7 +175,7 @@ namespace loader::addons {
 
     bool Addon::HasUpdate() const {
         VersionInfo version = this->GetLatestVersion();
-        return this->SupportsUpdating() && !version.downloadUrl.empty() && version.version != this->GetVersion();
+        return this->SupportsUpdating() && version.version != this->GetVersion();
     }
 
 

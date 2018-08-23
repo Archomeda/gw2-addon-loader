@@ -28,6 +28,7 @@ namespace loader::updaters {
 
     protected:
         virtual void DownloadUpdate() = 0;
+        void FinishDownload();
         void CleanUpDownload();
         
         std::vector<char> data;

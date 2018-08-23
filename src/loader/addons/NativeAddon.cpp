@@ -104,13 +104,10 @@ namespace loader::addons {
                 this->updateMethod = AddonUpdateMethod::NoUpdateMethod;
                 ADDONS_LOG()->warn("No CheckUpdate function provided, add-on updater disabled");
             }
-            //TODO: Implement support for custom downloaders
-            /*
             this->AddonDownloadUpdate = v1->DownloadUpdate;
             if (this->AddonDownloadUpdate) {
                 ADDONS_LOG()->debug(" - DownloadUpdate: 0x{0:X}", reinterpret_cast<size_t>(v1->DownloadUpdate));
             }
-            */
             break;
         case AddonUpdateMethod::GithubReleasesUpdateMethod:
             this->githubRepo = v1->updateInfo.githubRepo;

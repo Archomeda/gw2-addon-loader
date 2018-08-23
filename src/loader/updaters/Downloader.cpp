@@ -12,12 +12,15 @@ namespace loader::updaters {
         }
     }
 
-    void Downloader::CleanUpDownload() {
+    void Downloader::FinishDownload() {
         if (this->busy) {
             this->busy = false;
             this->completed = this->data.size() == this->dataSize || (this->data.size() > 0 && this->dataSize == 0);
-            this->downloadTask = {};
         }
+    }
+
+    void Downloader::CleanUpDownload() {
+        this->downloadTask = {};
     }
 
     const vector<char> Downloader::GetData() {

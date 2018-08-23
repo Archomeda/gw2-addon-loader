@@ -114,7 +114,7 @@ Don't call this too often, but every time when your buffer is full, or when it's
 Do call this at the start to show the total size at the beginning, but with bytesWritten set to 0 (optional, but helpful in the UI).
 If you do not know the total size, set it to 0.
 */
-typedef void(GW2ADDON_CALL GW2AddonLoaderWriteBufferCallback_t)(void* ptr, size_t bytesWritten, size_t totalSize);
+typedef void(GW2ADDON_CALL GW2AddonLoaderWriteBufferCallback_t)(void* ptr, unsigned int bytesWritten, unsigned int totalSize);
 
 /**
 Gets called whenever the add-on loader wants the add-on to download an update and the CheckUpdate function didn't return an update url.
