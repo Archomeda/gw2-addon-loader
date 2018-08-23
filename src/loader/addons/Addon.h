@@ -102,7 +102,7 @@ namespace loader::addons {
         hooks::LoaderDirect3DDevice9* D3DDevice9 = nullptr;
         HWND FocusWindow = NULL;
 
-        AddonFunc<void, const char*> ApiKeyChange;
+        AddonFunc<void, const char*, int> ApiKeyChange;
 
         AddonFunc<bool, HWND, UINT, WPARAM, LPARAM> HandleWndProc;
 

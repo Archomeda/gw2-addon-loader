@@ -71,7 +71,7 @@ namespace loader::addons {
     void DrawFrameBeforePostProcessing(IDirect3DDevice9* device);
     void DrawFrameBeforeGui(IDirect3DDevice9* device);
     void DrawFrame(IDirect3DDevice9* device);
-    void ApiKeyChange(const char* key);
+    void ApiKeyChange(const char* key, int keySize);
     void AdvPreBeginScene(IDirect3DDevice9* device);
     void AdvPostBeginScene(IDirect3DDevice9* device);
     void AdvPreEndScene(IDirect3DDevice9* device);

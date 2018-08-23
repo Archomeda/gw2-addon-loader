@@ -38,7 +38,7 @@ GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev);
 void GW2ADDON_CALL Draw(IDirect3DDevice9* pDev);
 void GW2ADDON_CALL DrawBeforePostProcessing(IDirect3DDevice9* pDev);
 void GW2ADDON_CALL DrawBeforeGui(IDirect3DDevice9* pDev);
-void GW2ADDON_CALL ApiKeyChange(const char* key);
+void GW2ADDON_CALL ApiKeyChange(const char* key, int keySize);
 GW2ADDON_RESULT GW2ADDON_CALL CheckUpdate(UpdateCheckDetails* details);
 GW2ADDON_RESULT GW2ADDON_CALL DownloadUpdate(void* ptr, char* buffer, int bufferSize, GW2AddonLoaderWriteBufferCallback_t* writeBufferCallback);
 
@@ -157,7 +157,7 @@ void GW2ADDON_CALL DrawBeforeGui(IDirect3DDevice9* pDev) {
     font->Release();
 }
 
-void GW2ADDON_CALL ApiKeyChange(const char* key) {
+void GW2ADDON_CALL ApiKeyChange(const char* key, int keySize) {
     // This is where we get the shared API key.
     // You can do whatever you want with the key, but you have to check its validity yourself.
     
@@ -167,10 +167,7 @@ void GW2ADDON_CALL ApiKeyChange(const char* key) {
     }
     
     // Copy it because the parameter key will be cleaned up after this function.
-    // 73 should be the max length of an API key + the null terminator.
-    char k[73];
-    strcpy_s(k, sizeof(k), key);
-    apiKey = string(k);
+    apiKey = string(key, keySize);
 }
 
 GW2ADDON_RESULT GW2ADDON_CALL CheckUpdate(UpdateCheckDetails* details) {

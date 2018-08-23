@@ -128,10 +128,10 @@ typedef GW2ADDON_RESULT(GW2ADDON_CALL GW2AddonDownloadUpdate_t)(void* ptr, char*
 
 /**
 Gets called whenever the shared API key changes, and immediately after loading.
-Parameter key is a null-terminated C-string. The pointer can be NULL if no API key is set.
+Parameter key is a C-string with keySize as length. The pointer can be NULL if no API key is set.
 Copy the key to a local variable, because it will be cleaned up after this call.
 */
-typedef void(GW2ADDON_CALL GW2AddonApiKeyChange_t)(const char* key);
+typedef void(GW2ADDON_CALL GW2AddonApiKeyChange_t)(const char* key, int keySize);
 
 
 /****************************

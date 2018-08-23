@@ -327,10 +327,10 @@ namespace loader::addons {
         }
     }
 
-    void ApiKeyChange(const char* key) {
+    void ApiKeyChange(const char* key, int keySize) {
         for (auto& addon : ActiveAddonHooks.ApiKeyChange) {
             try {
-                addon->ApiKeyChange(key);
+                addon->ApiKeyChange(key, keySize);
             }
             catch (const exceptions::AddonException& ex) {
                 ADDONS_LOG()->error("Failed to call ApiKeyChange in add-on {0}: {1}", addon->GetFileName(), ex.what());

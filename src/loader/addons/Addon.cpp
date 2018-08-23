@@ -117,7 +117,13 @@ namespace loader::addons {
 
         // Let the add-on know about our shared API key
         if (this->ApiKeyChange) {
-            this->ApiKeyChange(!AppConfig.GetApiKey().empty() ? AppConfig.GetApiKey().c_str() : nullptr);
+            string key = AppConfig.GetApiKey();
+            if (!key.empty()) {
+                this->ApiKeyChange(key.c_str(), static_cast<int>(key.length()));
+            }
+            else {
+                this->ApiKeyChange(nullptr, 0);
+            }
         }
 
         return true;

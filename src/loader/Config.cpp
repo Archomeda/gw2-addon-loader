@@ -124,7 +124,12 @@ namespace loader {
         this->ini.SaveFile(this->configPath.c_str());
 
         // Update the add-ons
-        addons::ApiKeyChange(!apiKey.empty() ? apiKey.c_str() : nullptr);
+        if (!apiKey.empty()) {
+            addons::ApiKeyChange(apiKey.c_str(), static_cast<int>(apiKey.length()));
+        }
+        else {
+            addons::ApiKeyChange(nullptr, 0);
+        }
     }
 
     void Config::SetLatestVersion(const string& version) {
