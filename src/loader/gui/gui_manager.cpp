@@ -17,11 +17,16 @@ namespace loader::gui {
     void ShowWindow(Window* const window) {
         GUI_LOG()->debug("Opening window {0}", window->GetTitle());
         openWindows[window] = true;
+        window->OnShow();
     }
 
     void CloseWindow(Window* const window) {
-        GUI_LOG()->debug("Closing window {0}", window->GetTitle());
         openWindows[window] = false;
+    }
+
+    void OnCloseWindow(Window* const window) {
+        GUI_LOG()->debug("Closing window {0}", window->GetTitle());
+        window->OnClose();
     }
 
     bool IsWindowOpen(Window* const window) {
@@ -32,6 +37,8 @@ namespace loader::gui {
     void Render() {
         for (auto it = openWindows.begin(); it != openWindows.end(); ) {
             if (!it->second) {
+                // Remove the closed window
+                OnCloseWindow(it->first);
                 it = openWindows.erase(it);
                 continue;
             }

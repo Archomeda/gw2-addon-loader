@@ -21,6 +21,9 @@ namespace loader::gui {
         virtual void Close();
         virtual bool IsOpen();
 
+        virtual void OnShow() { }
+        virtual void OnClose() { }
+
         const std::string GetTitle() const { return this->title; }
         void SetTitle(const std::string& title) { this->title = title; }
         WindowType GetType() const { return this->type; }

@@ -152,9 +152,8 @@ namespace loader::gui {
         }
     }
 
-    void AddonSettingsWindow::Close() {
+    void AddonSettingsWindow::OnClose() {
         this->addon->CloseSettings();
-        Window::Close();
     }
 
     void AddonSettingsWindow::AddSetting(AddonSettingsEntry setting) {

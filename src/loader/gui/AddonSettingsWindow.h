@@ -34,8 +34,7 @@ namespace loader::gui {
         AddonSettingsWindow(std::shared_ptr<addons::Addon> addon);
 
         virtual void Render() override;
-
-        virtual void Close() override;
+        virtual void OnClose() override;
 
         void AddSetting(AddonSettingsEntry setting);
 
