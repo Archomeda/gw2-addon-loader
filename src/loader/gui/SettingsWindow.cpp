@@ -420,8 +420,6 @@ namespace loader::gui {
                     if (addon->IsLoaded() && addon->SupportsSettings()) {
                         ImGui::SameLine(ImGui::GetContentRegionAvailWidth() - 192 - style.ItemSpacing.x - 8); // -8 for the resize grip
                         if (ImGui::Button(ICON_MD_SETTINGS " Settings", ImVec2(96, 0))) {
-                            // Close ourselves and show the addon settings
-                            this->Close();
                             addon->OpenSettings();
                         }
                     }

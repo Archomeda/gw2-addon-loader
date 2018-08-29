@@ -13,7 +13,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example-addon-native", "src
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addon-taco-launcher", "src\addon-taco-launcher\addon-taco-launcher.vcxproj", "{5380C049-F068-4BFB-8E1F-1F1830326796}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addon-fix-mouse-movement", "src\addon-fix-mouse-movement\addon-fix-mouse-movement.vcxproj", "{5FB761B8-D2A7-481D-AF1F-6F4F2356B1B5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addon-utilities", "src\addon-utilities\addon-utilities.vcxproj", "{5FB761B8-D2A7-481D-AF1F-6F4F2356B1B5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bitmap-font-packer", "src\bitmap-font-packer\bitmap-font-packer.vcxproj", "{7031DFCC-1DF8-47B5-B486-A5ECD8FC9C98}"
 EndProject

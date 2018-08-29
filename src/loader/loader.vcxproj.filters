@@ -177,6 +177,9 @@
     <ClInclude Include="updaters\CustomDownloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gui\AddonSettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -309,6 +312,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="updaters\CustomDownloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\AddonSettingsWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

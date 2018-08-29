@@ -1,4 +1,4 @@
-LIBRARY fix-mouse-movement.dll
+LIBRARY utilities.dll
 
 EXPORTS
 	GW2AddonInitialize

@@ -1,5 +1,8 @@
 #include "NativeAddon.h"
 #include "addons_manager.h"
+#include "../gui/gui_manager.h"
+#include "../gui/SettingsWindow.h"
+#include "../gui/Window.h"
 #include "../log.h"
 #include "../updaters/CustomDownloader.h"
 #include "../updaters/CustomUpdater.h"
@@ -7,6 +10,7 @@
 #include "../updaters/HttpDownloader.h"
 
 using namespace std;
+using namespace loader::gui;
 using namespace loader::updaters;
 using namespace loader::utils;
 
@@ -319,7 +323,27 @@ namespace loader::addons {
 
     void NativeAddon::OpenSettings() {
         if (this->AddonOpenSettings != nullptr) {
-            this->AddonOpenSettings();
+            auto settings = this->AddonOpenSettings(nullptr);
+            if (settings != nullptr) {
+                // We supply the UI
+                this->lastSettings = settings;
+                this->settingsWindow = make_unique<AddonSettingsWindow>(shared_from_this());
+                for (int i = 0; i < settings->entriesSize; ++i) {
+                    this->settingsWindow->AddSetting(settings->entries[i]);
+                }
+                this->settingsWindow->Show();
+            }
+            else {
+                // The add-on supplies the UI, we close the settings window
+                CloseWindow(static_cast<Window*>(SettingsWnd.get()));
+            }
+        }
+    }
+
+    void NativeAddon::CloseSettings() {
+        if (this->lastSettings != nullptr) {
+            this->AddonOpenSettings(this->lastSettings);
+            this->lastSettings = nullptr;
         }
     }
 

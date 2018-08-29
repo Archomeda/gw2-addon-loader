@@ -1,6 +1,7 @@
 #pragma once
 #include "../stdafx.h"
 #include "Addon.h"
+#include "../gui/AddonSettingsWindow.h"
 
 namespace loader::addons {
 
@@ -35,6 +36,7 @@ namespace loader::addons {
         virtual std::unique_ptr<updaters::Downloader> GetDownloader() override;
 
         virtual void OpenSettings() override;
+        virtual void CloseSettings() override;
 
     private:
         bool InitializeV1(GW2AddonAPIBase* base);
@@ -49,6 +51,9 @@ namespace loader::addons {
         std::string homepage;
         IDirect3DTexture9* icon = nullptr;
         bool iconManaged = false;
+
+        AddonSettings* lastSettings = nullptr;
+        std::unique_ptr<gui::AddonSettingsWindow> settingsWindow;
 
         AddonUpdateMethod updateMethod = AddonUpdateMethod::NoUpdateMethod;
         std::string githubRepo;

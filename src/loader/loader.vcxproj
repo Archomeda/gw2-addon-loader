@@ -73,29 +73,29 @@
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>d3d9</TargetName>
-    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(ProjectDir)..\..\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64</LibraryPath>
+    <IncludePath>$(ProjectDir)..\dependencies\IconFontCppHeaders;$(ProjectDir)..\dependencies\imgui;$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\miniz;$(ProjectDir)..\dependencies\simpleini;$(ProjectDir)..\dependencies\spdlog\include;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -185,6 +185,7 @@
     <ClInclude Include="disasm\opcodes.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="gui\AddonSettingsWindow.h" />
     <ClInclude Include="gui\DisclaimerWindow.h" />
     <ClInclude Include="gui\elements\AddonListItem.h" />
     <ClInclude Include="gui\elements\Columns.h" />
@@ -237,6 +238,7 @@
     <ClCompile Include="addons\ProxyDirect3DDevice9.cpp" />
     <ClCompile Include="diagnostics\ThreadInfo.cpp" />
     <ClCompile Include="diagnostics\ThreadMonitor.cpp" />
+    <ClCompile Include="gui\AddonSettingsWindow.cpp" />
     <ClCompile Include="gui\DisclaimerWindow.cpp" />
     <ClCompile Include="gui\elements\AddonListItem.cpp" />
     <ClCompile Include="gui\elements\Columns.cpp" />

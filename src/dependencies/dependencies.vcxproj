@@ -71,25 +71,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x86</TargetName>
+    <TargetName>$(ProjectName).$(PlatformTarget)</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x86</TargetName>
+    <TargetName>$(ProjectName).$(PlatformTarget)</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x64</TargetName>
+    <TargetName>$(ProjectName).$(PlatformTarget)</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName).x64</TargetName>
+    <TargetName>$(ProjectName).$(PlatformTarget)</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)IconFontCppHeaders;$(ProjectDir)imgui;$(ProjectDir)minhook\include;$(ProjectDir)miniz;$(ProjectDir)simpleini;$(ProjectDir)spdlog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>

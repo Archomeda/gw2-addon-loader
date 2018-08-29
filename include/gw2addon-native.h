@@ -3,21 +3,33 @@ This is an include file specifically for creating Guild Wars 2 add-ons with the 
 Visit https://github.com/Archomeda/gw2-addon-loader for more information.
 */
 
+/**
+THE STRUCT TO IMPLEMENT CAN BE FOUND AFTER THE FUNCTION TYPEDEFS.
+
+It's not defined how and when native add-ons are loaded. Therefore, do not depend on DllMain for initialization.
+At the very end you can find the initialization and release functions. Make sure to use these properly.
+DO NOT USE THE INITIALIZATION FUNCTION FOR LOADING. Use the load function inside the struct (that should be returned by the initialization function) for that.
+*/
+
+
+
 #pragma once
 #include <d3d9.h>
 
 #define GW2ADDON_RESULT int
 #define GW2ADDON_CALL __stdcall
+// Define the latest add-on compatibility version.
+// You can override this by defining GW2ADDON_VER before including this header file,
+// however it's recommended to always use the latest version.
+#ifndef GW2ADDON_VER
 #define GW2ADDON_VER 1
+#endif
 
-/**
-THE STRUCT TO IMPLEMENT CAN BE FOUND AFTER THE FUNCTION TYPEDEFS.
 
-It's not defined how and when native add-ons are loaded.
-Therefore, do not depend on DllMain for initialization. Use Load instead.
-And don't forget to use Unload to clean up your mess.
-*/
 
+/**********************
+      STRUCT DEFS
+**********************/
 
 /**
 The add-on update method. Defaults to NoUpdateMethod.
@@ -37,14 +49,14 @@ struct UpdateCheckDetails {
     // if they differ, the add-on loader treats it as a new version.
     char* version;
 
-    // The version maximum character buffer size, includes the null terminator.
+    // The version maximum character buffer size, includes the NULL terminator.
     // Filled in by the add-on loader.
     int versionSize;
 
     // The release notes URL, e.g. add-on homepage or changelog.
     char* infoUrl;
 
-    // The release notes URL maximum character buffer size, includes the null terminator.
+    // The release notes URL maximum character buffer size, includes the NULL terminator.
     // Filled in by the add-on loader.
     int infoUrlSize;
 
@@ -53,11 +65,113 @@ struct UpdateCheckDetails {
     // and you will have to provide the DownloadUpdate function.
     char* downloadUrl;
 
-    // The download URL maximum character buffer size, includes the null terminuator.
+    // The download URL maximum character buffer size, includes the NULL terminator.
     // Filled in by the add-on loader.
     int downloadUrlSize;
 };
 
+/**
+The add-on settings entry type.
+*/
+enum AddonSettingsEntryType {
+    // A separator.
+    SettingsTypeSeparator = 0,
+
+    // A block of text.
+    SettingsTypeText = 1,
+
+    // A boolean.
+    SettingsTypeBoolean = 2,
+
+    // An integer.
+    SettingsTypeInteger = 3,
+
+    // A string.
+    SettingsTypeString = 4,
+
+    // An option list.
+    SettingsTypeOption = 5,
+
+    // A keybind.
+    SettingsTypeKeybind = 6
+};
+
+/**
+An add-on settings entry definition.
+*/
+struct AddonSettingsEntryDefinition {
+    // The type.
+    AddonSettingsEntryType type;
+
+    // The name, NULL-terminated string.
+    const char* name;
+
+    // The hint popup, NULL-terminated string. Use NULL for no hint.
+    const char* hint = NULL;
+
+    // The list names, if the type requires a list (e.g. option), otherwise it's ignored.
+    // Each entry is a NULL-terminated string.
+    const char** listNames = NULL;
+
+    // The list hints, if the type requires a list (e.g. option), otherwise it's ignored.
+    // Each entry is a NULL-terminated string.
+    const char** listHints = NULL;
+
+    // The amount of entries in the list.
+    int listSize = 0;
+
+    // The value buffer size if the value is a string or a list.
+    int valueSize = 0;
+};
+
+/**
+An add-on settings entry.
+*/
+struct AddonSettingsEntry {
+    // The settings definitions.
+    AddonSettingsEntryDefinition definition;
+
+    // The settings values.
+    // This is used as both input and output. Make sure that the buffers have sufficient lengths.
+    union {
+        // Generic value.
+        void* value = NULL;
+
+        // Boolean value.
+        bool* boolValue;
+
+        // Integer value.
+        int* intValue;
+
+        // String value. NULL-terminated, maximum size is valueSize.
+        char* stringValue;
+
+        // The selected option value.
+        int* optionValue;
+
+        // Keybind value.
+        // List of virtual key codes (see: https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes).
+        // Maximum list length is valueSize (use at least 4 to support CTRL, ALT and Shift modifiers; otherwise modifiers will not be supported).
+        int* keybindValue;
+    };
+};
+
+/**
+The add-on settings.
+*/
+struct AddonSettings {
+    // The settings entries.
+    AddonSettingsEntry* entries;
+
+    // The amount of settings entries.
+    int entriesSize;
+};
+
+
+
+/**********************
+   FUNCTION TYPEDEFS
+**********************/
 
 /**
 Gets called whenever the add-on is loading.
@@ -94,9 +208,16 @@ typedef bool(GW2ADDON_CALL GW2AddonHandleWndProc_t)(HWND hWnd, UINT msg, WPARAM 
 
 /**
 Gets called whenever the user clicks on the settings button in the add-on loader.
-Can be used as an alternative to or together with keybinds.
+Can be used in two ways:
+- Implement your own settings function, window, etc by returning NULL.
+  You are responsible for drawing and loading/saving the settings.
+- Use the provided add-on settings definition struct.
+  The add-on loader will handle the GUI drawing, but you are still responsible for loading/saving the settings.
+  All changes will be put back directly into your returned struct, make sure that every buffer has enough space.
+  When the settings window is being closed, this function is called again with settings pointing to your struct (the return value is ignored in this case).
+  This allows you to clean up allocated memory.
 */
-typedef void(GW2ADDON_CALL GW2AddonOpenSettings_t)();
+typedef AddonSettings* (GW2ADDON_CALL GW2AddonOpenSettings_t)(AddonSettings* const settings);
 
 /**
 Gets called whenever the add-on loader wants the add-on to check for an update.
@@ -330,7 +451,7 @@ This function is disabled in competitive areas.
 typedef void(GW2ADDON_CALL GW2AddonAdvPostSetRenderTarget_t)(IDirect3DDevice9* pDev, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
 
 /**
-Advanced function that gets called before D3D9 processes the SetRenderState. call.
+Advanced function that gets called before D3D9 processes the SetRenderState call.
 Do not call SetRenderState yourself. The add-on loader does that already after this call.
 
 This function is disabled in competitive areas.
@@ -360,10 +481,10 @@ This function is disabled in competitive areas.
 typedef void(GW2ADDON_CALL GW2AddonAdvPostDrawIndexedPrimitive_t)(IDirect3DDevice9* pDev, D3DPRIMITIVETYPE PrimitiveType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
 
 
-/**********************
- END FUNCTION TYPEDEFS
-**********************/
 
+/**********************
+    API STRUCT DEFS
+**********************/
 
 /********************************************************************************************************************
 THE FOLLOWING NEEDS TO BE IMPLEMENTED IN YOUR ADD-ON
@@ -392,22 +513,22 @@ typedef struct {
 
     /** ADD-ON INFORMATION **/
 
-    // The add-on ID, must be unique and fixed as long as it's the same add-on. Null terminated.
+    // The add-on ID, must be unique and fixed as long as it's the same add-on. NULL-terminated.
     const char* id;
 
-    // The add-on name. Null terminated.
+    // The add-on name. NULL-terminated.
     const char* name;
 
-    // The add-on author. Null terminated.
+    // The add-on author. NULL-terminated.
     const char* author;
 
-    // The add-on description. Null terminated.
+    // The add-on description. NULL-terminated.
     const char* description;
 
-    // The add-on version. Null terminated.
+    // The add-on version. NULL-terminated.
     const char* version;
 
-    // The add-on homepage URL. Null terminated.
+    // The add-on homepage URL. NULL-terminated.
     const char* homepage;
 
     // The add-on icon, should be 32x32 pixels.
@@ -436,7 +557,7 @@ typedef struct {
             // Additional method information. Reserved, unused directly.
             const char* methodInfo;
 
-            // The GitHub repository (e.g. Archomeda/gw2-addon-loader) if using the GithubReleases method. Null terminated.
+            // The GitHub repository (e.g. Archomeda/gw2-addon-loader) if using the GithubReleases method. NULL-terminated.
             const char* githubRepo;
         };
     } updateInfo;
@@ -499,17 +620,14 @@ typedef GW2AddonAPIBase* (GW2ADDON_CALL GW2AddonInitialize_t)(int loaderVersion)
 
 /**
 Exported C-function: GW2AddonRelease. Required.
-Gets called as soon as the add-on needs to be released.
-This is not the same as the add-on being unloaded or deactivated.
-This function is your last chance to clean up your stuff.
+Gets called as soon as the add-on needs to be unloaded and/or released.
+This function is your chance to clean up your stuff.
 */
 typedef void(GW2ADDON_CALL GW2AddonRelease_t)();
 #define GW2ADDON_DLL_Release "GW2AddonRelease"
 
 
-/**
-Ensure compiler errors when exported addon functions are wrong.
-*/
+// Ensure compiler errors when exported addon functions are wrong.
 #ifndef _GW2ADDON_IMPORTS
 #if GW2ADDON_VER == 1
 typedef GW2AddonAPIV1 GW2AddonAPI;

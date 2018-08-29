@@ -23,6 +23,7 @@
     <ProjectGuid>{5FB761B8-D2A7-481D-AF1F-6F4F2356B1B5}</ProjectGuid>
     <RootNamespace>addonfixmousemovement</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <ProjectName>addon-utilities</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,24 +71,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>fix-mouse-movement</TargetName>
+    <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>fix-mouse-movement</TargetName>
+    <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>fix-mouse-movement</TargetName>
+    <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>fix-mouse-movement</TargetName>
+    <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -98,10 +103,13 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link />
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -113,10 +121,13 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link />
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,11 +141,14 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,18 +162,50 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="fixes\mouse_movement.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="qol\coherent_priority.cpp" />
+    <ClCompile Include="qol\confine_cursor.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="utils\encoding.cpp" />
+    <ClCompile Include="utils\file.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="fixes\mouse_movement.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="minhook.h" />
+    <ClInclude Include="qol\coherent_priority.h" />
+    <ClInclude Include="qol\confine_cursor.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="utils\encoding.h" />
+    <ClInclude Include="utils\file.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dependencies\dependencies.vcxproj">
+      <Project>{9a4064cf-5604-4363-9b07-02f4f7071de3}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -30,7 +30,7 @@ namespace loader::addons {
     const std::string AddonTypeToString(AddonType type);
     const std::string AddonStateToString(AddonState state);
 
-    class Addon {
+    class Addon : public std::enable_shared_from_this<Addon> {
     public:
         Addon() {
             this->InitializeAddonFuncs();
@@ -89,6 +89,7 @@ namespace loader::addons {
         virtual std::unique_ptr<updaters::Downloader> GetDownloader() { return nullptr; }
 
         virtual void OpenSettings() { }
+        virtual void CloseSettings() { }
         void CheckUpdate(const std::function<updaters::UpdateCheckCallback_t>& callback);
 
         virtual void OnStartFrame(IDirect3DDevice9* device);
