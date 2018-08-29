@@ -114,7 +114,6 @@ namespace loader::gui {
                 case AddonSettingsEntryType::SettingsTypeString: {
                     char* charPtr = static_cast<char*>(valuePointer);
                     memcpy_s(charPtr, sizeof(char) * definition.valueSize, value.string, sizeof(char) * definition.valueSize);
-                    delete[] charPtr;
                     break;
                 }
                 case AddonSettingsEntryType::SettingsTypeOption: {
@@ -125,12 +124,22 @@ namespace loader::gui {
                 case AddonSettingsEntryType::SettingsTypeKeybind: {
                     int* keybindPtr = static_cast<int*>(valuePointer);
                     memset(keybindPtr, 0, sizeof(int) * definition.valueSize);
-                    size_t i = 0;
-                    for (auto key : value.keybindSet) {
-                        keybindPtr[i] = key;
-                        ++i;
+                    if (definition.valueSize < 4) {
+                        // Just use one key
+                        keybindPtr[0] = *value.keybindSet.begin();
                     }
-                    delete[] keybindPtr;
+                    else {
+                        // Use all keys
+                        size_t i = 0;
+                        for (auto key : value.keybindSet) {
+                            if (i >= definition.valueSize) {
+                                // Prevent out-of-bounds crash
+                                break;
+                            }
+                            keybindPtr[i] = key;
+                            ++i;
+                        }
+                    }
                     break;
                 }
                 }
@@ -192,7 +201,9 @@ namespace loader::gui {
             break;
         case AddonSettingsEntryType::SettingsTypeKeybind:
             for (int i = 0; i < setting.definition.listSize; ++i) {
-                value.keybindSet.insert(setting.keybindValue[i]);
+                if (setting.keybindValue[i] != 0) {
+                    value.keybindSet.insert(setting.keybindValue[i]);
+                }
             }
             break;
         }

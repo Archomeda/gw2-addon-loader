@@ -146,23 +146,33 @@ namespace loader {
     const string GetReadableKeyString(const set<uint_fast8_t>& keys) {
         set<uint_fast8_t> remaining(keys);
         stringstream ss;
+        bool hasText = false;
         if (remaining.find(VK_CONTROL) != remaining.end()) {
-            ss << "Ctrl + ";
+            ss << "Ctrl";
             remaining.erase(VK_CONTROL);
+            hasText = true;
         }
         if (remaining.find(VK_MENU) != remaining.end()) {
-            ss << "Alt + ";
+            if (hasText) {
+                ss << " + ";
+            }
+            ss << "Alt";
             remaining.erase(VK_MENU);
+            hasText = true;
         }
         if (remaining.find(VK_SHIFT) != remaining.end()) {
-            ss << "Shift + ";
+            if (hasText) {
+                ss << " + ";
+            }
+            ss << "Shift";
             remaining.erase(VK_SHIFT);
+            hasText = true;
         }
-        bool doneFirst = false;
+
         for (const auto k : remaining) {
             auto str = vkStrings[k];
             if (!str[0]) {
-                if (doneFirst) {
+                if (hasText) {
                     ss << " + ";
                 }
 
@@ -175,12 +185,12 @@ namespace loader {
                 }
             }
             else {
-                if (doneFirst) {
+                if (hasText) {
                     ss << " + ";
                 }
                 ss << str;
             }
-            doneFirst = true;
+            hasText = true;
         }
 
         return ss.str();
