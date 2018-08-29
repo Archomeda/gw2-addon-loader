@@ -322,7 +322,7 @@ namespace loader::addons {
     }
 
     void NativeAddon::OpenSettings() {
-        if (this->AddonOpenSettings != nullptr) {
+        if (this->AddonOpenSettings != nullptr && !this->lastSettings) {
             auto settings = this->AddonOpenSettings(nullptr);
             if (settings != nullptr) {
                 // We supply the UI
@@ -334,8 +334,8 @@ namespace loader::addons {
                 this->settingsWindow->Show();
             }
             else {
-                // The add-on supplies the UI, we close the settings window
-                CloseWindow(static_cast<Window*>(SettingsWnd.get()));
+                // The add-on supplies the UI, so we just close the settings window
+                SettingsWnd->Close();
             }
         }
     }
@@ -344,6 +344,7 @@ namespace loader::addons {
         if (this->lastSettings != nullptr) {
             this->AddonOpenSettings(this->lastSettings);
             this->lastSettings = nullptr;
+            this->settingsWindow.reset();
         }
     }
 
