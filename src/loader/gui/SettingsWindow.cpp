@@ -548,7 +548,7 @@ The API key will be automatically shared to all active add-ons.)");
 
         ImGui::PushItemWidth(-1);
         const string types = sstream.str();
-        ImGui::Combo("##RenderType", &this->selectedStatsType, types.c_str());
+        ImGui::Combo("##RenderType", &this->selectedStatsType, types.c_str(), i);
 
         if (this->selectedStatsType == 0) {
             ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryD3D9Processing[0], static_cast<int>(hooks::DurationHistoryD3D9Processing.size()), 0, "Frame render time (ms)", 0, 67, ImVec2(0, 120));

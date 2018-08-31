@@ -36,11 +36,10 @@ I want to report a bug or a crash related to the add-on loader.
   Submit it as [an issue on the repository][issues] with the log if necessary (which can be found as *addons/loader/loader.log* inside the Guild Wars 2 installation folder).
   Please do check if it has been reported already.
 
-What are the debug features?
-: Those are mostly meant for debugging add-ons.
-  It will show you how an add-on is performing.
-  Right now it doesn't contain much else than that, but it might be expanded upon in the future.
-  If you don't require the debug features, please disable them.
+What are the diagnostics?
+: Those are mostly statistics of various things.
+  For example, it will show you how an add-on is performing, how many CPU time the game is consuming, etc.
+  If you don't require the diagnostic features, please turn them off, because leaving the diagnostics enabled might affect game performance.
 
 Why is &lt;insert some add-on name&gt; not working?
 : Are you sure it's compatible and that you placed it in the correct folder?
