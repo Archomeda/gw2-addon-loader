@@ -9,7 +9,7 @@ namespace loader {
 
     const char vkStrings[256][16] = {
         "M1", "M2", "", "M3", "M4", "M5", "", "", "Backspace", "Tab", "", "", "Clear", "Enter", "", "",
-        "Shift", "Ctr", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
+        "Shift", "Ctrl", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
         "Space", "Page Up", "Page Down", "End", "Home", "Left", "Up", "Right", "Down", "Select", "", "", "Print Screen", "Insert", "Delete", "Help",
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "",
         "", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",

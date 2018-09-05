@@ -21,10 +21,12 @@ namespace addon {
         bool GetCursorMovementFix() const { return this->cursorMovementFix; }
         CoherentPriorityLevel GetCoherentPriority() const { return this->coherentPriority; }
         bool GetConfineCursor() const { return this->confineCursor; }
+        bool GetHighlightCursor() const { return this->highlightCursor; }
 
         void SetCursorMovementFix(bool cursorMovementFix);
         void SetCoherentPriority(CoherentPriorityLevel coherentPriority);
         void SetConfineCursor(bool confineCursor);
+        void SetHighlightCursor(bool highlightCursor);
 
     private:
         const std::string configName = "utilities.ini";
@@ -34,6 +36,7 @@ namespace addon {
         bool cursorMovementFix = false;
         CoherentPriorityLevel coherentPriority = CoherentPriorityLevel::CoherentPriorityDontChange;
         bool confineCursor = false;
+        bool highlightCursor = false;
 
         CSimpleIni ini;
     };

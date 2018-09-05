@@ -157,7 +157,25 @@ namespace loader::hooks {
         bool trackStats = AppConfig.GetDiagnostics();
 
         dev->BeginScene();
+
+        // Back up DX9
+        IDirect3DStateBlock9* stateBlock = nullptr;
+        dev->CreateStateBlock(D3DSBT_ALL, &stateBlock);
+        // Back up the DX9 transform (DX9 documentation suggests that it is included in the StateBlock but it doesn't appear to)
+        D3DMATRIX lastWorld, lastView, lastProjection;
+        dev->GetTransform(D3DTS_WORLD, &lastWorld);
+        dev->GetTransform(D3DTS_VIEW, &lastView);
+        dev->GetTransform(D3DTS_PROJECTION, &lastProjection);
+
         addons::DrawFrame(dev);
+
+        // Restore the DX9 transform
+        dev->SetTransform(D3DTS_WORLD, &lastWorld);
+        dev->SetTransform(D3DTS_VIEW, &lastView);
+        dev->SetTransform(D3DTS_PROJECTION, &lastProjection);
+        // Restore DX9 state
+        stateBlock->Apply();
+        stateBlock->Release();
 
         if (trackStats) {
             auto presentStart = chrono::steady_clock::now();

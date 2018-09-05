@@ -74,25 +74,29 @@
     <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
-    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
-    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
-    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>utilities</TargetName>
     <IntDir>obj\$(PlatformTarget)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\addons\</OutDir>
-    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\dependencies\minhook\include;$(ProjectDir)..\dependencies\simpleini;$(SolutionDir)include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\$(PlatformTarget)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -109,7 +113,7 @@
     <Link />
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -127,7 +131,7 @@
     <Link />
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,7 +152,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -169,7 +173,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dx9.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -178,6 +182,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="qol\coherent_priority.cpp" />
     <ClCompile Include="qol\confine_cursor.cpp" />
+    <ClCompile Include="qol\highlight_cursor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -198,6 +203,8 @@
     <ClInclude Include="minhook.h" />
     <ClInclude Include="qol\coherent_priority.h" />
     <ClInclude Include="qol\confine_cursor.h" />
+    <ClInclude Include="qol\highlight_cursor.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="utils\encoding.h" />
     <ClInclude Include="utils\file.h" />
@@ -206,6 +213,9 @@
     <ProjectReference Include="..\dependencies\dependencies.vcxproj">
       <Project>{9a4064cf-5604-4363-9b07-02f4f7071de3}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="addon-utilities.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

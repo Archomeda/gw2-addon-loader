@@ -32,7 +32,8 @@ namespace addon {
 
         this->cursorMovementFix = this->ini.GetBoolValue(L"fixes", L"cursor_movement_fix", false);
         this->coherentPriority = static_cast<CoherentPriorityLevel>(this->ini.GetLongValue(L"qol", L"coherent_priority", 0));
-        this->confineCursor = this->ini.GetBoolValue(L"fixes", L"confine_cursor", false);
+        this->confineCursor = this->ini.GetBoolValue(L"qol", L"confine_cursor", false);
+        this->highlightCursor = this->ini.GetBoolValue(L"testing", L"highlight_cursor", false);
     }
 
     void Config::SetCursorMovementFix(bool cursorMovementFix) {
@@ -52,5 +53,12 @@ namespace addon {
         this->ini.SetBoolValue(L"qol", L"confine_cursor", confineCursor);
         this->ini.SaveFile(this->configPath.c_str());
     }
+
+    void Config::SetHighlightCursor(bool highlightCursor) {
+        this->highlightCursor = highlightCursor;
+        this->ini.SetBoolValue(L"testing", L"highlight_cursor", highlightCursor);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
 
 }
