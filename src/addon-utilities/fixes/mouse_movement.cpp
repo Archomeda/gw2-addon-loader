@@ -1,4 +1,5 @@
 #include "mouse_movement.h"
+#include "../Config.h"
 
 namespace addon::fixes {
 
@@ -55,7 +56,13 @@ namespace addon::fixes {
 
         if ((lmbDown || rmbDown) && !cursorInfo.hCursor && !isClipped) {
             // Set the space
-            GetClipCursor(&oldClipRect);
+
+            // Only grab the old clip rectangle if we confine the cursor to the GW2 window
+            // Somehow doing this all the time, makes the cursor always confine accidentally
+            if (AppConfig.GetConfineCursor()) {
+                GetClipCursor(&oldClipRect);
+            }
+
             RECT rect;
             rect.left = cursorPos.x;
             rect.top = cursorPos.y;
@@ -66,7 +73,11 @@ namespace addon::fixes {
         }
         else if (isClipped && cursorInfo.hCursor) {
             // Reset the space
-            ClipCursor(&oldClipRect);
+
+            // If we confine the cursor to the GW2 window, reset to old clip rectangle,
+            // otherwise completely reset to NULL
+            ClipCursor(AppConfig.GetConfineCursor() ? &oldClipRect : NULL);
+
             isClipped = false;
         }
 
