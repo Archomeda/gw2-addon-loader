@@ -86,7 +86,17 @@ namespace loader::gui {
                 }
                 break;
             case AddonSettingsEntryType::SettingsTypeKeybind:
-                elements::KeybindBox(definition.name.c_str(), value.keybindSet, &value.keybindBoxActive, ImVec2(200, 0));
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted(definition.name.c_str());
+                ImGui::SameLine();
+                if (definition.valueSize < 4) {
+                    // Just use one key
+                    elements::KeybindBox(("## " + definition.name).c_str(), &value.keybind, &value.keybindBoxActive, ImVec2(200, 0));
+                }
+                else {
+                    // Use all keys
+                    elements::KeybindBox(("## " + definition.name).c_str(), value.keybindSet, &value.keybindBoxActive, ImVec2(200, 0));
+                }
                 if (!definition.hint.empty() && ImGui::IsItemHovered()) {
                     ImGui::SetTooltip(definition.hint.c_str());
                 }
@@ -126,7 +136,7 @@ namespace loader::gui {
                     memset(keybindPtr, 0, sizeof(int) * definition.valueSize);
                     if (definition.valueSize < 4) {
                         // Just use one key
-                        keybindPtr[0] = *value.keybindSet.begin();
+                        keybindPtr[0] = value.keybind;
                     }
                     else {
                         // Use all keys
@@ -199,6 +209,7 @@ namespace loader::gui {
             value.option = *setting.optionValue;
             break;
         case AddonSettingsEntryType::SettingsTypeKeybind:
+            value.keybind = setting.keybindValue[0];
             for (int i = 0; i < setting.definition.listSize; ++i) {
                 if (setting.keybindValue[i] != 0) {
                     value.keybindSet.insert(setting.keybindValue[i]);

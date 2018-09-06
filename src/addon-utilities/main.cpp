@@ -25,24 +25,24 @@ GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
     if (AppConfig.GetConfineCursor()) {
         qol::EnableConfineCursor(hWindow);
     }
-    if (AppConfig.GetCoherentPriority() > 0) {
+    if (AppConfig.GetCoherentPriority()) {
         qol::EnableCoherentPriority(AppConfig.GetCoherentPriority());
     }
-    if (AppConfig.GetHighlightCursor()) {
-        qol::EnableHighlightCursor(dllModule, pDev);
+    if (AppConfig.GetCursorHighlightType()) {
+        qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, pDev);
     }
 
     return 0;
 }
 
 void GW2ADDON_CALL DrawFrame(IDirect3DDevice9* pDev) {
-    if (AppConfig.GetHighlightCursor()) {
+    if (AppConfig.GetCursorHighlightType()) {
         qol::RenderHighlightCursor(hWindow, pDev);
     }
 }
 
 bool GW2ADDON_CALL WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (AppConfig.GetHighlightCursor() && msg == WM_KEYDOWN && wParam == VK_CONTROL) {
+    if (AppConfig.GetCursorHighlightType() && (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) && wParam == AppConfig.GetCursorHighlightKey()) {
         qol::TriggerHighlightCursor();
     }
 
@@ -60,10 +60,13 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
     static bool settingCursorMovementFix = false;
     static CoherentPriorityLevel settingCoherentPriority = CoherentPriorityLevel::CoherentPriorityDontChange;
     static bool settingConfineCursor = false;
-    static bool settingHighlightCursor = false;
+    static CursorHighlightType settingCursorHighlightType = CursorHighlightType::CursorNoHighlight;
+    static int settingCursorHighlightKey[1];
+
+    static const int settingsSize = 10;
 
     if (settings == nullptr) {
-        static AddonSettingsEntry entries[9];
+        static AddonSettingsEntry entries[settingsSize];
 
         entries[0].definition.type = AddonSettingsEntryType::SettingsTypeText;
         entries[0].definition.name = "Fixes";
@@ -86,7 +89,7 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
         static const char* coherentPriorities[4];
         coherentPriorities[0] = "Don't change (default)";
         coherentPriorities[1] = "Normal";
-        coherentPriorities[2] = "Above Normal";
+        coherentPriorities[2] = "Above normal";
         coherentPriorities[3] = "High";
         entries[4].definition.listNames = &coherentPriorities[0];
         settingCoherentPriority = AppConfig.GetCoherentPriority();
@@ -103,14 +106,28 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
         entries[7].definition.type = AddonSettingsEntryType::SettingsTypeText;
         entries[7].definition.name = "Testing";
 
-        entries[8].definition.type = AddonSettingsEntryType::SettingsTypeBoolean;
-        entries[8].definition.name = "Highlight cursor";
-        entries[8].definition.hint = "Enabling this will highlight the cursor to make it easier to locate.";
-        settingHighlightCursor = AppConfig.GetHighlightCursor();
-        entries[8].boolValue = &settingHighlightCursor;
+        entries[8].definition.type = AddonSettingsEntryType::SettingsTypeOption;
+        entries[8].definition.name = "Cursor highlight type";
+        entries[8].definition.hint = "The cursor can be hard to locate at times. This setting allows you to choose\nbetween different types of highlights when the trigger key is pressed.";
+        entries[8].definition.listSize = 4;
+        static const char* cursorHighlightTypes[4];
+        cursorHighlightTypes[0] = "None";
+        cursorHighlightTypes[1] = "Shrinking arrows";
+        cursorHighlightTypes[2] = "Shrinking circles";
+        cursorHighlightTypes[3] = "Expanding circles";
+        entries[8].definition.listNames = &cursorHighlightTypes[0];
+        settingCursorHighlightType = AppConfig.GetCursorHighlightType();
+        entries[8].optionValue = reinterpret_cast<int*>(&settingCursorHighlightType);
+
+        entries[9].definition.type = AddonSettingsEntryType::SettingsTypeKeybind;
+        entries[9].definition.name = "Cursor highlight trigger key";
+        entries[9].definition.hint = "If the cursor highlight type is set, this key will cause\nthe cursor to be highlighted as long as it's pressed.";
+        entries[9].definition.valueSize = 1;
+        settingCursorHighlightKey[0] = AppConfig.GetCursorHighlightKey();
+        entries[9].keybindValue = &settingCursorHighlightKey[0];
 
         static AddonSettings addonSettings;
-        addonSettings.entriesSize = 9;
+        addonSettings.entriesSize = settingsSize;
         addonSettings.entries = &entries[0];
 
         return &addonSettings;
@@ -131,27 +148,30 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
         else {
             qol::DisableConfineCursor();
         }
-        AppConfig.SetHighlightCursor(settingHighlightCursor);
-        if (settingHighlightCursor) {
-            qol::EnableHighlightCursor(dllModule, device);
+        AppConfig.SetCursorHighlightType(settingCursorHighlightType);
+        if (settingCursorHighlightType) {
+            // Disable first in order to reset the texture
+            qol::DisableHighlightCursor(device);
+            qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, device);
         }
         else {
             qol::DisableHighlightCursor(device);
         }
+        AppConfig.SetCursorHighlightKey(*settingCursorHighlightKey);
         return nullptr;
     }
 }
 
 
 void GW2ADDON_CALL PreReset(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters) {
-    if (AppConfig.GetHighlightCursor()) {
+    if (AppConfig.GetCursorHighlightType()) {
         qol::DisableHighlightCursor(pDev);
     }
 }
 
 void GW2ADDON_CALL PostReset(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters) {
-    if (AppConfig.GetHighlightCursor()) {
-        qol::EnableHighlightCursor(dllModule, pDev);
+    if (AppConfig.GetCursorHighlightType()) {
+        qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, pDev);
     }
 }
 
@@ -181,7 +201,7 @@ void GW2ADDON_CALL GW2AddonRelease() {
     if (AppConfig.GetCoherentPriority() > 0) {
         qol::DisableCoherentPriority();
     }
-    if (AppConfig.GetHighlightCursor()) {
+    if (AppConfig.GetCursorHighlightType()) {
         qol::DisableHighlightCursor(device);
     }
 

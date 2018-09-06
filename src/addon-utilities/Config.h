@@ -10,6 +10,13 @@ namespace addon {
         CoherentPriorityHigh
     };
 
+    enum CursorHighlightType {
+        CursorNoHighlight = 0,
+        CursorArrowsHighlight,
+        CursorCirclesInHighlight,
+        CursorCirclesOutHighlight
+    };
+
     class Config {
     public:
         Config() { }
@@ -21,12 +28,14 @@ namespace addon {
         bool GetCursorMovementFix() const { return this->cursorMovementFix; }
         CoherentPriorityLevel GetCoherentPriority() const { return this->coherentPriority; }
         bool GetConfineCursor() const { return this->confineCursor; }
-        bool GetHighlightCursor() const { return this->highlightCursor; }
+        CursorHighlightType GetCursorHighlightType() const { return this->cursorHighlightType; }
+        int GetCursorHighlightKey() const { return this->cursorHighlightKey; }
 
         void SetCursorMovementFix(bool cursorMovementFix);
         void SetCoherentPriority(CoherentPriorityLevel coherentPriority);
         void SetConfineCursor(bool confineCursor);
-        void SetHighlightCursor(bool highlightCursor);
+        void SetCursorHighlightType(CursorHighlightType cursorHighlightType);
+        void SetCursorHighlightKey(int cursorHighlightKey);
 
     private:
         const std::string configName = "utilities.ini";
@@ -36,7 +45,8 @@ namespace addon {
         bool cursorMovementFix = false;
         CoherentPriorityLevel coherentPriority = CoherentPriorityLevel::CoherentPriorityDontChange;
         bool confineCursor = false;
-        bool highlightCursor = false;
+        CursorHighlightType cursorHighlightType = CursorHighlightType::CursorNoHighlight;
+        int cursorHighlightKey = VK_CONTROL;
 
         CSimpleIni ini;
     };

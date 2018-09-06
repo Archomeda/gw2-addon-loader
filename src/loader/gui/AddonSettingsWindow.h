@@ -25,7 +25,8 @@ namespace loader::gui {
             int option;
         };
 
-        std::set<uint8_t> keybindSet;
+        uint_fast8_t keybind;
+        std::set<uint_fast8_t> keybindSet;
         bool keybindBoxActive = false;
     };
 

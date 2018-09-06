@@ -33,7 +33,8 @@ namespace addon {
         this->cursorMovementFix = this->ini.GetBoolValue(L"fixes", L"cursor_movement_fix", false);
         this->coherentPriority = static_cast<CoherentPriorityLevel>(this->ini.GetLongValue(L"qol", L"coherent_priority", 0));
         this->confineCursor = this->ini.GetBoolValue(L"qol", L"confine_cursor", false);
-        this->highlightCursor = this->ini.GetBoolValue(L"testing", L"highlight_cursor", false);
+        this->cursorHighlightType = static_cast<CursorHighlightType>(this->ini.GetLongValue(L"testing", L"cursor_highlight_type", false));
+        this->cursorHighlightKey = this->ini.GetLongValue(L"testing", L"cursor_highlight_key", VK_CONTROL);
     }
 
     void Config::SetCursorMovementFix(bool cursorMovementFix) {
@@ -54,11 +55,16 @@ namespace addon {
         this->ini.SaveFile(this->configPath.c_str());
     }
 
-    void Config::SetHighlightCursor(bool highlightCursor) {
-        this->highlightCursor = highlightCursor;
-        this->ini.SetBoolValue(L"testing", L"highlight_cursor", highlightCursor);
+    void Config::SetCursorHighlightType(CursorHighlightType cursorHighlightType) {
+        this->cursorHighlightType = cursorHighlightType;
+        this->ini.SetLongValue(L"testing", L"cursor_highlight_type", cursorHighlightType);
         this->ini.SaveFile(this->configPath.c_str());
     }
 
+    void Config::SetCursorHighlightKey(int cursorHighlightKey) {
+        this->cursorHighlightKey = cursorHighlightKey;
+        this->ini.SetLongValue(L"testing", L"cursor_highlight_key", cursorHighlightKey);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
 
 }
