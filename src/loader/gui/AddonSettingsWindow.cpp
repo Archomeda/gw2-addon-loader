@@ -142,7 +142,7 @@ namespace loader::gui {
                         // Use all keys
                         size_t i = 0;
                         for (auto key : value.keybindSet) {
-                            if (i >= definition.valueSize) {
+                            if (i >= static_cast<size_t>(definition.valueSize)) {
                                 // Prevent out-of-bounds crash
                                 break;
                             }
