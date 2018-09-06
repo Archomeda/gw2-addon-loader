@@ -12,6 +12,8 @@ namespace addon::qol {
     int vertexCount = 0;
     IDirect3DTexture9* highlightTexture = nullptr;
     const RECT highlightRect = { 0, 0, 256, 256 };
+    RECT clientRect;
+    POINT cursorPos;
 
     chrono::steady_clock::time_point loopStart;
     chrono::duration<double, std::nano> loopMaxDuration;
@@ -77,7 +79,7 @@ namespace addon::qol {
     }
 
 
-    void RenderArrows(HWND hWnd, IDirect3DDevice9* const pDev, POINT cursorPos, RECT clientRect) {
+    void RenderArrows(IDirect3DDevice9* const pDev) {
         static const auto loopInDuration = 0.5e9ns; // 0.5s
         static const auto loopOutDuration = 0.5e9ns; // 0.5s
 
@@ -143,7 +145,7 @@ namespace addon::qol {
         }
     }
 
-    void RenderCirclesIn(HWND hWnd, IDirect3DDevice9* const pDev, POINT cursorPos, RECT clientRect) {
+    void RenderCirclesIn(IDirect3DDevice9* const pDev) {
         static const auto loopInDuration = 0.35e9ns; // 0.5s
         static const auto loopOutDuration = 0.35e9ns; // 0.5s
         static const auto circleInterval = 0.2e9ns; // 0.2s
@@ -222,7 +224,7 @@ namespace addon::qol {
         }
     }
 
-    void RenderCirclesOut(HWND hWnd, IDirect3DDevice9* const pDev, POINT cursorPos, RECT clientRect) {
+    void RenderCirclesOut(IDirect3DDevice9* const pDev) {
         static const auto loopInDuration = 0.1e9ns; // 0.1s
         static const auto loopOutDuration = 0.6e9ns; // 0.6s
         static const auto circleInterval = 0.2e9ns; // 0.2s
@@ -316,7 +318,7 @@ namespace addon::qol {
         }
     }
 
-    void EnableHighlightCursor(CursorHighlightType type, HMODULE hModule, IDirect3DDevice9* const pDev) {
+    void EnableHighlightCursor(CursorHighlightType type, HMODULE hModule, HWND hWnd, IDirect3DDevice9* const pDev) {
         if (!highlightImage) {
             UINT size;
             switch (type) {
@@ -349,44 +351,45 @@ namespace addon::qol {
                 return;
             }
         }
+        GetClientRect(hWnd, &clientRect);
     }
 
-    void RenderHighlightCursor(HWND hWnd, IDirect3DDevice9* const pDev) {
-        POINT cursorPos;
-        if (!GetCursorPos(&cursorPos)) {
-            return;
-        }
-        RECT clientRect;
-        if (!GetClientRect(hWnd, &clientRect)) {
-            return;
-        }
-
+    bool IsCursorHighlighted() {
         const auto loopDuration = chrono::steady_clock::now() - loopStart;
-        if (loopDuration > loopMaxDuration) {
-            // We are inside the loop, no need to render
+        return loopDuration < loopMaxDuration;
+    }
+
+    void RenderHighlightCursor(IDirect3DDevice9* const pDev) {
+        if (!IsCursorHighlighted()) {
+            // We are outside the loop, no need to render
             return;
         }
 
         switch (highlightType) {
         case CursorHighlightType::CursorArrowsHighlight:
-            RenderArrows(hWnd, pDev, cursorPos, clientRect);
+            RenderArrows(pDev);
             break;
         case CursorHighlightType::CursorCirclesInHighlight:
-            RenderCirclesIn(hWnd, pDev, cursorPos, clientRect);
+            RenderCirclesIn(pDev);
             break;
         case CursorHighlightType::CursorCirclesOutHighlight:
-            RenderCirclesOut(hWnd, pDev, cursorPos, clientRect);
+            RenderCirclesOut(pDev);
             break;
         }
     }
 
     void TriggerHighlightCursor() {
-        const auto loopDuration = chrono::steady_clock::now() - loopStart;
-        if (loopDuration < loopMaxDuration) {
+        if (IsCursorHighlighted()) {
             // We are inside the loop, no need to reset
             return;
         }
+
         loopStart = chrono::steady_clock::now();
+        GetCursorPos(&cursorPos);
+    }
+
+    void UpdateCursorPos(POINT pos) {
+        cursorPos = pos;
     }
 
 }

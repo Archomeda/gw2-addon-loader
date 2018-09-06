@@ -29,7 +29,7 @@ GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
         qol::EnableCoherentPriority(AppConfig.GetCoherentPriority());
     }
     if (AppConfig.GetCursorHighlightType()) {
-        qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, pDev);
+        qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, hWindow, pDev);
     }
 
     return 0;
@@ -37,13 +37,18 @@ GW2ADDON_RESULT GW2ADDON_CALL Load(HWND hFocusWindow, IDirect3DDevice9* pDev) {
 
 void GW2ADDON_CALL DrawFrame(IDirect3DDevice9* pDev) {
     if (AppConfig.GetCursorHighlightType()) {
-        qol::RenderHighlightCursor(hWindow, pDev);
+        qol::RenderHighlightCursor(pDev);
     }
 }
 
 bool GW2ADDON_CALL WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (AppConfig.GetCursorHighlightType() && (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) && wParam == AppConfig.GetCursorHighlightKey()) {
-        qol::TriggerHighlightCursor();
+    if (AppConfig.GetCursorHighlightType()) {
+        if ((msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) && wParam == AppConfig.GetCursorHighlightKey()) {
+            qol::TriggerHighlightCursor();
+        }
+        else if (msg == WM_MOUSEMOVE && qol::IsCursorHighlighted()) {
+            qol::UpdateCursorPos({ GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) });
+        }
     }
 
     bool result = false;
@@ -152,7 +157,7 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
         if (settingCursorHighlightType) {
             // Disable first in order to reset the texture
             qol::DisableHighlightCursor(device);
-            qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, device);
+            qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, hWindow, device);
         }
         else {
             qol::DisableHighlightCursor(device);
@@ -171,7 +176,7 @@ void GW2ADDON_CALL PreReset(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPres
 
 void GW2ADDON_CALL PostReset(IDirect3DDevice9* pDev, D3DPRESENT_PARAMETERS* pPresentationParameters) {
     if (AppConfig.GetCursorHighlightType()) {
-        qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, pDev);
+        qol::EnableHighlightCursor(AppConfig.GetCursorHighlightType(), dllModule, hWindow, pDev);
     }
 }
 
