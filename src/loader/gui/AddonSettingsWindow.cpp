@@ -4,6 +4,8 @@
 #include "../addons/NativeAddon.h"
 #include "../log.h"
 
+#define FLOATCOLTOINT(f) (static_cast<int>(f * 255.0f + 0.5f))
+
 using namespace std;
 using namespace loader::addons;
 using namespace loader::gui::elements;
@@ -101,6 +103,24 @@ namespace loader::gui {
                     ImGui::SetTooltip(definition.hint.c_str());
                 }
                 break;
+            case AddonSettingsEntryType::SettingsTypeRgb:
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted(definition.name.c_str());
+                ImGui::SameLine();
+                ImGui::ColorEdit3(("##" + definition.name).c_str(), value.colors);
+                if (!definition.hint.empty() && ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip(definition.hint.c_str());
+                }
+                break;
+            case AddonSettingsEntryType::SettingsTypeArgb:
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted(definition.name.c_str());
+                ImGui::SameLine();
+                ImGui::ColorEdit4(("##" + definition.name).c_str(), value.colors);
+                if (!definition.hint.empty() && ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip(definition.hint.c_str());
+                }
+                break;
             }
         }
 
@@ -150,6 +170,16 @@ namespace loader::gui {
                             ++i;
                         }
                     }
+                    break;
+                }
+                case AddonSettingsEntryType::SettingsTypeRgb: {
+                    int* intPtr = static_cast<int*>(valuePointer);
+                    *intPtr = (FLOATCOLTOINT(value.colors[0]) << 16) | (FLOATCOLTOINT(value.colors[1]) << 8) | FLOATCOLTOINT(value.colors[2]);
+                    break;
+                }
+                case AddonSettingsEntryType::SettingsTypeArgb: {
+                    int* intPtr = static_cast<int*>(valuePointer);
+                    *intPtr = (FLOATCOLTOINT(value.colors[0]) << 16) | (FLOATCOLTOINT(value.colors[1]) << 8) | FLOATCOLTOINT(value.colors[2]) | (FLOATCOLTOINT(value.colors[3]) << 24);
                     break;
                 }
                 }
@@ -215,6 +245,17 @@ namespace loader::gui {
                     value.keybindSet.insert(setting.keybindValue[i]);
                 }
             }
+            break;
+        case AddonSettingsEntryType::SettingsTypeRgb:
+            value.colors[0] = static_cast<float>((*setting.rgbValue >> 16) & 0xFF) / 255.0f;
+            value.colors[1] = static_cast<float>((*setting.rgbValue >> 8) & 0xFF) / 255.0f;
+            value.colors[2] = static_cast<float>(*setting.rgbValue & 0xFF) / 255.0f;
+            break;
+        case AddonSettingsEntryType::SettingsTypeArgb:
+            value.colors[0] = static_cast<float>((*setting.rgbValue >> 16) & 0xFF) / 255.0f;
+            value.colors[1] = static_cast<float>((*setting.rgbValue >> 8) & 0xFF) / 255.0f;
+            value.colors[2] = static_cast<float>(*setting.rgbValue & 0xFF) / 255.0f;
+            value.colors[3] = static_cast<float>((*setting.rgbValue >> 24) & 0xFF) / 255.0f;
             break;
         }
         this->values.push_back(value);

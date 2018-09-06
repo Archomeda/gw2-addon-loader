@@ -35,6 +35,7 @@ namespace addon {
         this->confineCursor = this->ini.GetBoolValue(L"qol", L"confine_cursor", false);
         this->cursorHighlightType = static_cast<CursorHighlightType>(this->ini.GetLongValue(L"testing", L"cursor_highlight_type", false));
         this->cursorHighlightKey = this->ini.GetLongValue(L"testing", L"cursor_highlight_key", VK_CONTROL);
+        this->cursorHighlightColor = this->ini.GetLongValue(L"testing", L"cursor_highlight_color", 0xFFFFFF);
     }
 
     void Config::SetCursorMovementFix(bool cursorMovementFix) {
@@ -64,6 +65,12 @@ namespace addon {
     void Config::SetCursorHighlightKey(int cursorHighlightKey) {
         this->cursorHighlightKey = cursorHighlightKey;
         this->ini.SetLongValue(L"testing", L"cursor_highlight_key", cursorHighlightKey);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
+    void Config::SetCursorHighlightColor(int cursorHighlightColor) {
+        this->cursorHighlightColor = cursorHighlightColor;
+        this->ini.SetLongValue(L"testing", L"cursor_highlight_color", cursorHighlightColor);
         this->ini.SaveFile(this->configPath.c_str());
     }
 

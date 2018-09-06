@@ -7,11 +7,12 @@ namespace addon::qol {
 
     CursorHighlightType highlightType;
 
-    void* highlightImage = nullptr;
     IDirect3DVertexBuffer9* vertexBuffer = nullptr;
     int vertexCount = 0;
+    void* highlightImage = nullptr;
     IDirect3DTexture9* highlightTexture = nullptr;
     const RECT highlightRect = { 0, 0, 256, 256 };
+    D3DCOLOR highlightColor = 0xFFFFFF;
     RECT clientRect;
     POINT cursorPos;
 
@@ -50,7 +51,7 @@ namespace addon::qol {
         const float top = static_cast<float>(highlightRect.top);
         const float right = static_cast<float>(highlightRect.right);
         const float bottom = static_cast<float>(highlightRect.bottom);
-        const D3DCOLOR color = D3DCOLOR_ARGB(alpha, 255, 255, 0);
+        const D3DCOLOR color = (alpha << 24) | (highlightColor & 0xFFFFFF);
 
         vertex[startIndex + 0].x = left;
         vertex[startIndex + 0].y = top;
@@ -318,7 +319,7 @@ namespace addon::qol {
         }
     }
 
-    void EnableHighlightCursor(CursorHighlightType type, HMODULE hModule, HWND hWnd, IDirect3DDevice9* const pDev) {
+    void EnableHighlightCursor(CursorHighlightType type, int color, HMODULE hModule, HWND hWnd, IDirect3DDevice9* const pDev) {
         if (!highlightImage) {
             UINT size;
             switch (type) {
@@ -351,6 +352,7 @@ namespace addon::qol {
                 return;
             }
         }
+        highlightColor = color;
         GetClientRect(hWnd, &clientRect);
     }
 

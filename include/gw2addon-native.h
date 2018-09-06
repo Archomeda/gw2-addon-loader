@@ -93,7 +93,13 @@ enum AddonSettingsEntryType {
     SettingsTypeOption = 5,
 
     // A keybind.
-    SettingsTypeKeybind = 6
+    SettingsTypeKeybind = 6,
+
+    // An RGB color.
+    SettingsTypeRgb = 7,
+
+    // An ARGB color.
+    SettingsTypeArgb = 8
 };
 
 /**
@@ -153,6 +159,12 @@ struct AddonSettingsEntry {
         // List of virtual key codes (see: https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes).
         // Maximum list length is valueSize (use at least 4 to support CTRL, ALT and Shift modifiers; otherwise modifiers will not be supported).
         int* keybindValue;
+
+        // RGB value.
+        int* rgbValue;
+
+        // RGBA value.
+        int* rgbaValue;
     };
 };
 

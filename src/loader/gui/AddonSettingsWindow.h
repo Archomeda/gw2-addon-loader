@@ -28,6 +28,7 @@ namespace loader::gui {
         uint_fast8_t keybind;
         std::set<uint_fast8_t> keybindSet;
         bool keybindBoxActive = false;
+        float colors[4];
     };
 
     class AddonSettingsWindow : public Window {
