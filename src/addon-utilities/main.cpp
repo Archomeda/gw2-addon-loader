@@ -69,7 +69,7 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
     static int settingCursorHighlightKey[1];
     static int settingCursorHighlightColor = 0xFFFFFF;
 
-    static const int settingsSize = 11;
+    static const int settingsSize = 9;
 
     if (settings == nullptr) {
         static AddonSettingsEntry entries[settingsSize];
@@ -78,7 +78,7 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
         entries[0].definition.name = "Fixes";
 
         entries[1].definition.type = AddonSettingsEntryType::SettingsTypeBoolean;
-        entries[1].definition.name = "Enable mouse cursor camera movement fix";
+        entries[1].definition.name = "Enable cursor camera movement fix";
         entries[1].definition.hint = "When the left or right mouse button is pressed to rotate the camera,\nthe game does not confine the mouse cursor to its current location,\ncausing it to still move in the background.\nBecause of this, the game can accept input on odd places like\nscrolling in a UI window, while the cursor wasn't initially there.\n\nEnabling this will fix this issue by confining the cursor properly.";
         settingCursorMovementFix = AppConfig.GetCursorMovementFix();
         entries[1].boolValue = &settingCursorMovementFix;
@@ -107,36 +107,31 @@ AddonSettings* GW2ADDON_CALL GetSettings(AddonSettings* const settings) {
         settingConfineCursor = AppConfig.GetConfineCursor();
         entries[5].boolValue = &settingConfineCursor;
 
-        entries[6].definition.type = AddonSettingsEntryType::SettingsTypeSeparator;
-
-        entries[7].definition.type = AddonSettingsEntryType::SettingsTypeText;
-        entries[7].definition.name = "Testing";
-
-        entries[8].definition.type = AddonSettingsEntryType::SettingsTypeOption;
-        entries[8].definition.name = "Cursor highlight type";
-        entries[8].definition.hint = "The cursor can be hard to locate at times. This setting allows you to choose\nbetween different types of highlights when the trigger key is pressed.";
-        entries[8].definition.listSize = 4;
+        entries[6].definition.type = AddonSettingsEntryType::SettingsTypeOption;
+        entries[6].definition.name = "Cursor highlight type";
+        entries[6].definition.hint = "The mouse cursor can be hard to locate at times. This setting allows you to choose\nbetween different types of highlights when the trigger key is pressed.";
+        entries[6].definition.listSize = 4;
         static const char* cursorHighlightTypes[4];
         cursorHighlightTypes[0] = "None";
         cursorHighlightTypes[1] = "Shrinking arrows";
         cursorHighlightTypes[2] = "Shrinking circles";
         cursorHighlightTypes[3] = "Expanding circles";
-        entries[8].definition.listNames = &cursorHighlightTypes[0];
+        entries[6].definition.listNames = &cursorHighlightTypes[0];
         settingCursorHighlightType = AppConfig.GetCursorHighlightType();
-        entries[8].optionValue = reinterpret_cast<int*>(&settingCursorHighlightType);
+        entries[6].optionValue = reinterpret_cast<int*>(&settingCursorHighlightType);
 
-        entries[9].definition.type = AddonSettingsEntryType::SettingsTypeKeybind;
-        entries[9].definition.name = "Cursor highlight trigger key";
-        entries[9].definition.hint = "If the cursor highlight type is set, this key will cause\nthe cursor to be highlighted as long as it's pressed.";
-        entries[9].definition.valueSize = 1;
+        entries[7].definition.type = AddonSettingsEntryType::SettingsTypeKeybind;
+        entries[7].definition.name = "Cursor highlight trigger key";
+        entries[7].definition.hint = "If the mouse cursor highlight type is set, this key will cause\nthe cursor to be highlighted as long as it's pressed.";
+        entries[7].definition.valueSize = 1;
         settingCursorHighlightKey[0] = AppConfig.GetCursorHighlightKey();
-        entries[9].keybindValue = &settingCursorHighlightKey[0];
+        entries[7].keybindValue = &settingCursorHighlightKey[0];
 
-        entries[10].definition.type = AddonSettingsEntryType::SettingsTypeRgb;
-        entries[10].definition.name = "Cursor highlight color";
-        entries[10].definition.hint = "If the cursor highlight type is set, this will control the color of the highlight.";
+        entries[8].definition.type = AddonSettingsEntryType::SettingsTypeRgb;
+        entries[8].definition.name = "Cursor highlight color";
+        entries[8].definition.hint = "If the mouse cursor highlight type is set, this will control the color of the highlight.";
         settingCursorHighlightColor = AppConfig.GetCursorHighlightColor();
-        entries[10].rgbValue = &settingCursorHighlightColor;
+        entries[8].rgbValue = &settingCursorHighlightColor;
 
         static AddonSettings addonSettings;
         addonSettings.entriesSize = settingsSize;
