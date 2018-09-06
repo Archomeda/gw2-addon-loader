@@ -7,8 +7,8 @@ namespace loader {
     set<uint_fast8_t> pressedKeys;
     bool repeatedPressedKeys = false;
 
-    const char vkStrings[256][16] = {
-        "M1", "M2", "", "M3", "M4", "M5", "", "", "Backspace", "Tab", "", "", "Clear", "Enter", "", "",
+    const char vkStrings[256][17] = {
+        "", "M1", "M2", "", "M3", "M4", "M5", "", "Backspace", "Tab", "", "", "Clear", "Enter", "", "",
         "Shift", "Ctrl", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
         "Space", "Page Up", "Page Down", "End", "Home", "Left", "Up", "Right", "Down", "Select", "", "", "Print Screen", "Insert", "Delete", "Help",
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "",
@@ -17,7 +17,9 @@ namespace loader {
         "NUM 0", "NUM 1", "NUM 2", "NUM 3", "NUM 4", "NUM 5", "NUM 6", "NUM 7", "NUM 8", "NUM 9", "NUM *", "NUM +", "", "NUM -", "NUM .", "NUM /",
         "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16",
         "F17", "F18", "F19", "F20", "F21", "F22", "F23", "F24", "", "", "", "", "", "", "", "",
-        "Num Lock", "Scroll Lock"
+        "Num Lock", "Scroll Lock", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+        "Left Shift", "Right Shift", "Left Ctrl", "Right Ctrl", "Left Alt", "Right Alt", "Back", "Forward", "Refresh", "Stop", "Search", "Favorites", "Home", "Mute", "Volume Down", "Volume Up",
+        "Next Media", "Previous Media", "Stop Media", "Play/Pause Media", "Mail", "Select Media"
     };
 
     void ProcessInputMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
