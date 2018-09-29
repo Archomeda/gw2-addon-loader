@@ -451,9 +451,14 @@ namespace loader::hooks {
             addons::AdvPreSetRenderTarget(this->dev, RenderTargetIndex, pRenderTarget);
         }
 
-        D3DSURFACE_DESC desc;
-        if (pRenderTarget->GetDesc(&desc) == D3D_OK) {
-            stateFormat = desc.Format;
+        if (pRenderTarget != NULL) {
+            D3DSURFACE_DESC desc;
+            if (pRenderTarget->GetDesc(&desc) == D3D_OK) {
+                stateFormat = desc.Format;
+            }
+        }
+        else {
+            stateFormat = D3DFORMAT::D3DFMT_UNKNOWN;
         }
 
         if (PrePostProcessingDone == 1) {
