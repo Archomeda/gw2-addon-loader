@@ -1,14 +1,17 @@
 #include "log.h"
-
-#define LOG_FILE "addons/loader/loader.log"
+#include "globals.h"
+#include "utils/file.h"
 
 using namespace std;
 using namespace std::filesystem;
+using namespace loader::utils;
 
 namespace loader {
 
     map<string, shared_ptr<spdlog::logger>> loggers;
     shared_ptr<spdlog::sinks::basic_file_sink_mt> logSink;
+
+    const string logName = "loader.log";
 
     const shared_ptr<spdlog::logger> GetLog() {
         return GetLog("loader");
@@ -23,10 +26,19 @@ namespace loader {
             TCHAR fileName[MAX_PATH];
             GetModuleFileName(NULL, fileName, sizeof(fileName));
             PathRemoveFileSpec(fileName);
-            path logFileName(fileName);
-            logFileName /= LOG_FILE;
+            path logFolder(fileName);
+            logFolder /= LOG_FOLDER;
 
-            logSink = make_shared<spdlog::sinks::basic_file_sink_mt>(logFileName.u8string(), true);
+            create_directories(logFolder);
+            if (!FolderExists(logFolder)) {
+                // TODO Whenever we fail to make a log file, just return a fake logger (it would be awesome to have an ingame logger too)
+                return nullptr;
+            }
+
+            path logPath(logFolder);
+            logPath /= logName;
+
+            logSink = make_shared<spdlog::sinks::basic_file_sink_mt>(logPath.u8string(), true);
         }
 
         shared_ptr<spdlog::logger> logger = make_shared<spdlog::logger>(name, logSink);

@@ -227,7 +227,8 @@ namespace loader::updaters {
 
         path folder(fileName);
         folder.remove_filename();
-        if (!FolderExists(folder.string()) && SHCreateDirectory(NULL, folder.c_str()) != ERROR_SUCCESS) {
+        create_directories(folder);
+        if (!FolderExists(folder)) {
             throw exception(("Failed to create subfolder " + folder.string()).c_str());
         }
 

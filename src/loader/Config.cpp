@@ -25,9 +25,7 @@ namespace loader {
         PathRemoveFileSpec(fileName);
         path configFolder(fileName);
         configFolder /= CONFIG_FOLDER;
-        if (!FolderExists(configFolder.u8string())) {
-            SHCreateDirectory(NULL, configFolder.c_str());
-        }
+        create_directories(configFolder);
 
         // Our config file
         path configPath(configFolder);

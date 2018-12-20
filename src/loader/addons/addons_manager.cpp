@@ -46,8 +46,9 @@ namespace loader::addons {
         // Create path
         path addonsFolder = GetGuildWars2Folder(ADDONS_FOLDER);
         ADDONS_LOG()->info("Refresh add-ons list in {0}", addonsFolder.u8string());
-        if (!PathFileExists(addonsFolder.c_str())) {
-            SHCreateDirectoryEx(NULL, addonsFolder.c_str(), NULL);
+        create_directories(addonsFolder);
+        if (!FolderExists(addonsFolder)) {
+            ADDONS_LOG()->error("Failed to create add-ons folder");
         }
 
         // Iterate and find DLL files

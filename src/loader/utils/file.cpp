@@ -30,9 +30,17 @@ namespace loader::utils {
         return false;
     }
 
+    bool FolderExists(const path& folderPath) {
+        return FolderExists(folderPath.u8string());
+    }
+
     bool FileExists(const string& fileName) {
         DWORD fileType = GetFileAttributes(u16(fileName).c_str());
         return fileType != INVALID_FILE_ATTRIBUTES;
+    }
+
+    bool FileExists(const path& filePath) {
+        return FileExists(filePath.u8string());
     }
 
     FILETIME TimetToFileTime(time_t time) {
