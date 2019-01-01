@@ -8,7 +8,7 @@ using namespace std;
 namespace loader::gui {
 
     DisclaimerWindow::DisclaimerWindow() {
-        this->SetTitle("Addon Loader Disclaimer");
+        this->SetTitle("Add-on Loader Disclaimer");
         this->SetFlags(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
     }
 

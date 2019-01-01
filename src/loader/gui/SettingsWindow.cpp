@@ -310,7 +310,7 @@ namespace loader::gui {
                     if (addon->IsForced()) {
                         ImGui::Spacing();
                         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 204, 0, 255));
-                        ImGui::TextWrapped("This is a supportive add-on for the Addon Loader and cannot be disabled.");
+                        ImGui::TextWrapped("This is a supportive add-on for the Add-on Loader and cannot be disabled.");
                         ImGui::PopStyleColor();
                     }
                     else if (addon->GetType() == AddonType::AddonTypeLegacy) {
@@ -453,7 +453,7 @@ namespace loader::gui {
         ImGui::PushTextWrapPos();
         ImGui::TextUnformatted(R"(Guild Wars 2 Add-on Loader is an unofficial add-on for Guild Wars 2 developed by Archomeda. It acts as a master add-on that makes it easy to manage your Guild Wars 2 add-ons without the need to sort the files manually.
 
-Addons have to be compatible before they can be used with the Add-on Loader. While incompatible add-ons will still show up in the list of add-ons, you can't activate them. If you want to use an add-on that's not compatible, ask its developer to update it.
+Add-ons have to be compatible before they can be used with the Add-on Loader. While incompatible add-ons will still show up in the list of add-ons, you can't activate them. If you want to use an add-on that's not compatible, ask its developer to update it.
 
 Both this add-on and its author do not support add-ons that are against the Guild Wars 2 Terms of Service. Support will not be provided if you're using these kind of add-ons. Please do not use them.
 
