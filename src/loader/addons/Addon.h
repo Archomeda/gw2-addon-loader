@@ -1,7 +1,9 @@
 #pragma once
 #include "../stdafx.h"
-#include "AddonFunc.h"
-#include "AddonMetric.h"
+#include "AddonCallFunc.h"
+#include "AddonFrameFunc.h"
+#include "../diagnostics/HistoricTimeMetric.h"
+#include "../diagnostics/SingleTimeMetric.h"
 #include "../hooks/LoaderDirect3D9.h"
 #include "../hooks/LoaderDirect3DDevice9.h"
 #include "../updaters/Downloader.h"
@@ -95,52 +97,52 @@ namespace loader::addons {
         virtual void OnStartFrame(IDirect3DDevice9* device);
         virtual void OnEndFrame(IDirect3DDevice9* device);
 
-        AddonMetric& GetMetricLoad() { return this->metricLoad; }
-        AddonMetric& GetMetricOverall() { return this->metricOverall; }
+        diagnostics::SingleTimeMetric& GetMetricLoad() { return this->metricLoad; }
+        diagnostics::HistoricTimeMetric<1000000, 2>& GetMetricOverall() { return this->metricOverall; }
 
         UINT D3D9SdkVersion = 0;
         hooks::LoaderDirect3D9* D3D9 = nullptr;
         hooks::LoaderDirect3DDevice9* D3DDevice9 = nullptr;
         HWND FocusWindow = NULL;
 
-        AddonFunc<void, const char*, int> ApiKeyChange;
+        AddonCallFunc<void, const char*, int> ApiKeyChange;
 
-        AddonFunc<bool, HWND, UINT, WPARAM, LPARAM> HandleWndProc;
+        AddonCallFunc<bool, HWND, UINT, WPARAM, LPARAM> HandleWndProc;
 
         bool HasRenderingHooks() const { return this->hasRenderingHooks; }
-        AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforeGui;
-        AddonFunc<void, IDirect3DDevice9*> DrawFrameBeforePostProcessing;
-        AddonFunc<void, IDirect3DDevice9*> DrawFrame;
-        AddonFunc<void, IDirect3DDevice9*> AdvPreBeginScene;
-        AddonFunc<void, IDirect3DDevice9*> AdvPostBeginScene;
-        AddonFunc<void, IDirect3DDevice9*> AdvPreEndScene;
-        AddonFunc<void, IDirect3DDevice9*> AdvPostEndScene;
-        AddonFunc<void, IDirect3DDevice9*, DWORD, CONST D3DRECT*, DWORD, D3DCOLOR, float, DWORD> AdvPreClear;
-        AddonFunc<void, IDirect3DDevice9*, DWORD, CONST D3DRECT*, DWORD, D3DCOLOR, float, DWORD> AdvPostClear;
-        AddonFunc<void, IDirect3DDevice9*, D3DPRESENT_PARAMETERS*> AdvPreReset;
-        AddonFunc<void, IDirect3DDevice9*, D3DPRESENT_PARAMETERS*> AdvPostReset;
-        AddonFunc<void, IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*> AdvPrePresent;
-        AddonFunc<void, IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*> AdvPostPresent;
-        AddonFunc<HRESULT, IDirect3DDevice9*, UINT, UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DTexture9**, HANDLE*> AdvPreCreateTexture;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DTexture9*, UINT, UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, HANDLE*> AdvPostCreateTexture;
-        AddonFunc<HRESULT, IDirect3DDevice9*, CONST DWORD*, IDirect3DVertexShader9**> AdvPreCreateVertexShader;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*, CONST DWORD*> AdvPostCreateVertexShader;
-        AddonFunc<HRESULT, IDirect3DDevice9*, CONST DWORD*, IDirect3DPixelShader9**> AdvPreCreatePixelShader;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*, CONST DWORD*> AdvPostCreatePixelShader;
-        AddonFunc<HRESULT, IDirect3DDevice9*, UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, DWORD, BOOL, IDirect3DSurface9**, HANDLE*> AdvPreCreateRenderTarget;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DSurface9*, UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, DWORD, BOOL, HANDLE*> AdvPostCreateRenderTarget;
-        AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DBaseTexture9*> AdvPreSetTexture;
-        AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DBaseTexture9*> AdvPostSetTexture;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*> AdvPreSetVertexShader;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*> AdvPostSetVertexShader;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*> AdvPreSetPixelShader;
-        AddonFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*> AdvPostSetPixelShader;
-        AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DSurface9*> AdvPreSetRenderTarget;
-        AddonFunc<void, IDirect3DDevice9*, DWORD, IDirect3DSurface9*> AdvPostSetRenderTarget;
-        AddonFunc<void, IDirect3DDevice9*, D3DRENDERSTATETYPE, DWORD> AdvPreSetRenderState;
-        AddonFunc<void, IDirect3DDevice9*, D3DRENDERSTATETYPE, DWORD> AdvPostSetRenderState;
-        AddonFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPreDrawIndexedPrimitive;
-        AddonFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPostDrawIndexedPrimitive;
+        AddonFrameFunc<void, IDirect3DDevice9*> DrawFrameBeforeGui;
+        AddonFrameFunc<void, IDirect3DDevice9*> DrawFrameBeforePostProcessing;
+        AddonFrameFunc<void, IDirect3DDevice9*> DrawFrame;
+        AddonFrameFunc<void, IDirect3DDevice9*> AdvPreBeginScene;
+        AddonFrameFunc<void, IDirect3DDevice9*> AdvPostBeginScene;
+        AddonFrameFunc<void, IDirect3DDevice9*> AdvPreEndScene;
+        AddonFrameFunc<void, IDirect3DDevice9*> AdvPostEndScene;
+        AddonFrameFunc<void, IDirect3DDevice9*, DWORD, CONST D3DRECT*, DWORD, D3DCOLOR, float, DWORD> AdvPreClear;
+        AddonFrameFunc<void, IDirect3DDevice9*, DWORD, CONST D3DRECT*, DWORD, D3DCOLOR, float, DWORD> AdvPostClear;
+        AddonFrameFunc<void, IDirect3DDevice9*, D3DPRESENT_PARAMETERS*> AdvPreReset;
+        AddonFrameFunc<void, IDirect3DDevice9*, D3DPRESENT_PARAMETERS*> AdvPostReset;
+        AddonFrameFunc<void, IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*> AdvPrePresent;
+        AddonFrameFunc<void, IDirect3DDevice9*, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*> AdvPostPresent;
+        AddonFrameFunc<HRESULT, IDirect3DDevice9*, UINT, UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, IDirect3DTexture9**, HANDLE*> AdvPreCreateTexture;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DTexture9*, UINT, UINT, UINT, DWORD, D3DFORMAT, D3DPOOL, HANDLE*> AdvPostCreateTexture;
+        AddonFrameFunc<HRESULT, IDirect3DDevice9*, CONST DWORD*, IDirect3DVertexShader9**> AdvPreCreateVertexShader;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*, CONST DWORD*> AdvPostCreateVertexShader;
+        AddonFrameFunc<HRESULT, IDirect3DDevice9*, CONST DWORD*, IDirect3DPixelShader9**> AdvPreCreatePixelShader;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*, CONST DWORD*> AdvPostCreatePixelShader;
+        AddonFrameFunc<HRESULT, IDirect3DDevice9*, UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, DWORD, BOOL, IDirect3DSurface9**, HANDLE*> AdvPreCreateRenderTarget;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DSurface9*, UINT, UINT, D3DFORMAT, D3DMULTISAMPLE_TYPE, DWORD, BOOL, HANDLE*> AdvPostCreateRenderTarget;
+        AddonFrameFunc<void, IDirect3DDevice9*, DWORD, IDirect3DBaseTexture9*> AdvPreSetTexture;
+        AddonFrameFunc<void, IDirect3DDevice9*, DWORD, IDirect3DBaseTexture9*> AdvPostSetTexture;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*> AdvPreSetVertexShader;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DVertexShader9*> AdvPostSetVertexShader;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*> AdvPreSetPixelShader;
+        AddonFrameFunc<void, IDirect3DDevice9*, IDirect3DPixelShader9*> AdvPostSetPixelShader;
+        AddonFrameFunc<void, IDirect3DDevice9*, DWORD, IDirect3DSurface9*> AdvPreSetRenderTarget;
+        AddonFrameFunc<void, IDirect3DDevice9*, DWORD, IDirect3DSurface9*> AdvPostSetRenderTarget;
+        AddonFrameFunc<void, IDirect3DDevice9*, D3DRENDERSTATETYPE, DWORD> AdvPreSetRenderState;
+        AddonFrameFunc<void, IDirect3DDevice9*, D3DRENDERSTATETYPE, DWORD> AdvPostSetRenderState;
+        AddonFrameFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPreDrawIndexedPrimitive;
+        AddonFrameFunc<void, IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT> AdvPostDrawIndexedPrimitive;
 
     protected:
         void ChangeState(AddonState state) { this->state = state; }
@@ -158,8 +160,8 @@ namespace loader::addons {
         std::string fileName;
 
         bool hasRenderingHooks = false;
-        AddonMetric metricLoad = AddonMetric(AddonMetricType::SingleMetric);
-        AddonMetric metricOverall;
+        diagnostics::SingleTimeMetric metricLoad;
+        diagnostics::HistoricTimeMetric<1000000, 2> metricOverall;
     };
 
 }

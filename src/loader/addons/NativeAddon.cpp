@@ -261,12 +261,12 @@ namespace loader::addons {
         }
         this->ChangeState(AddonState::LoadingState);
 
-        this->GetMetricLoad().StartMeasurement();
+        this->GetMetricLoad().Start();
         if (this->AddonLoad != nullptr) {
             GW2ADDON_RESULT result = this->AddonLoad(this->FocusWindow, this->D3DDevice9->GetSystemDevice());
 
             if (result) {
-                this->GetMetricLoad().EndMeasurement();
+                this->GetMetricLoad().Stop();
                 this->ChangeState(AddonState::ErroredState);
                 ADDONS_LOG()->error("Could not load native add-on {0}: Add-on returned {1}", this->GetFileName(), to_string(result));
                 return false;
@@ -275,7 +275,7 @@ namespace loader::addons {
 
         bool result = Addon::Load();
 
-        this->GetMetricLoad().EndMeasurement();
+        this->GetMetricLoad().Stop();
         this->ChangeState(AddonState::LoadedState);
 
         return result;

@@ -7,6 +7,12 @@ namespace loader {
         class Addon;
     }
 
+    enum DiagnosticsHistoryType {
+        RenderTime,
+        Fps
+    };
+    static const int MaxDiagnosticsHistoryTypes = 2;
+
     typedef std::chrono::time_point<std::chrono::seconds> timestamp;
 
     class Config {
@@ -28,6 +34,7 @@ namespace loader {
         bool GetOBSCompatibilityMode() const { return this->obsCompatibilityMode; }
         bool GetShowHiddenAddons() const { return this->showHiddenAddons; }
         bool GetDiagnostics() const { return this->diagnostics; }
+        DiagnosticsHistoryType GetDiagnosticsHistoryType() const { return (DiagnosticsHistoryType)this->diagnosticsHistoryType; }
         std::string GetApiKey() const { return this->apiKey; }
         timestamp GetLastUpdateCheck() const { return this->lastUpdateCheck; }
         std::string GetLatestVersion() const { return this->latestVersion; }
@@ -39,6 +46,7 @@ namespace loader {
         void SetOBSCompatibilityMode(bool compatibilityMode);
         void SetShowHiddenAddons(bool showHiddenAddons);
         void SetDiagnostics(bool diagnostics);
+        void SetDiagnosticsHistoryType(DiagnosticsHistoryType diagnosticsHistoryType);
         void SetApiKey(const std::string& apiKey);
         template<class Clock>
         void SetLastUpdateCheck(std::chrono::time_point<Clock, std::chrono::seconds> lastUpdate) {
@@ -78,6 +86,7 @@ namespace loader {
         bool obsCompatibilityMode = false;
         bool showHiddenAddons = false;
         bool diagnostics = false;
+        int diagnosticsHistoryType = 0;
         std::string apiKey;
         timestamp lastUpdateCheck;
         std::string latestVersion;

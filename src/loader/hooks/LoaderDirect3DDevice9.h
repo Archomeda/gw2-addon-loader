@@ -1,5 +1,7 @@
 #pragma once
 #include "../stdafx.h"
+#include "../diagnostics/HistoricFpsMetric.h"
+#include "../diagnostics/HistoricTimeMetric.h"
 
 namespace loader::hooks {
 
@@ -11,8 +13,9 @@ namespace loader::hooks {
     extern PostReset_t* PostResetHook;
     extern PrePresent_t* PrePresentHook;
 
-    extern std::vector<float> DurationHistoryD3D9Processing;
-    extern std::vector<float> DurationHistoryLoaderDrawFrame;
+    extern diagnostics::HistoricTimeMetric<1000, 1> D3D9ProcessingMetric;
+    extern diagnostics::HistoricTimeMetric<1000, 1> LoaderDrawFrameMetric;
+    extern diagnostics::HistoricFpsMetric FpsMetric;
 
     extern IDirect3DDevice9* LegacyAddonChainDevice;
 

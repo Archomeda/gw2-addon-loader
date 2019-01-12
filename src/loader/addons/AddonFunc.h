@@ -1,8 +1,7 @@
 #pragma once
 #include "../stdafx.h"
-#include "AddonMetric.h"
 #include "exceptions.h"
-#include "../Config.h"
+#include "../diagnostics/HistoricTimeMetric.h"
 
 namespace loader::addons {
 
@@ -34,12 +33,8 @@ namespace loader::addons {
         }
 
 
-        AddonMetric& GetMetric() {
+        diagnostics::HistoricTimeMetric<1000000, 2>& GetMetric() {
             return this->metric;
-        }
-
-        void SetGlobalMetric(AddonMetric* globalMetric) {
-            this->globalMetric = globalMetric;
         }
 
         template<typename T = R, typename = typename std::enable_if_t<!std::is_void_v<T>>>
@@ -113,29 +108,10 @@ namespace loader::addons {
         std::function<R(Args...)> Func;
         std::string FuncName;
 
+        virtual void StartMetric() = 0;
+        virtual void EndMetric() = 0;
 
-    private:
-        void StartMetric() {
-            if (AppConfig.GetDiagnostics()) {
-                if (this->globalMetric != nullptr) {
-                    this->globalMetric->StartMeasurement();
-                }
-                this->metric.StartMeasurement();
-            }
-        }
-
-        void EndMetric() {
-            if (AppConfig.GetDiagnostics()) {
-                if (this->globalMetric != nullptr) {
-                    this->globalMetric->EndMeasurement();
-                }
-                this->metric.EndMeasurement();
-            }
-        }
-
-
-        AddonMetric metric;
-        AddonMetric* globalMetric = nullptr;
+        diagnostics::HistoricTimeMetric<1000000, 2> metric;
     };
 
 }

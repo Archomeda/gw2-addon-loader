@@ -153,27 +153,34 @@ namespace loader::gui {
         return value_changed;
     }
 
-    void SettingsWindow::ImGuiAddonStatLine(const char* label, const AddonMetric& measure, bool calls = true) {
+    void SettingsWindow::ImGuiAddonStatLine(const char* label, const HistoricTimeMetric<1000000, 2>& metric, bool calls = true) {
         ImGui::TextUnformatted(label);
         ImGui::NextColumn();
-        if (measure.GetLast() >= 500) {
-            ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), measure.FormatTimeMetric(measure.GetLast()).c_str());
+        if (metric.GetLast() >= 500) {
+            ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), metric.GetLastTimeFormatted().c_str());
         }
         else {
-            ImGui::TextUnformatted(measure.FormatTimeMetric(measure.GetLast()).c_str());
+            ImGui::TextUnformatted(metric.GetLastTimeFormatted().c_str());
         }
         ImGui::NextColumn();
-        if (measure.GetMovingAverage() >= 500) {
-            ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), measure.FormatTimeMetric(measure.GetMovingAverage()).c_str());
+        if (metric.GetMovingAverage() >= 500) {
+            ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), metric.GetMovingAverageFormatted().c_str());
         }
         else {
-            ImGui::TextUnformatted(measure.FormatTimeMetric(measure.GetMovingAverage()).c_str());
+            ImGui::TextUnformatted(metric.GetMovingAverageFormatted().c_str());
         }
         ImGui::NextColumn();
-        ImGui::TextUnformatted(measure.FormatTimeMetric(measure.GetOverallMaximum()).c_str());
+        if (metric.GetMovingMaximum() >= 1000) {
+            ImGui::TextColored(ImVec4(0.75, 0.5625f, 0.375f, 1.0f), metric.GetMovingMaximumFormatted().c_str());
+        }
+        else {
+            ImGui::TextUnformatted(metric.GetMovingMaximumFormatted().c_str());
+        }
+        ImGui::NextColumn();
+        ImGui::TextUnformatted(metric.GetOverallMaximumFormatted().c_str());
         ImGui::NextColumn();
         if (calls) {
-            ImGui::Text("%llu", measure.GetCalls());
+            ImGui::Text("%llu", metric.GetCalls());
         }
         ImGui::NextColumn();
     }
@@ -551,17 +558,84 @@ The API key will be automatically shared to all active add-ons.)");
         ImGui::Combo("##RenderType", &this->selectedStatsType, types.c_str(), i);
 
         if (this->selectedStatsType == 0) {
-            ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryD3D9Processing[0], static_cast<int>(hooks::DurationHistoryD3D9Processing.size()), 0, "Frame render time (ms)", 0, 67, ImVec2(0, 120));
+            DiagnosticsHistoryType historyType = AppConfig.GetDiagnosticsHistoryType();
+            int yFps144 = 0;
+            int yFps60 = 0;
+            int yFps30 = 0;
+            int yFpsAvg = 0;
 
-            ImDrawList* draw = ImGui::GetWindowDrawList();
-            ImGuiStyle& style = ImGui::GetStyle();
-            ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
-            float yFps30 = plotRect.Max.y - (plotRect.GetSize().y / 2.0f);
-            float yFps60 = plotRect.Max.y - (plotRect.GetSize().y / 4.0f);
-            draw->AddLine(ImVec2(plotRect.Min.x, yFps30), ImVec2(plotRect.Max.x, yFps30), IM_COL32(192, 144, 96, 255));
-            draw->AddText(ImVec2(plotRect.Min.x + 2, yFps30 + 1), IM_COL32(192, 144, 96, 255), "30fps");
-            draw->AddLine(ImVec2(plotRect.Min.x, yFps60), ImVec2(plotRect.Max.x, yFps60), IM_COL32(96, 192, 96, 255));
-            draw->AddText(ImVec2(plotRect.Min.x + 2, yFps60 + 1), IM_COL32(96, 192, 96, 255), "60fps");
+            if (historyType == DiagnosticsHistoryType::RenderTime) {
+                const auto& metric = hooks::D3D9ProcessingMetric;
+                float scaleMax = max(1000 / 144.0f, metric.GetMovingMaximum());
+                ImGui::PlotLines("##RenderingTime", &metric.GetMovingHistory()[0], metric.GetMaxHistorySize(), 0, "Frame render time (ms) - lower is better", 0, scaleMax, ImVec2(0, 120));
+
+                ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+                const float scaleRatio = plotRect.GetSize().y / scaleMax;
+                yFpsAvg = static_cast<int>(plotRect.Max.y - (scaleRatio * metric.GetMovingAverage()));
+                if (scaleMax >= (1000 / 30.0f)) {
+                    yFps30 = static_cast<int>(plotRect.Max.y - (scaleRatio * (1000 / 30.0f)));
+                }
+                if (scaleMax >= (1000 / 60.0f) && scaleMax <= (1000 / 20.0f)) {
+                    yFps60 = static_cast<int>(plotRect.Max.y - (scaleRatio * (1000 / 60.0f)));
+                }
+                if (scaleMax >= (1000 / 144.0f) && scaleMax <= (1000 / 36.0f)) {
+                    yFps144 = static_cast<int>(plotRect.Max.y - (scaleRatio * (1000 / 144.0f)));
+                }
+            }
+            else {
+                const auto& metric = hooks::FpsMetric;
+                float scaleMax = max(30.0f, metric.GetMovingMaximum());
+                ImGui::PlotLines("##Fps", &metric.GetMovingHistory()[0], metric.GetMaxHistorySize(), 0, "FPS - higher is better", 0, scaleMax, ImVec2(0, 120));
+
+                ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+                const float scaleRatio = plotRect.GetSize().y / scaleMax;
+                yFpsAvg = static_cast<int>(plotRect.Max.y - (scaleRatio * metric.GetMovingAverage()));
+                if (scaleMax >= 30 && scaleMax <= 120) {
+                    yFps30 = static_cast<int>(plotRect.Max.y - (scaleRatio * 30));
+                }
+                if (scaleMax >= 60) {
+                    yFps60 = static_cast<int>(plotRect.Max.y - (scaleRatio * 60));
+                }
+                if (scaleMax >= 144) {
+                    yFps144 = static_cast<int>(plotRect.Max.y - (scaleRatio * 144));
+                }
+            }
+
+            {
+                ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+                ImDrawList* draw = ImGui::GetWindowDrawList();
+
+                // Average FPS line
+                if (yFpsAvg > 0) {
+                    draw->AddLine(ImVec2(plotRect.Min.x, static_cast<float>(yFpsAvg)), ImVec2(plotRect.Max.x, static_cast<float>(yFpsAvg)), IM_COL32(192, 192, 64, 255));
+                    draw->AddText(ImVec2(plotRect.Min.x + 2, static_cast<float>(yFpsAvg) + 1), IM_COL32(192, 192, 64, 255), "avg");
+                }
+
+                // 144 FPS line
+                if (yFps144 > 0) {
+                    draw->AddLine(ImVec2(plotRect.Min.x, static_cast<float>(yFps144)), ImVec2(plotRect.Max.x, static_cast<float>(yFps144)), IM_COL32(96, 144, 192, 255));
+                    draw->AddText(ImVec2(plotRect.Min.x + 2, static_cast<float>(yFps144) + 1), IM_COL32(96, 144, 192, 255), "144fps");
+                }
+
+                // 60 FPS line
+                if (yFps60 > 0) {
+                    draw->AddLine(ImVec2(plotRect.Min.x, static_cast<float>(yFps60)), ImVec2(plotRect.Max.x, static_cast<float>(yFps60)), IM_COL32(96, 192, 96, 255));
+                    draw->AddText(ImVec2(plotRect.Min.x + 2, static_cast<float>(yFps60) + 1), IM_COL32(96, 192, 96, 255), "60fps");
+                }
+
+                // 30 FPS line
+                if (yFps30 > 0) {
+                    draw->AddLine(ImVec2(plotRect.Min.x, static_cast<float>(yFps30)), ImVec2(plotRect.Max.x, static_cast<float>(yFps30)), IM_COL32(192, 144, 96, 255));
+                    draw->AddText(ImVec2(plotRect.Min.x + 2, static_cast<float>(yFps30) + 1), IM_COL32(192, 144, 96, 255), "30fps");
+                }
+            }
+
+            if (ImGui::IsItemClicked()) {
+                historyType = (DiagnosticsHistoryType)(historyType + 1);
+                if (historyType == MaxDiagnosticsHistoryTypes)
+                    historyType = (DiagnosticsHistoryType)0;
+                AppConfig.SetDiagnosticsHistoryType(historyType);
+            }
             ImGui::Spacing();
 
             const auto& link = hooks::MumbleLink::GetInstance();
@@ -693,29 +767,33 @@ The API key will be automatically shared to all active add-ons.)");
             }
         }
         else if (this->selectedStatsType == 1) {
-            ImGui::PlotLines("##RenderingTime", &hooks::DurationHistoryLoaderDrawFrame[0], static_cast<int>(hooks::DurationHistoryLoaderDrawFrame.size()), 0, "Frame render time (ms)", 0, 4, ImVec2(0, 70));
+            ImGui::PlotLines("##RenderingTime", &hooks::LoaderDrawFrameMetric.GetMovingHistory()[0], hooks::LoaderDrawFrameMetric.GetMaxHistorySize(), 0, "Frame render time (ms) - lower is better", 0, 4, ImVec2(0, 70));
         }
         else if (selectedAddon) {
             if (ImGui::CollapsingHeader("General")) {
-                ImGui::BeginColumns("##AddonGeneral", 5, 0);
+                ImGui::BeginColumns("##AddonGeneral", 6, 0);
                 {
                     elements::SetColumnWidth(0, 150);
-                    elements::SetColumnWidth(1, 110);
-                    elements::SetColumnWidth(2, 110);
-                    elements::SetColumnWidth(3, 110);
+                    elements::SetColumnWidth(1, 70);
+                    elements::SetColumnWidth(2, 70);
+                    elements::SetColumnWidth(3, 70);
+                    elements::SetColumnWidth(4, 70);
                     ImGui::NextColumn();
-                    ImGui::TextUnformatted("Current");
+                    ImGui::TextUnformatted("Last");
                     ImGui::NextColumn();
-                    ImGui::TextUnformatted("Exp. moving avg");
+                    ImGui::TextUnformatted("M avg");
                     ImGui::NextColumn();
-                    ImGui::TextUnformatted("Overall max");
+                    ImGui::TextUnformatted("M max");
+                    ImGui::NextColumn();
+                    ImGui::TextUnformatted("O max");
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Calls");
                     ImGui::NextColumn();
                     ImGui::TextUnformatted("Load");
                     ImGui::NextColumn();
                     const auto& metric = selectedAddon->GetMetricLoad();
-                    ImGui::TextUnformatted(metric.FormatTimeMetric(metric.GetLast()).c_str());
+                    ImGui::TextUnformatted(metric.GetTimeFormatted().c_str());
+                    ImGui::NextColumn();
                     ImGui::NextColumn();
                     ImGui::NextColumn();
                     ImGui::NextColumn();
@@ -726,20 +804,23 @@ The API key will be automatically shared to all active add-ons.)");
             }
             if (selectedAddon->HasRenderingHooks()) {
                 if (ImGui::CollapsingHeader("Rendering")) {
-                    const auto history = selectedAddon->GetMetricOverall().GetMovingHistory();
-                    ImGui::PlotLines("##RenderingTime", &history[0], static_cast<int>(history.size()), 0, "Add-on frame time (µs)", 0, 10000, ImVec2(0, 100));
-                    ImGui::BeginColumns("##AddonRenderingTime", 5, 0);
+                    const auto& metric = selectedAddon->GetMetricOverall();
+                    ImGui::PlotLines("##RenderingTime", &metric.GetMovingHistory()[0], metric.GetMaxHistorySize(), 0, "Add-on frame time (µs) - lower is better", 0, 10000, ImVec2(0, 100));
+                    ImGui::BeginColumns("##AddonRenderingTime", 6, 0);
                     {
                         elements::SetColumnWidth(0, 150);
-                        elements::SetColumnWidth(1, 110);
-                        elements::SetColumnWidth(2, 110);
-                        elements::SetColumnWidth(3, 110);
+                        elements::SetColumnWidth(1, 70);
+                        elements::SetColumnWidth(2, 70);
+                        elements::SetColumnWidth(3, 70);
+                        elements::SetColumnWidth(4, 70);
                         ImGui::NextColumn();
-                        ImGui::TextUnformatted("Current");
+                        ImGui::TextUnformatted("Last");
                         ImGui::NextColumn();
-                        ImGui::TextUnformatted("Exp. moving avg");
+                        ImGui::TextUnformatted("M avg");
                         ImGui::NextColumn();
-                        ImGui::TextUnformatted("Overall max");
+                        ImGui::TextUnformatted("M max");
+                        ImGui::NextColumn();
+                        ImGui::TextUnformatted("O max");
                         ImGui::NextColumn();
                         ImGui::TextUnformatted("Calls");
                         ImGui::NextColumn();

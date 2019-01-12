@@ -174,14 +174,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="addons\AddonCallFunc.h" />
+    <ClInclude Include="addons\AddonFrameFunc.h" />
     <ClInclude Include="addons\AddonFunc.h" />
     <ClInclude Include="addons\AddonsList.h" />
     <ClInclude Include="addons\LegacyAddon.h" />
     <ClInclude Include="addons\NativeAddon.h" />
     <ClInclude Include="addons\ProxyAddon.h" />
     <ClInclude Include="addons\ProxyDirect3DDevice9.h" />
+    <ClInclude Include="diagnostics\HistoricFpsMetric.h" />
+    <ClInclude Include="diagnostics\HistoricTimeMetric.h" />
+    <ClInclude Include="diagnostics\HistoricMetric.h" />
+    <ClInclude Include="diagnostics\SingleTimeMetric.h" />
     <ClInclude Include="diagnostics\ThreadInfo.h" />
     <ClInclude Include="diagnostics\ThreadMonitor.h" />
+    <ClInclude Include="diagnostics\TimeMetric.h" />
     <ClInclude Include="disasm\opcodes.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="globals.h" />
@@ -214,7 +221,6 @@
     <ClInclude Include="IconsOcticons.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="addons\AddonMetric.h" />
     <ClInclude Include="updaters\Installer.h" />
     <ClInclude Include="updaters\Updater.h" />
     <ClInclude Include="updaters\update_manager.h" />
@@ -238,6 +244,7 @@
     <ClCompile Include="addons\ProxyDirect3DDevice9.cpp" />
     <ClCompile Include="diagnostics\ThreadInfo.cpp" />
     <ClCompile Include="diagnostics\ThreadMonitor.cpp" />
+    <ClCompile Include="diagnostics\TimeMetric.cpp" />
     <ClCompile Include="gui\AddonSettingsWindow.cpp" />
     <ClCompile Include="gui\DisclaimerWindow.cpp" />
     <ClCompile Include="gui\elements\AddonListItem.cpp" />
@@ -285,7 +292,6 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui\Window.cpp" />
-    <ClCompile Include="addons\AddonMetric.cpp" />
     <ClCompile Include="updaters\Installer.cpp" />
     <ClCompile Include="updaters\Updater.cpp" />
     <ClCompile Include="updaters\update_manager.cpp" />

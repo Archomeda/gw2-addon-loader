@@ -116,6 +116,12 @@ namespace loader {
         this->ini.SaveFile(this->configPath.c_str());
     }
 
+    void Config::SetDiagnosticsHistoryType(DiagnosticsHistoryType diagnosticsHistoryType) {
+        this->diagnosticsHistoryType = diagnosticsHistoryType;
+        this->ini.SetLongValue(L"general", L"diagnostics_history_type", diagnosticsHistoryType);
+        this->ini.SaveFile(this->configPath.c_str());
+    }
+
     void Config::SetApiKey(const string& apiKey) {
         this->apiKey = apiKey;
         this->ini.SetValue(L"general", L"api_key", u16(apiKey).c_str());

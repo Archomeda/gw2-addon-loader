@@ -8,6 +8,7 @@
 
 using namespace std;
 using namespace std::filesystem;
+using namespace loader::diagnostics;
 
 namespace loader::hooks {
 
@@ -24,9 +25,9 @@ namespace loader::hooks {
     int PrePresentGuiDone = 0;
     int PrePostProcessingDone = 0;
 
-    chrono::steady_clock::time_point d3d9ProcessingStart;
-    vector<float> DurationHistoryD3D9Processing;
-    vector<float> DurationHistoryLoaderDrawFrame;
+    HistoricTimeMetric<1000, 1> D3D9ProcessingMetric;
+    HistoricTimeMetric<1000, 1> LoaderDrawFrameMetric;
+    HistoricFpsMetric FpsMetric;
 
     IDirect3DDevice9* LegacyAddonChainDevice = nullptr;
 
@@ -178,16 +179,9 @@ namespace loader::hooks {
         stateBlock->Release();
 
         if (trackStats) {
-            auto presentStart = chrono::steady_clock::now();
+            LoaderDrawFrameMetric.Start();
             PrePresentHook(dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-            if (DurationHistoryLoaderDrawFrame.size() < 4 * 60) {
-                DurationHistoryLoaderDrawFrame.resize(4 * 60);
-                DurationHistoryLoaderDrawFrame.reserve(8 * 60);
-            }
-            if (DurationHistoryLoaderDrawFrame.size() == 4 * 60) {
-                DurationHistoryLoaderDrawFrame.erase(DurationHistoryLoaderDrawFrame.begin());
-            }
-            DurationHistoryLoaderDrawFrame.push_back(((chrono::steady_clock::now() - presentStart).count() / 10000) / 100.0f);
+            LoaderDrawFrameMetric.Stop();
         }
         else {
             PrePresentHook(dev, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
@@ -220,14 +214,8 @@ namespace loader::hooks {
         bool obsCompatibilityMode = AppConfig.GetOBSCompatibilityMode();
 
         if (trackStats) {
-            if (DurationHistoryD3D9Processing.size() < 4 * 60) {
-                DurationHistoryD3D9Processing.resize(4 * 60);
-                DurationHistoryD3D9Processing.reserve(8 * 60);
-            }
-            if (DurationHistoryD3D9Processing.size() == 4 * 60) {
-                DurationHistoryD3D9Processing.erase(DurationHistoryD3D9Processing.begin());
-            }
-            DurationHistoryD3D9Processing.push_back(((chrono::steady_clock::now() - d3d9ProcessingStart).count() / 100000) / 10.0f);
+            D3D9ProcessingMetric.Stop();
+            FpsMetric.MarkFrame();
         }
 
         // Before we start, determine the hook chain and see if we need to adapt
@@ -273,7 +261,6 @@ namespace loader::hooks {
         // Reset this for a new frame
         PrePresentGuiDone = 0;
         PrePostProcessingDone = 0;
-        d3d9ProcessingStart = {};
         addons::OnEndFrame(this->dev);
 
         // Signal MumbleLink
@@ -285,7 +272,7 @@ namespace loader::hooks {
     HRESULT LoaderDirect3DDevice9::GetBackBuffer(UINT iSwapChain, UINT iBackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9** ppBackBuffer) {
         // This is the very first call Guild Wars 2 does upon a new frame
         if (AppConfig.GetDiagnostics()) {
-            d3d9ProcessingStart = chrono::steady_clock::now();
+            D3D9ProcessingMetric.Start();
         }
         addons::OnStartFrame(this->dev);
 

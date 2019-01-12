@@ -2,6 +2,7 @@
 #include "../stdafx.h"
 #include "Window.h"
 #include "../addons/Addon.h"
+#include "../diagnostics/HistoricTimeMetric.h"
 
 namespace loader::gui {
 
@@ -16,7 +17,7 @@ namespace loader::gui {
 
     private:
         bool ImGuiAddonsList(const char* label, int* current_item, const std::vector<std::shared_ptr<addons::Addon>> addons, const ImVec2& listBoxSize, float listItemHeight);
-        void ImGuiAddonStatLine(const char* label, const addons::AddonMetric& measure, bool calls);
+        void ImGuiAddonStatLine(const char* label, const diagnostics::HistoricTimeMetric<1000000, 2>& metric, bool calls);
 
         void RenderTabAddons();
         void RenderTabInfo();

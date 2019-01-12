@@ -111,9 +111,6 @@
     <ClInclude Include="addons\AddonFunc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="addons\AddonMetric.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -178,6 +175,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\AddonSettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="diagnostics\TimeMetric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="diagnostics\SingleTimeMetric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="diagnostics\HistoricTimeMetric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="diagnostics\HistoricMetric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="diagnostics\HistoricFpsMetric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\AddonFrameFunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addons\AddonCallFunc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -257,9 +275,6 @@
     <ClCompile Include="utils\file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="addons\AddonMetric.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="addons\NativeAddon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -315,6 +330,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\AddonSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="diagnostics\TimeMetric.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
