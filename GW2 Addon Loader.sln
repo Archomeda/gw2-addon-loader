@@ -26,6 +26,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{5C05D5A6-2D40-4BC3-9897-69E049589B72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Addons", "Addons", "{99C0BCFA-A754-4DDD-A352-E8FBC005AAC4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C5FE4F99-F23A-4239-ADF6-C6E153F271C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -150,6 +156,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4D8C0684-F947-4F27-AF4D-9474286E355A} = {5C05D5A6-2D40-4BC3-9897-69E049589B72}
+		{83EC20E0-6AEC-45A2-9C32-235307FFA713} = {5C05D5A6-2D40-4BC3-9897-69E049589B72}
+		{5380C049-F068-4BFB-8E1F-1F1830326796} = {99C0BCFA-A754-4DDD-A352-E8FBC005AAC4}
+		{5FB761B8-D2A7-481D-AF1F-6F4F2356B1B5} = {99C0BCFA-A754-4DDD-A352-E8FBC005AAC4}
+		{7031DFCC-1DF8-47B5-B486-A5ECD8FC9C98} = {C5FE4F99-F23A-4239-ADF6-C6E153F271C7}
+		{618FBD6D-6041-4543-BCC8-9B225C8AA0B3} = {C5FE4F99-F23A-4239-ADF6-C6E153F271C7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B090B88-41C2-45C1-9D5D-8C9D3868564B}
