@@ -14,6 +14,7 @@
 #include "../hooks/MumbleLink.h"
 #include "../updaters/update_manager.h"
 #include "../utils/encoding.h"
+#include "../utils/string.h"
 
 using namespace std;
 using namespace std::filesystem;
@@ -559,6 +560,7 @@ The API key will be automatically shared to all active add-ons.)");
 
         if (this->selectedStatsType == 0) {
             DiagnosticsHistoryType historyType = AppConfig.GetDiagnosticsHistoryType();
+            string yAvgName;
             int yFps144 = 0;
             int yFps60 = 0;
             int yFps30 = 0;
@@ -571,7 +573,9 @@ The API key will be automatically shared to all active add-ons.)");
 
                 ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
                 const float scaleRatio = plotRect.GetSize().y / scaleMax;
-                yFpsAvg = static_cast<int>(plotRect.Max.y - (scaleRatio * metric.GetMovingAverage()));
+                float movingAverage = metric.GetMovingAverage();
+                yAvgName = to_string_with_precision(movingAverage, 1) + "ms";
+                yFpsAvg = static_cast<int>(plotRect.Max.y - (scaleRatio * movingAverage));
                 if (scaleMax >= (1000 / 30.0f)) {
                     yFps30 = static_cast<int>(plotRect.Max.y - (scaleRatio * (1000 / 30.0f)));
                 }
@@ -589,7 +593,9 @@ The API key will be automatically shared to all active add-ons.)");
 
                 ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
                 const float scaleRatio = plotRect.GetSize().y / scaleMax;
-                yFpsAvg = static_cast<int>(plotRect.Max.y - (scaleRatio * metric.GetMovingAverage()));
+                float movingAverage = metric.GetMovingAverage();
+                yAvgName = to_string_with_precision(movingAverage, 1) + "fps";
+                yFpsAvg = static_cast<int>(plotRect.Max.y - (scaleRatio * movingAverage));
                 if (scaleMax >= 30 && scaleMax <= 120) {
                     yFps30 = static_cast<int>(plotRect.Max.y - (scaleRatio * 30));
                 }
@@ -604,12 +610,6 @@ The API key will be automatically shared to all active add-ons.)");
             {
                 ImRect plotRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
                 ImDrawList* draw = ImGui::GetWindowDrawList();
-
-                // Average FPS line
-                if (yFpsAvg > 0) {
-                    draw->AddLine(ImVec2(plotRect.Min.x, static_cast<float>(yFpsAvg)), ImVec2(plotRect.Max.x, static_cast<float>(yFpsAvg)), IM_COL32(192, 192, 64, 255));
-                    draw->AddText(ImVec2(plotRect.Min.x + 2, static_cast<float>(yFpsAvg) + 1), IM_COL32(192, 192, 64, 255), "avg");
-                }
 
                 // 144 FPS line
                 if (yFps144 > 0) {
@@ -627,6 +627,12 @@ The API key will be automatically shared to all active add-ons.)");
                 if (yFps30 > 0) {
                     draw->AddLine(ImVec2(plotRect.Min.x, static_cast<float>(yFps30)), ImVec2(plotRect.Max.x, static_cast<float>(yFps30)), IM_COL32(192, 144, 96, 255));
                     draw->AddText(ImVec2(plotRect.Min.x + 2, static_cast<float>(yFps30) + 1), IM_COL32(192, 144, 96, 255), "30fps");
+                }
+
+                // Average FPS line
+                if (yFpsAvg > 0) {
+                    draw->AddLine(ImVec2(plotRect.Min.x, static_cast<float>(yFpsAvg)), ImVec2(plotRect.Max.x, static_cast<float>(yFpsAvg)), IM_COL32(192, 192, 64, 255));
+                    draw->AddText(ImVec2(plotRect.Min.x + 2, static_cast<float>(yFpsAvg) + 1), IM_COL32(192, 192, 64, 255), yAvgName.c_str());
                 }
             }
 
@@ -767,7 +773,9 @@ The API key will be automatically shared to all active add-ons.)");
             }
         }
         else if (this->selectedStatsType == 1) {
-            ImGui::PlotLines("##RenderingTime", &hooks::LoaderDrawFrameMetric.GetMovingHistory()[0], hooks::LoaderDrawFrameMetric.GetMaxHistorySize(), 0, "Frame render time (ms) - lower is better", 0, 4, ImVec2(0, 70));
+            const auto& metric = hooks::LoaderDrawFrameMetric;
+            float scaleMax = metric.GetMovingMaximum();
+            ImGui::PlotLines("##RenderingTime", &metric.GetMovingHistory()[0], metric.GetMaxHistorySize(), 0, "Frame render time (ms) - lower is better", 0, scaleMax, ImVec2(0, 70));
         }
         else if (selectedAddon) {
             if (ImGui::CollapsingHeader("General")) {
@@ -805,7 +813,8 @@ The API key will be automatically shared to all active add-ons.)");
             if (selectedAddon->HasRenderingHooks()) {
                 if (ImGui::CollapsingHeader("Rendering")) {
                     const auto& metric = selectedAddon->GetMetricOverall();
-                    ImGui::PlotLines("##RenderingTime", &metric.GetMovingHistory()[0], metric.GetMaxHistorySize(), 0, "Add-on frame time (µs) - lower is better", 0, 10000, ImVec2(0, 100));
+                    float scaleMax = metric.GetMovingMaximum();
+                    ImGui::PlotLines("##RenderingTime", &metric.GetMovingHistory()[0], metric.GetMaxHistorySize(), 0, "Add-on frame time (µs) - lower is better", 0, scaleMax, ImVec2(0, 100));
                     ImGui::BeginColumns("##AddonRenderingTime", 6, 0);
                     {
                         elements::SetColumnWidth(0, 150);
