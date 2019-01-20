@@ -13,7 +13,7 @@ using namespace loader::gui::elements;
 namespace loader::gui {
 
     AddonSettingsWindow::AddonSettingsWindow(shared_ptr<Addon> addon) : addon(addon) {
-        this->SetTitle("Addon Settings");
+        this->SetTitle(addon->GetName() + " Settings");
         this->SetFlags(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
     }
 
