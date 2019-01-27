@@ -1,8 +1,5 @@
 #pragma once
 
-// Suppress deprecation warnings
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING // Yeah fuck off here... not in the mood to write my own converter
-
 // Standard
 #include <atomic>
 #include <condition_variable>

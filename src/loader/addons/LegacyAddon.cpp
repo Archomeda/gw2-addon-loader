@@ -26,6 +26,8 @@ namespace loader::addons {
         typedef HMODULE(WINAPI GetModuleHandleW_t)(LPCWSTR lpFileName);
         typedef BOOL(WINAPI GetModuleHandleExA_t)(DWORD dwFlags, LPCSTR lpFileName, HMODULE* phModule);
         typedef BOOL(WINAPI GetModuleHandleExW_t)(DWORD dwFlags, LPCWSTR lpFileName, HMODULE* phModule);
+        typedef BOOL(WINAPI FreeLibrary_t)(HMODULE hLibModule);
+        typedef BOOL(WINAPI FreeLibraryAndExitThread_t)(HMODULE hLibModule, DWORD dwExitCode);
 
         LoadLibraryA_t* SystemLoadLibraryA;
         LoadLibraryW_t* SystemLoadLibraryW;
@@ -35,13 +37,15 @@ namespace loader::addons {
         GetModuleHandleW_t* SystemGetModuleHandleW;
         GetModuleHandleExA_t* SystemGetModuleHandleExA;
         GetModuleHandleExW_t* SystemGetModuleHandleExW;
+        FreeLibrary_t* SystemFreeLibrary;
+        FreeLibraryAndExitThread_t* SystemFreeLibraryAndExitThread;
 
 
-        path RedirectModuleFileName(string fileName) {
+        path RedirectModuleFileName(const string& fileName) {
             // 1) Redirect system d3d9.dll
             string fileNameLower = fileName;
-            string systemD3D9 = GetSystemFolder("d3d9").u8string();
             transform(fileNameLower.begin(), fileNameLower.end(), fileNameLower.begin(), tolower);
+            string systemD3D9 = GetSystemFolder("d3d9").u8string();
             transform(systemD3D9.begin(), systemD3D9.end(), systemD3D9.begin(), tolower);
             if (fileNameLower.find(systemD3D9) == 0) {
                 // It tries to load the system d3d9.dll, replace with proxy DLL
@@ -71,88 +75,203 @@ namespace loader::addons {
         }
 
 
-        HMODULE WINAPI HookLoadLibraryEx(string fileName, HANDLE hFile, DWORD dwFlags) {
+        HMODULE WINAPI HookLoadLibrary(const string& fileName, HANDLE hFile, DWORD dwFlags) {
             path filePath(fileName);
             if (filePath.has_parent_path()) {
                 path newFilePath = RedirectModuleFileName(fileName);
                 if (filePath != newFilePath) {
                     ADDONS_LOG()->info("Redirecting path to {0}", newFilePath.u8string());
+                    filePath = newFilePath;
                 }
-                filePath = newFilePath;
             }
-            return SystemLoadLibraryExW(filePath.c_str(), hFile, dwFlags);
+            return SystemLoadLibraryExW(filePath.wstring().c_str(), hFile, dwFlags);
+        }
+
+        HMODULE WINAPI HookLoadLibrary(LPCSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
+            if (lpFileName == nullptr) {
+                return SystemLoadLibraryExW(nullptr, hFile, dwFlags);
+            }
+            else {
+                return HookLoadLibrary(string(lpFileName), hFile, dwFlags);
+            }
+        }
+
+        HMODULE WINAPI HookLoadLibrary(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
+            if (lpFileName == nullptr) {
+                return SystemLoadLibraryExW(nullptr, hFile, dwFlags);
+            }
+            else {
+                return HookLoadLibrary(u8(lpFileName), hFile, dwFlags);
+            }
         }
 
         HMODULE WINAPI HookLoadLibraryExA(LPCSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
-            ADDONS_LOG()->info("Loading {0} by using LoadLibraryExA with flags 0x{1:X}", lpFileName != nullptr ? lpFileName : "NULL", dwFlags);
-            return HookLoadLibraryEx(lpFileName, hFile, dwFlags);
+            const string fileName = lpFileName != nullptr ? lpFileName : "NULL";
+            ADDONS_LOG()->info("Loading {0} by using LoadLibraryExA with flags 0x{1:X}", fileName, dwFlags);
+            const auto hModule = HookLoadLibrary(lpFileName, hFile, dwFlags);
+            if (hModule != NULL) {
+                ADDONS_LOG()->info("Loaded {0} into 0x{1:X}", fileName, reinterpret_cast<UINT_PTR>(hModule));
+            }
+            else {
+                ADDONS_LOG()->info("Failed to load {0}: {1}", fileName, LastErrorToString());
+            }
+            return hModule;
         }
 
         HMODULE WINAPI HookLoadLibraryExW(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags) {
-            ADDONS_LOG()->info("Loading {0} by using LoadLibraryExW with flags 0x{1:X}", lpFileName != nullptr ? u8(lpFileName) : "NULL", dwFlags);
-            return HookLoadLibraryEx(u8(lpFileName), hFile, dwFlags);
+            const string fileName = lpFileName != nullptr ? u8(lpFileName) : "NULL";
+            ADDONS_LOG()->info("Loading {0} by using LoadLibraryExW with flags 0x{1:X}", fileName, dwFlags);
+            const auto hModule = HookLoadLibrary(lpFileName, hFile, dwFlags);
+            if (hModule != NULL) {
+                ADDONS_LOG()->info("Loaded {0} into 0x{1:X}", fileName, reinterpret_cast<UINT_PTR>(hModule));
+            }
+            else {
+                ADDONS_LOG()->info("Failed to load {0}: {1}", fileName, LastErrorToString());
+            }
+            return hModule;
         }
 
         HMODULE WINAPI HookLoadLibraryA(LPCSTR lpFileName) {
-            ADDONS_LOG()->info("Loading {0} by using LoadLibraryA", lpFileName != nullptr ? lpFileName : "NULL");
-            return HookLoadLibraryEx(lpFileName, NULL, 0);
+            const string fileName = lpFileName != nullptr ? lpFileName : "NULL";
+            ADDONS_LOG()->info("Loading {0} by using LoadLibraryA", fileName);
+            const auto hModule = HookLoadLibrary(lpFileName, NULL, 0);
+            if (hModule != NULL) {
+                ADDONS_LOG()->info("Loaded {0} into 0x{1:X}", fileName, reinterpret_cast<UINT_PTR>(hModule));
+            }
+            else {
+                ADDONS_LOG()->info("Failed to load {0}: {1}", fileName, LastErrorToString());
+            }
+            return hModule;
         }
 
         HMODULE WINAPI HookLoadLibraryW(LPCWSTR lpFileName) {
-            ADDONS_LOG()->info("Loading {0} by using LoadLibraryW", lpFileName != nullptr ? u8(lpFileName) : "NULL");
-            return HookLoadLibraryEx(u8(lpFileName), NULL, 0);
+            const string fileName = lpFileName != nullptr ? u8(lpFileName) : "NULL";
+            ADDONS_LOG()->info("Loading {0} by using LoadLibraryW", fileName);
+            const auto hModule = HookLoadLibrary(lpFileName, NULL, 0);
+            if (hModule != NULL) {
+                ADDONS_LOG()->info("Loaded {0} into 0x{1:X}", fileName, reinterpret_cast<UINT_PTR>(hModule));
+            }
+            else {
+                ADDONS_LOG()->info("Failed to load {0}: {1}", fileName, LastErrorToString());
+            }
+            return hModule;
         }
 
 
-        BOOL WINAPI HookGetModuleHandleEx(DWORD dwFlags, string fileName, HMODULE* phModule) {
+        BOOL WINAPI FreeLibrary(HMODULE hLibModule) {
+            ADDONS_LOG()->info("Freeing 0x{0:X} by using FreeLibrary", reinterpret_cast<UINT_PTR>(hLibModule));
+            return SystemFreeLibrary(hLibModule);
+        }
+
+        BOOL WINAPI FreeLibraryAndExitThread(HMODULE hLibModule, DWORD dwExitCode) {
+            ADDONS_LOG()->info("Freeing 0x{0:X} and exiting with {1} by using FreeLibraryAndExitThread", reinterpret_cast<UINT_PTR>(hLibModule), dwExitCode);
+            return SystemFreeLibraryAndExitThread(hLibModule, dwExitCode);
+        }
+
+
+        BOOL WINAPI HookGetModuleHandle(DWORD dwFlags, const string& fileName, HMODULE* phModule) {
             path filePath(fileName);
             if (filePath.has_parent_path()) {
                 path newFilePath = RedirectModuleFileName(fileName);
                 if (filePath != newFilePath) {
                     ADDONS_LOG()->info("Redirecting path to {0}", newFilePath.u8string());
+                    filePath = newFilePath;
                 }
-                filePath = newFilePath;
             }
-            return SystemGetModuleHandleExW(dwFlags, filePath.c_str(), phModule);
+            return SystemGetModuleHandleExW(dwFlags, filePath.wstring().c_str(), phModule);
         }
 
-        BOOL WINAPI HookGetModuleHandleEx(DWORD dwFlags, LPCVOID fileName, HMODULE* phModule) {
-            return SystemGetModuleHandleExW(dwFlags, reinterpret_cast<LPCWSTR>(fileName), phModule);
+        BOOL WINAPI HookGetModuleHandle(DWORD dwFlags, LPCSTR lpFileName, HMODULE* phModule) {
+            if (lpFileName == nullptr) {
+                return SystemGetModuleHandleExW(dwFlags, nullptr, phModule);
+            }
+            else {
+                return HookGetModuleHandle(dwFlags, string(lpFileName), phModule);
+            }
+        }
+
+        BOOL WINAPI HookGetModuleHandle(DWORD dwFlags, LPCWSTR lpFileName, HMODULE* phModule) {
+            if (lpFileName == nullptr) {
+                return SystemGetModuleHandleExW(dwFlags, nullptr, phModule);
+            }
+            else {
+                return HookGetModuleHandle(dwFlags, u8(lpFileName), phModule);
+            }
         }
 
         BOOL WINAPI HookGetModuleHandleExA(DWORD dwFlags, LPCSTR lpFileName, HMODULE* phModule) {
-            if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0 || lpFileName == NULL) {
-                ADDONS_LOG()->info("Getting module at 0x{0:X} by using GetModuleHandleExA with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
-                return HookGetModuleHandleEx(dwFlags, reinterpret_cast<LPCVOID>(lpFileName), phModule);
+            if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0) {
+                ADDONS_LOG()->info("Getting module at 0x{0:X} by using GetModuleHandleExA with flags 0x{1:X}", reinterpret_cast<UINT_PTR>(lpFileName), dwFlags);
+                const BOOL result = SystemGetModuleHandleExW(dwFlags, reinterpret_cast<LPCWSTR>(lpFileName), phModule);
+                if (result) {
+                    ADDONS_LOG()->info("Got module 0x{0:X} at 0x{1:X}", reinterpret_cast<UINT_PTR>(lpFileName), reinterpret_cast<UINT_PTR>(*phModule));
+                }
+                else {
+                    ADDONS_LOG()->info("Module 0x{0:X} not found: {1}", reinterpret_cast<UINT_PTR>(lpFileName), LastErrorToString());
+                }
+                return result;
             }
             else {
-                ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleExA with flags 0x{1:X}", lpFileName, dwFlags);
-                return HookGetModuleHandleEx(dwFlags, lpFileName, phModule);
+                ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleExA with flags 0x{1:X}", lpFileName != nullptr ? lpFileName : "NULL", dwFlags);
+                const BOOL result = HookGetModuleHandle(dwFlags, lpFileName, phModule);
+                if (result) {
+                    ADDONS_LOG()->info("Got module {0} at 0x{1:X}", lpFileName != nullptr ? lpFileName : "NULL", reinterpret_cast<UINT_PTR>(*phModule));
+                }
+                else {
+                    ADDONS_LOG()->info("Module {0} not found: {1}", lpFileName != nullptr ? lpFileName : "NULL", LastErrorToString());
+                }
+                return result;
             }
         }
 
         BOOL WINAPI HookGetModuleHandleExW(DWORD dwFlags, LPCWSTR lpFileName, HMODULE* phModule) {
-            if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0 || lpFileName == NULL) {
-                ADDONS_LOG()->info("Getting module at 0x{0:X} by using GetModuleHandleExW with flags 0x{1:X}", reinterpret_cast<LPCVOID>(lpFileName), dwFlags);
-                return HookGetModuleHandleEx(dwFlags, reinterpret_cast<LPCVOID>(lpFileName), phModule);
+            if ((dwFlags & GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS) > 0) {
+                ADDONS_LOG()->info("Getting module at 0x{0:X} by using GetModuleHandleExW with flags 0x{1:X}", reinterpret_cast<UINT_PTR>(lpFileName), dwFlags);
+                const BOOL result = SystemGetModuleHandleExW(dwFlags, lpFileName, phModule);
+                if (result) {
+                    ADDONS_LOG()->info("Got module 0x{0:X} at 0x{1:X}", reinterpret_cast<UINT_PTR>(lpFileName), reinterpret_cast<UINT_PTR>(*phModule));
+                }
+                else {
+                    ADDONS_LOG()->info("Module 0x{0:X} not found: {1}", reinterpret_cast<UINT_PTR>(lpFileName), LastErrorToString());
+                }
+                return result;
             }
             else {
-                ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleExW with flags 0x{1:X}", u8(lpFileName), dwFlags);
-                return HookGetModuleHandleEx(dwFlags, u8(lpFileName), phModule);
+                ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleExW with flags 0x{1:X}", lpFileName != nullptr ? u8(lpFileName) : "NULL", dwFlags);
+                const BOOL result = HookGetModuleHandle(dwFlags, lpFileName, phModule);
+                if (result) {
+                    ADDONS_LOG()->info("Got module {0} at 0x{1:X}", lpFileName != nullptr ? u8(lpFileName) : "NULL", reinterpret_cast<UINT_PTR>(*phModule));
+                }
+                else {
+                    ADDONS_LOG()->info("Module {0} not found: {1}", lpFileName != nullptr ? u8(lpFileName) : "NULL", LastErrorToString());
+                }
+                return result;
             }
         }
 
         HMODULE WINAPI HookGetModuleHandleA(LPCSTR lpFileName) {
-            ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleA", lpFileName != NULL ? lpFileName : "NULL");
+            const string fileName = lpFileName != nullptr ? lpFileName : "NULL";
+            ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleA", fileName);
             HMODULE phModule;
-            HookGetModuleHandleEx(0, lpFileName, &phModule);
+            if (HookGetModuleHandle(0, lpFileName, &phModule)) {
+                ADDONS_LOG()->info("Got module {0} at 0x{1:X}", fileName, reinterpret_cast<UINT_PTR>(phModule));
+            }
+            else {
+                ADDONS_LOG()->info("Module {0} not found: {1}", fileName, LastErrorToString());
+            }
             return phModule;
         }
 
         HMODULE WINAPI HookGetModuleHandleW(LPCWSTR lpFileName) {
-            ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleW", lpFileName != NULL ? u8(lpFileName) : "NULL");
+            const string fileName = lpFileName != nullptr ? u8(lpFileName) : "NULL";
+            ADDONS_LOG()->info("Getting module {0} by using GetModuleHandleW", fileName);
             HMODULE phModule;
-            HookGetModuleHandleEx(0, lpFileName, &phModule);
+            if (HookGetModuleHandle(0, lpFileName, &phModule)) {
+                ADDONS_LOG()->info("Got module {0} at 0x{1:X}", fileName, reinterpret_cast<UINT_PTR>(phModule));
+            }
+            else {
+                ADDONS_LOG()->info("Module {0} not found: {1}", fileName, LastErrorToString());
+            }
             return phModule;
         }
 
@@ -304,6 +423,8 @@ namespace loader::addons {
         mhStatus = MH_CreateHookEx(&GetModuleHandleW, hooks::HookGetModuleHandleW, &hooks::SystemGetModuleHandleW);
         mhStatus = MH_CreateHookEx(&GetModuleHandleExA, hooks::HookGetModuleHandleExA, &hooks::SystemGetModuleHandleExA);
         mhStatus = MH_CreateHookEx(&GetModuleHandleExW, hooks::HookGetModuleHandleExW, &hooks::SystemGetModuleHandleExW);
+        mhStatus = MH_CreateHookEx(&FreeLibrary, hooks::FreeLibrary, &hooks::SystemFreeLibrary);
+        mhStatus = MH_CreateHookEx(&FreeLibraryAndExitThread, hooks::FreeLibraryAndExitThread, &hooks::SystemFreeLibraryAndExitThread);
         mhStatus = MH_QueueEnableHook(&LoadLibraryA);
         mhStatus = MH_QueueEnableHook(&LoadLibraryW);
         mhStatus = MH_QueueEnableHook(&LoadLibraryExA);
@@ -312,6 +433,8 @@ namespace loader::addons {
         mhStatus = MH_QueueEnableHook(&GetModuleHandleW);
         mhStatus = MH_QueueEnableHook(&GetModuleHandleExA);
         mhStatus = MH_QueueEnableHook(&GetModuleHandleExW);
+        mhStatus = MH_QueueEnableHook(&FreeLibrary);
+        mhStatus = MH_QueueEnableHook(&FreeLibraryAndExitThread);
         mhStatus = MH_ApplyQueued();
         ADDONS_LOG()->info("Redirected WinAPI functions for legacy add-on {0}", this->GetFileName());
         ADDONS_LOG()->debug(" - LoadLibraryA: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemLoadLibraryA), reinterpret_cast<size_t>(hooks::HookLoadLibraryA));
@@ -322,6 +445,8 @@ namespace loader::addons {
         ADDONS_LOG()->debug(" - GetModuleHandleW: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemGetModuleHandleW), reinterpret_cast<size_t>(hooks::HookGetModuleHandleW));
         ADDONS_LOG()->debug(" - GetModuleHandleExA: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemGetModuleHandleExA), reinterpret_cast<size_t>(hooks::HookGetModuleHandleExA));
         ADDONS_LOG()->debug(" - GetModuleHandleExW: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemGetModuleHandleExW), reinterpret_cast<size_t>(hooks::HookGetModuleHandleExW));
+        ADDONS_LOG()->debug(" - FreeLibrary: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemFreeLibrary), reinterpret_cast<size_t>(hooks::FreeLibrary));
+        ADDONS_LOG()->debug(" - FreeLibraryAndExitThread: 0x{0:X} -> 0x{1:X}", reinterpret_cast<size_t>(hooks::SystemFreeLibraryAndExitThread), reinterpret_cast<size_t>(hooks::FreeLibraryAndExitThread));
         return mhStatus == MH_OK;
     }
 
@@ -336,6 +461,8 @@ namespace loader::addons {
         mhStatus = MH_QueueDisableHook(&GetModuleHandleW);
         mhStatus = MH_QueueDisableHook(&GetModuleHandleExA);
         mhStatus = MH_QueueDisableHook(&GetModuleHandleExW);
+        mhStatus = MH_QueueDisableHook(&FreeLibrary);
+        mhStatus = MH_QueueDisableHook(&FreeLibraryAndExitThread);
         mhStatus = MH_ApplyQueued();
         mhStatus = MH_RemoveHook(&LoadLibraryA);
         mhStatus = MH_RemoveHook(&LoadLibraryW);
@@ -345,6 +472,8 @@ namespace loader::addons {
         mhStatus = MH_RemoveHook(&GetModuleHandleW);
         mhStatus = MH_RemoveHook(&GetModuleHandleExA);
         mhStatus = MH_RemoveHook(&GetModuleHandleExW);
+        mhStatus = MH_RemoveHook(&FreeLibrary);
+        mhStatus = MH_RemoveHook(&FreeLibraryAndExitThread);
         hooks::SystemLoadLibraryA = nullptr;
         hooks::SystemLoadLibraryW = nullptr;
         hooks::SystemLoadLibraryExA = nullptr;
@@ -353,6 +482,8 @@ namespace loader::addons {
         hooks::SystemGetModuleHandleW = nullptr;
         hooks::SystemGetModuleHandleExA = nullptr;
         hooks::SystemGetModuleHandleExW = nullptr;
+        hooks::SystemFreeLibrary = nullptr;
+        hooks::SystemFreeLibraryAndExitThread = nullptr;
         ADDONS_LOG()->info("Reverted WinAPI functions redirects for legacy add-on {0}", this->GetFileName());
 
         // Make sure to restore the states from earlier, check ApplySafeEnv
