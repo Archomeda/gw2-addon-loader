@@ -14,6 +14,6 @@ namespace loader {
 
     const std::shared_ptr<spdlog::logger> GetLog();
     const std::shared_ptr<spdlog::logger> GetLog(const std::string& name);
-    const std::string LastErrorToString(DWORD error);
+    const std::string LastErrorToString();
 
 }

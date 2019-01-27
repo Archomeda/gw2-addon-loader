@@ -22,7 +22,7 @@ namespace loader::hooks {
         path systemD3D9 = GetSystemFolder("d3d9");
         SystemD3D9Module = LoadLibrary(systemD3D9.c_str());
         if (!SystemD3D9Module) {
-            HOOKS_LOG()->error("Failed to load the system d3d9.dll: {0}", LastErrorToString(GetLastError()));
+            HOOKS_LOG()->error("Failed to load the system d3d9.dll: {0}", LastErrorToString());
             return;
         }
 
@@ -49,7 +49,7 @@ namespace loader::hooks {
         if (SystemD3D9Module)
         {
             if (!FreeLibrary(SystemD3D9Module)) {
-                HOOKS_LOG()->error("Failed to free system d3d9 library: {0}", LastErrorToString(GetLastError()));
+                HOOKS_LOG()->error("Failed to free system d3d9 library: {0}", LastErrorToString());
             }
             SystemD3D9Module = nullptr;
         }

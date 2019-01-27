@@ -51,7 +51,8 @@ namespace loader {
         return logger;
     }
 
-    const string LastErrorToString(DWORD error) {
+    const string LastErrorToString() {
+        const DWORD error = GetLastError();
         if (!error) {
             return "";
         }
@@ -62,7 +63,7 @@ namespace loader {
 
         string message(messageBuffer, size);
         LocalFree(messageBuffer);
-        return message;
+        return message + " (" + to_string(error) + ")";
     }
 
 }
