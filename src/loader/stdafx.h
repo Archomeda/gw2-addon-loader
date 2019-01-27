@@ -67,6 +67,7 @@
 
 // Third-party
 #include <IconsMaterialDesign.h>
+#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 #include <imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>

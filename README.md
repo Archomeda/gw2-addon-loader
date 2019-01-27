@@ -33,7 +33,7 @@ This project uses a number of third-party software.
 Please refer to their GitHub repositories or websites for more information.
 
 - [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)
-- [ImGui 1.62](https://github.com/ocornut/imgui)
+- [ImGui 1.67](https://github.com/ocornut/imgui)
 - [JSON for Modern C++ 3.1.2](https://github.com/nlohmann/json)
 - [minhook 1.3.3](https://github.com/TsudaKageyu/minhook)
 - [miniz 2.0.7](https://github.com/richgel999/miniz)

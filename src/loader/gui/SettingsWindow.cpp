@@ -523,7 +523,7 @@ OBS third-party overlays capture setting is disabled.)");
 The API key will be automatically shared to all active add-ons.)");
             }
             ImGui::SameLine();
-            if (ImGui::InputTextEx("##ApiKey", this->apiKey, sizeof(this->apiKey), ImVec2(438, 0), ImGuiInputTextFlags_CallbackCharFilter, [](ImGuiTextEditCallbackData *data) {
+            if (ImGui::InputTextEx("##ApiKey", this->apiKey, sizeof(this->apiKey), ImVec2(438, 0), ImGuiInputTextFlags_CallbackCharFilter, [](ImGuiInputTextCallbackData *data) {
                 ImWchar c = data->EventChar;
                 return c >= 0x30 && c <= 0x39 || c >= 0x41 && c <= 0x46 || c == 0x2D ? 0 : 1;
             })) {

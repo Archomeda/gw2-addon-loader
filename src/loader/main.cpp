@@ -187,7 +187,7 @@ void PostCreateDevice(hooks::LoaderDirect3D9* d3d9, hooks::LoaderDirect3DDevice9
     colors[ImGuiCol_PlotHistogram] = ImVec4(1.00f, 1.00f, 0.94f, 1.00f);
     colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.84f, 0.77f, 0.71f, 0.98f);
     colors[ImGuiCol_TextSelectedBg] = ImVec4(0.84f, 0.77f, 0.71f, 0.27f);
-    colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
     colors[ImGuiCol_DragDropTarget] = ImVec4(0.58f, 0.50f, 0.43f, 0.98f);
 
     // Load enabled add-ons
