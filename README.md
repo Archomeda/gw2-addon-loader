@@ -8,9 +8,11 @@ For the usage information, please check the associated [GitHub pages website](ht
 Guild Wars 2 Add-on Loader is an unofficial add-on for Guild Wars 2.
 It acts as a master add-on that makes it easy to manage your Guild Wars 2 add-ons without the need to sort the files manually.
 
-
 ## Compiling
-This project uses Visual Studio 2017.
+This project uses Visual Studio 2017 and the [DirectX 9 SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812).
+If you're unable to install the DirectX 9 SDK, make sure to deinstall the Microsoft Visual C++ 2010 SP1 redistributable package before installing the SDK.
+After installation you can reinstall the redistributable package again.
+
 There are 4 build configuration settings:
 - Debug: Debug version of the add-on loader
 - DebugExamples: Debug version of the add-on loader and examples

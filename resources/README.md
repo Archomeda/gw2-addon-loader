@@ -1,5 +1,5 @@
 # Fonts
-Guild Wars 2 Addon Loader uses various fonts.
+Guild Wars 2 Add-on Loader uses various fonts.
 Its main font is the same as Guild Wars 2 itself, a slightly modified version of Trebuchet MS.
 It also uses the icon fonts [Material Icons](https://material.io/tools/icons/) and [Octicons](https://octicons.github.com/).
 
@@ -21,6 +21,6 @@ In order to compile the font file, do the following:
   - Export textures: PNG
   - Export compression: Deflate
 3. Export it
-4. Compile Guild Wars 2 Addon Loader tools
+4. Compile Guild Wars 2 Add-on Loader tools
 5. Run the font-atlas-packer tool (can be found in the Debug/tools folder after compilation), use the FNT files as command line arguments, and place `-m` before any (except the first) file to merge it with the previous one (check the source file for more information)
 6. If no errors have occured, the ATL file should be placed next to the first input file
