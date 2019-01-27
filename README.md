@@ -1,4 +1,9 @@
 # Guild Wars 2 Add-on Loader
+[![](https://img.shields.io/appveyor/ci/Archomeda/gw2-addon-loader/master.svg?logo=appveyor&logoColor=f0f0f0)](https://ci.appveyor.com/project/Archomeda/gw2-addon-loader/branch/master)
+[![](https://img.shields.io/github/release/Archomeda/gw2-addon-loader.svg?logo=github&logoColor=f0f0f0)](https://github.com/Archomeda/gw2-addon-loader/releases/latest)
+[![](https://img.shields.io/github/downloads/Archomeda/gw2-addon-loader/total.svg?logo=github&logoColor=f0f0f0)](https://github.com/Archomeda/gw2-addon-loader/releases/latest)
+[![](https://img.shields.io/discord/384735285197537290.svg?logo=discord&logoColor=f0f0f0)](https://discord.gg/tS5UpUU)
+
 **This readme file contains general information about the development.
 For the usage information, please check the associated [GitHub pages website](https://archomeda.github.io/gw2-addon-loader/).**
 
